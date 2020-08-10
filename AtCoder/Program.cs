@@ -14,7 +14,7 @@ namespace AtCoder
         private static void Main(string[] args)
         {
         }
-        
+
         #region Utility
         static readonly StreamScanner Scanner = new StreamScanner(Console.OpenStandardInput());
 
@@ -132,7 +132,7 @@ namespace AtCoder
     public class Primer
     {
         /// <summary> 素数判定 </summary>
-        public bool IsPrime(int num)
+        public bool IsPrime(long num)
         {
             if (num < 2) {return false;}
             if (num == 2) {return true;}
@@ -146,16 +146,22 @@ namespace AtCoder
             return true;
         }
 
-        public IEnumerable<int> GetPrimeFactors(int n)
+        public IEnumerable<long> GetPrimeFactors(long n)
         {
             int i = 2;
-            int tmp = n;
+            long tmp = n;
 
-            while (i * i <= n) //※1
+            while (i * i <= tmp)
             {
                 if(tmp % i == 0){
                     tmp /= i;
                     yield return i;
+                    if (IsPrime(tmp))
+                    {
+                        yield return tmp;
+                        tmp = 1;
+                        break;
+                    }
                 }else{
                     i++;
                 }
