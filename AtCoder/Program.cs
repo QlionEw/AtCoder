@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Numerics;
 
 namespace AtCoder
 {
@@ -12,7 +13,6 @@ namespace AtCoder
     {
         private static void Main(string[] args)
         {
-
         }
         
         #region Utility
@@ -24,7 +24,7 @@ namespace AtCoder
             var sb = new StringBuilder();
             foreach (var result in items)
             {
-                sb.Append(result + "\n");
+                sb.Append(result.ToString() + "\n");
             }
             sb = sb.Remove(sb.Length - 1, 1);
             Console.WriteLine(sb);
@@ -32,6 +32,7 @@ namespace AtCoder
         #endregion
     }
 
+    
     #region Utility Class
     public class StreamScanner
     {
@@ -65,6 +66,13 @@ namespace AtCoder
         {
             var sb = new StringBuilder();
             for (var b = Char(); b >= 33 && b <= 126; b = (char)read())
+                sb.Append(b);
+            return sb.ToString();
+        }
+        public string ScanIncludeSpace()
+        {
+            var sb = new StringBuilder();
+            for (var b = Char(); b >= 32 && b <= 126; b = (char)read())
                 sb.Append(b);
             return sb.ToString();
         }
@@ -105,10 +113,26 @@ namespace AtCoder
             return scan;
         }
     }
+    public class LargeCalc
+    {
+        public IEnumerable<long> Surplus(long baseNum, long power, int division)
+        {
+            long value = 1;
+            for (int i = 1; i <= power; i++)
+            {
+                value = value * baseNum % division;
+                yield return value;
+                if (value == 0)
+                {
+                    break;
+                }
+            }
+        }
+    }
     public class Primer
     {
         /// <summary> 素数判定 </summary>
-        public static bool IsPrime(int num)
+        public bool IsPrime(int num)
         {
             if (num < 2) {return false;}
             if (num == 2) {return true;}
@@ -122,7 +146,7 @@ namespace AtCoder
             return true;
         }
 
-        public static IEnumerable<int> GetPrimeFactors(int n)
+        public IEnumerable<int> GetPrimeFactors(int n)
         {
             int i = 2;
             int tmp = n;
