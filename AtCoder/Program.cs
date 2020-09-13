@@ -183,21 +183,21 @@ namespace AtCoder
         }
         
         /// <summary> 和 </summary>
-        public long Addition(IEnumerable<long> nums)
+        public long Addition(long start, params long[] nums)
         {
-            return nums.Aggregate<long, long>(0, (current, num) => ModifyPositive((current + num) % ModValue));
+            return nums.Aggregate(start, (current, num) => ModifyPositive((current + num) % ModValue));
         }
         
         /// <summary> 差 </summary>
-        public long Subtraction(IEnumerable<long> nums)
+        public long Subtraction(long start, params long[] nums)
         {
-            return nums.Aggregate<long, long>(0, (current, num) => ModifyPositive((current - num) % ModValue));
+            return nums.Aggregate(start, (current, num) => ModifyPositive((current - num) % ModValue));
         }
         
         /// <summary> 積 </summary>
-        public long Multiplication(IEnumerable<long> nums)
+        public long Multiplication(long start, params long[] nums)
         {
-            return nums.Aggregate<long, long>(1, (current, num) => ModifyPositive((current * num) % ModValue));
+            return nums.Aggregate(start, (current, num) => ModifyPositive((current * num) % ModValue));
         }
 
         private long ModifyPositive(long value)
