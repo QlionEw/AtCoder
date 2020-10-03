@@ -121,8 +121,8 @@ namespace AtCoder
     public class DynamicProgramming
     {
         public long[][] Table { get; private set; }
-        private int itemCount;
-        private int selectionCount;
+        private readonly int itemCount;
+        private readonly int selectionCount;
 
         public DynamicProgramming(int itemCount, int selectionCount = 1)
         {
@@ -130,44 +130,45 @@ namespace AtCoder
             this.selectionCount = selectionCount;
         }
 
-        private long Min(long a, long b) => a > b ? b : a;
+        private static long Min(long a, long b) => a > b ? b : a;
         public long GetMin(int fallbackCount, Func<int,int,int,long> calcFunc, Func<int, long> getFirstValue, int fallbackStep = 1)
         {
-            Table = Enumerable.Repeat(0,selectionCount).Select(_ => Enumerable.Repeat(long.MaxValue, itemCount).ToArray()).ToArray();
-            for (int i = 0; i < Table.Length; i++)
+            Table = Enumerable.Repeat(0,itemCount).Select(_ => Enumerable.Repeat(long.MaxValue, selectionCount).ToArray()).ToArray();
+            for (int i = 0; i < Table[0].Length; i++)
             {
-                Table[i][0] = getFirstValue(i);
+                Table[0][i] = getFirstValue(i);
             }
 
-            return Calculation(fallbackCount, (i, fi, sel) => Min(Table[sel][i], calcFunc(i, fi, sel)), fallbackStep).Min();
+            return Calculation(fallbackCount, (i, fi, sel) => Min(Table[i][sel], calcFunc(i, fi, sel)), fallbackStep).Min();
         }
 
-        private long Max(long a, long b) => a < b ? b : a;
+        private static long Max(long a, long b) => a < b ? b : a;
         public long GetMax(int fallbackCount, Func<int, int, int, long> calcFunc, Func<int, long> getFirstValue, int fallbackStep = 1)
         {
-            Table = Enumerable.Repeat(0, selectionCount).Select(_ => Enumerable.Repeat(long.MinValue, itemCount).ToArray()).ToArray();
-            for (int i = 0; i < Table.Length; i++)
+            Table = Enumerable.Repeat(0,itemCount).Select(_ => Enumerable.Repeat(long.MinValue, selectionCount).ToArray()).ToArray();
+            for (int i = 0; i < Table[0].Length; i++)
             {
-                Table[i][0] = getFirstValue(i);
+                Table[0][i] = getFirstValue(i);
             }
 
-            return Calculation(fallbackCount, (i, fi, sel) => Max(Table[sel][i], calcFunc(i, fi, sel)), fallbackStep).Max();
+            return Calculation(fallbackCount, (i, fi, sel) => Max(Table[i][sel], calcFunc(i, fi, sel)), fallbackStep).Max();
         }
 
         private IEnumerable<long> Calculation(int fallbackCount, Func<int, int, int, long> calcFunc, int fallbackStep = 1)
         {
-            var calcLength = Table.First().Length;
+            var calcLength = Table.Length;
             for (int i = 0; i < calcLength; i++)
             {
-                for (int selection = 0; selection < Table.Length; selection++)
+                for (int fi = i - 1; fi >= 0 && fi >= i - fallbackCount * fallbackStep; fi -= fallbackStep)
                 {
-                    for (int fi = i - 1; fi >= 0 && fi >= i - fallbackCount * fallbackStep; fi -= fallbackStep)
+                    for (int selection = 0; selection < Table[0].Length; selection++)
                     {
-                        Table[selection][i] = calcFunc(i, fi, selection);
+                        Table[i][selection] = calcFunc(i, fi, selection);
                     }
                 }
             }
-            return Table.Select(xs => xs.Last());
+
+            return Table.Last();
         }
     }
     public class LargeCalc
@@ -290,5 +291,4 @@ namespace AtCoder
         }
     }
     #endregion
-    
 }
