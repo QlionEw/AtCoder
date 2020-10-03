@@ -22,9 +22,10 @@ namespace AtCoder
     #region Utility Class
     public class StreamScanner
     {
+        private const int Size = 1024 * 16;
         public StreamScanner(Stream stream) { str = stream; }
         private readonly Stream str;
-        private readonly byte[] buf = new byte[1024];
+        private readonly byte[] buf = new byte[Size];
         private int len, ptr;
         public bool IsEof { get; private set; }
         private byte Read()
@@ -32,7 +33,7 @@ namespace AtCoder
             if (IsEof) throw new EndOfStreamException();
             if (ptr >= len) {
                 ptr = 0;
-                if ((len = str.Read(buf, 0, 1024)) <= 0)
+                if ((len = str.Read(buf, 0, Size)) <= 0)
                 {
                     IsEof = true;
                     return 0;
@@ -78,22 +79,40 @@ namespace AtCoder
         public double Double() { return double.Parse(Scan(), CultureInfo.InvariantCulture); }
         
         /// <summary> 数値読み込み </summary>
-        public List<long> ArrayLong(int count = 0)
+        public long[] ArrayLong(int count = 0)
         {
-            var scan = new List<long>();
+            var scan = new long[count];
             for (int i = 0; i < count; i++)
             {
-                scan.Add(Long());
+                scan[i] = Long();
             }
             return scan;
         }
         /// <summary> 数値読み込み </summary>
-        public List<int> ArrayInt(int count = 0)
+        public int[] ArrayInt(int count = 0)
         {
-            var scan = new List<int>();
+            var scan = new int[count];
             for (int i = 0; i < count; i++)
             {
-                scan.Add(Integer());
+                scan[i] = Integer();
+            }
+            return scan;
+        }
+        public long[][] SquareLong(int row, int col)
+        {
+            var scan = new long[row][];
+            for (int i = 0; i < row; i++)
+            {
+                scan[i] = ArrayLong(col);
+            }
+            return scan;
+        }
+        public int[][] SquareInt(int row, int col)
+        {
+            var scan = new int[row][];
+            for (int i = 0; i < row; i++)
+            {
+                scan[i] = ArrayInt(col);
             }
             return scan;
         }
