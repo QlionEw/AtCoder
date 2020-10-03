@@ -118,6 +118,58 @@ namespace AtCoder
             Console.WriteLine(sb);
         }
     }
+    public class DynamicProgramming
+    {
+        public long[][] Table { get; private set; }
+        private int itemCount;
+        private int selectionCount;
+
+        public DynamicProgramming(int itemCount, int selectionCount = 1)
+        {
+            this.itemCount = itemCount;
+            this.selectionCount = selectionCount;
+        }
+
+        private long Min(long a, long b) => a > b ? b : a;
+        public long GetMin(int fallbackCount, Func<int,int,int,long> calcFunc, Func<int, long> getFirstValue, int fallbackStep = 1)
+        {
+            Table = Enumerable.Repeat(0,selectionCount).Select(_ => Enumerable.Repeat(long.MaxValue, itemCount).ToArray()).ToArray();
+            for (int i = 0; i < Table.Length; i++)
+            {
+                Table[i][0] = getFirstValue(i);
+            }
+
+            return Calculation(fallbackCount, (i, fi, sel) => Min(Table[sel][i], calcFunc(i, fi, sel)), fallbackStep).Min();
+        }
+
+        private long Max(long a, long b) => a < b ? b : a;
+        public long GetMax(int fallbackCount, Func<int, int, int, long> calcFunc, Func<int, long> getFirstValue, int fallbackStep = 1)
+        {
+            Table = Enumerable.Repeat(0, selectionCount).Select(_ => Enumerable.Repeat(long.MinValue, itemCount).ToArray()).ToArray();
+            for (int i = 0; i < Table.Length; i++)
+            {
+                Table[i][0] = getFirstValue(i);
+            }
+
+            return Calculation(fallbackCount, (i, fi, sel) => Max(Table[sel][i], calcFunc(i, fi, sel)), fallbackStep).Max();
+        }
+
+        private IEnumerable<long> Calculation(int fallbackCount, Func<int, int, int, long> calcFunc, int fallbackStep = 1)
+        {
+            var calcLength = Table.First().Length;
+            for (int i = 0; i < calcLength; i++)
+            {
+                for (int selection = 0; selection < Table.Length; selection++)
+                {
+                    for (int fi = i - 1; fi >= 0 && fi >= i - fallbackCount * fallbackStep; fi -= fallbackStep)
+                    {
+                        Table[selection][i] = calcFunc(i, fi, selection);
+                    }
+                }
+            }
+            return Table.Select(xs => xs.Last());
+        }
+    }
     public class LargeCalc
     {
         public IEnumerable<long> Surplus(long baseNum, long power, int division)
