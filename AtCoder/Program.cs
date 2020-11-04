@@ -139,54 +139,51 @@ namespace AtCoder
     }
     public class DynamicProgramming
     {
+        public const long MaxValue = (long) 1 << 60;
+        public const long MinValue = -((long) 1 << 60);
         public long[][] Table { get; private set; }
         private readonly int itemCount;
         private readonly int selectionCount;
+        private readonly bool isGetMax;
 
-        public DynamicProgramming(int itemCount, int selectionCount = 1)
+        public DynamicProgramming(int itemCount, int selectionCount, bool isGetMax)
         {
             this.itemCount = itemCount;
             this.selectionCount = selectionCount;
+            this.isGetMax = isGetMax;
+
+            var initialDefaultValue = isGetMax ? MinValue : MaxValue;
+            Table = Enumerable.Repeat(0,itemCount).Select(_ => Enumerable.Repeat(initialDefaultValue, selectionCount).ToArray()).ToArray();
         }
 
-        private static long Min(long a, long b) => a > b ? b : a;
-        public long GetMin(int fallbackCount, Func<int,int,int,long> calcFunc, Func<int, long> getFirstValue, int fallbackStep = 1)
+        public void SetFirstValue(long value)
         {
-            Table = Enumerable.Repeat(0,itemCount).Select(_ => Enumerable.Repeat(long.MaxValue, selectionCount).ToArray()).ToArray();
             for (int i = 0; i < Table[0].Length; i++)
             {
-                Table[0][i] = getFirstValue(i);
+                Table[0][i] = value;
             }
-
-            return Calculation(fallbackCount, (i, fi, sel) => Min(Table[i][sel], calcFunc(i, fi, sel)), fallbackStep).Min();
         }
 
-        private static long Max(long a, long b) => a < b ? b : a;
-        public long GetMax(int fallbackCount, Func<int, int, int, long> calcFunc, Func<int, long> getFirstValue, int fallbackStep = 1)
+        public long Get(int startBy, Func<int, int, long> calcFunc)
         {
-            Table = Enumerable.Repeat(0,itemCount).Select(_ => Enumerable.Repeat(long.MinValue, selectionCount).ToArray()).ToArray();
-            for (int i = 0; i < Table[0].Length; i++)
-            {
-                Table[0][i] = getFirstValue(i);
-            }
-
-            return Calculation(fallbackCount, (i, fi, sel) => Max(Table[i][sel], calcFunc(i, fi, sel)), fallbackStep).Max();
+            return isGetMax 
+                ? Calculation(calcFunc, startBy).Max() 
+                : Calculation(calcFunc, startBy).Min();
         }
 
-        private IEnumerable<long> Calculation(int fallbackCount, Func<int, int, int, long> calcFunc, int fallbackStep = 1)
+        private IEnumerable<long> Calculation(Func<int,int,long> calcFunc, int startBy)
         {
-            var calcLength = Table.Length;
-            for (int i = 0; i < calcLength; i++)
+            for (int i = startBy; i < Table.Length; i++)
             {
-                for (int fi = i - 1; fi >= 0 && fi >= i - fallbackCount * fallbackStep; fi -= fallbackStep)
+                for (int selection = 0; selection < Table[0].Length; selection++)
                 {
-                    for (int selection = 0; selection < Table[0].Length; selection++)
+                    if (i < startBy)
                     {
-                        Table[i][selection] = calcFunc(i, fi, selection);
+                        continue;
                     }
+                    Table[i][selection] = calcFunc(i, selection);
                 }
             }
-
             return Table.Last();
         }
     }
