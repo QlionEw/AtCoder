@@ -18,7 +18,7 @@ namespace AtCoder
         private static readonly StreamScanner Scanner = new StreamScanner(Console.OpenStandardInput());
         #endregion
     }
-    
+
     #region Utility Class
     public class StreamScanner
     {
@@ -304,6 +304,27 @@ namespace AtCoder
                 bitValue /= 2;
             }
             return list;
+        }
+    }
+    public class TreeStructure
+    {
+        private List<TreeItem> items = new List<TreeItem>();
+        
+        class TreeItem
+        {
+            public List<int> Connector { get; set; } = new List<int>();
+            public long Value { get; set; }
+        }
+
+        public void CreatePoint(int number)
+        {
+            items = Enumerable.Range(0, number+1).Select(x => new TreeItem()).ToList();
+        }
+
+        public void Connect(int num1, int num2)
+        {
+            items[num1].Connector.Add(num2);
+            items[num2].Connector.Add(num1);
         }
     }
     #endregion
