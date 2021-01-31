@@ -3,8 +3,8 @@ SET contest=%1
 SET question=%2
 
 set current=%CD%
-set contestPath=C:\Users\owner\atcoder-workspace\%contest%
-set questionPath=C:\Users\owner\atcoder-workspace\%contest%\%question%
+set contestPath=%HOMEPATH%\atcoder-workspace\%contest%
+set questionPath=%HOMEPATH%\atcoder-workspace\%contest%\%question%
 
 if not exist %contestPath%\ (
     atcoder-tools gen %contest%
