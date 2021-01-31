@@ -126,7 +126,7 @@ namespace AtCoder
         }
         
         /// <summary> 一括出力 </summary>
-        public static void OutAllLine(IEnumerable<object> items)
+        public static void OutAllLine<T>(IEnumerable<T> items)
         {
             var sb = new StringBuilder();
             foreach (var result in items)
@@ -241,6 +241,25 @@ namespace AtCoder
                 }
             }
             if(tmp != 1) yield return tmp;
+        }
+
+        public int GetDivisor(long n)
+        {
+            var count = 0;
+            var sq = (long)Math.Sqrt(n);
+            for (long i = 1; i <= sq; i++)
+            {
+                if (n % i == 0)
+                {
+                    count += 2;
+                }
+            }
+            if (sq * sq == n)
+            {
+                count--;
+            }
+
+            return count;
         }
     }
     public class Mod109
