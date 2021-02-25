@@ -325,25 +325,102 @@ namespace AtCoder
             return list;
         }
     }
-    public class TreeStructure
+    public class PathInfo
     {
-        private List<TreeItem> items = new List<TreeItem>();
+        public long From { get; set; }
+        public long To { get; set; }
+        public long Cost { get; set; }
+    }
+    public class GraphProcessor
+    {
+        public bool[] IsLoop { get; }
+        public long[] Distances { get; }
+        private PathInfo[] pathInfos;
         
-        class TreeItem
+        public GraphProcessor(int nodeCount, IEnumerable<PathInfo> paths)
         {
-            public List<int> Connector { get; set; } = new List<int>();
-            public long Value { get; set; }
+            Distances = Enumerable.Repeat(long.MaxValue, nodeCount + 1).ToArray();
+            IsLoop = Enumerable.Repeat(false, nodeCount + 1).ToArray();
+            pathInfos = paths.ToArray();
         }
-
-        public void CreatePoint(int number)
+        
+        public void BellmanFord(int point, bool isDetectLoop = false)
         {
-            items = Enumerable.Range(0, number+1).Select(x => new TreeItem()).ToList();
+            Distances[point] = 0;
+            int count;
+            for (count = 0; count < Distances.Length; count++)
+            {
+                var isUpdated = false;
+                foreach (var path in pathInfos)
+                {
+                    if (Distances[path.From] == long.MaxValue) {continue;}
+                    if (Distances[path.To] <= Distances[path.From] + path.Cost) {continue;}
+                    
+                    Distances[path.To] = Distances[path.From] + path.Cost;
+                    isUpdated = true;
+                }
+
+                if (!isUpdated){ break; }
+            }
+
+            if (isDetectLoop)
+            {
+                DetectBellmanFordLoop();
+            }
         }
-
-        public void Connect(int num1, int num2)
+        
+        private void DetectBellmanFordLoop()
         {
-            items[num1].Connector.Add(num2);
-            items[num2].Connector.Add(num1);
+            for (int i = 0; i <= Distances.Length; i++)
+            {
+                foreach (var path in pathInfos)
+                {
+                    if (Distances[path.From] == long.MaxValue) {continue;}
+
+                    if (Distances[path.To] > Distances[path.From] + path.Cost)
+                    {
+                        Distances[path.To] = Distances[path.From] + path.Cost;
+                        IsLoop[path.To] = true;
+                    }
+
+                    if (IsLoop[path.From])
+                    {
+                        IsLoop[path.To] = true;
+                    }
+                }
+            }
+        }
+    }
+    public class BinarySearch
+    {
+        private long min;
+        private long max;
+        
+        public BinarySearch(long min, long max)
+        {
+            this.min = min;
+            this.max = max;
+        }
+        
+        public long Solve(Func<long,bool> judge)
+        {
+            var ok = min;
+            var ng = max + 1;
+            long i = (ok + ng) / 2;
+            while (ok + 1 < ng)
+            {
+                if (judge(i))
+                {
+                    ok = i;
+                }
+                else
+                {
+                    ng = i;
+                }
+                i = (ok + ng) / 2;
+            }
+
+            return ok;
         }
     }
     #endregion
