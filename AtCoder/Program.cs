@@ -325,26 +325,31 @@ namespace AtCoder
             return list;
         }
     }
-    public class PathInfo
+    public struct PathInfo : IComparable<PathInfo>
     {
         public long From { get; set; }
         public long To { get; set; }
         public long Cost { get; set; }
+
+        public int CompareTo(PathInfo other)
+        {
+            return (int)(Cost - other.Cost);
+        }
     }
-    public class GraphProcessor
+    public class BellmanFord
     {
         public bool[] IsLoop { get; }
         public long[] Distances { get; }
         private PathInfo[] pathInfos;
-        
-        public GraphProcessor(int nodeCount, IEnumerable<PathInfo> paths)
+
+        public BellmanFord(int nodeCount, IEnumerable<PathInfo> paths)
         {
             Distances = Enumerable.Repeat(long.MaxValue, nodeCount + 1).ToArray();
             IsLoop = Enumerable.Repeat(false, nodeCount + 1).ToArray();
             pathInfos = paths.ToArray();
         }
-        
-        public void BellmanFord(int point, bool isDetectLoop = false)
+
+        public void Solve(int point, bool isDetectLoop = false)
         {
             Distances[point] = 0;
             int count;
@@ -391,6 +396,53 @@ namespace AtCoder
             }
         }
     }
+    public class Dijkstra
+    {
+        private readonly List<PathInfo>[] pathInfos;
+        public long[] Distances { get; }
+
+        public Dijkstra(int nodeCount)
+        {
+            Distances = Enumerable.Repeat(long.MaxValue, nodeCount + 1).ToArray();
+            pathInfos = Enumerable.Repeat(0, nodeCount + 1).Select(_ => new List<PathInfo>()).ToArray();
+        }
+
+        public void AddPath(long from, long to, long cost, params long[] additionalInfo)
+        {
+            pathInfos[from].Add(new PathInfo
+            {
+                From = from,
+                To = to,
+                Cost = cost
+            });
+        }
+
+        public void Solve(int point)
+        {
+            var queue = new PriorityQueue<PathInfo>(pathInfos.Select(x => x.Count).Sum() + 1);
+            Distances[point] = 0;
+            queue.Enqueue(new PathInfo {To = point, Cost = 0});
+
+            while (queue.Count != 0)
+            {
+                var pop = queue.Dequeue();
+                if (Distances[pop.To] < pop.Cost) { continue; }
+
+                foreach (var path in pathInfos[pop.To])
+                {
+                    var nextValue = Distances[pop.To] + path.Cost;
+                    if (Distances[path.To] <= nextValue) { continue; }
+                    Distances[path.To] = nextValue;
+                    queue.Enqueue(new PathInfo
+                    {
+                        From = path.From,
+                        To = path.To,
+                        Cost = Distances[path.To]
+                    });
+                }
+            }
+        }
+    }
     public class BinarySearch
     {
         private long min;
@@ -423,5 +475,56 @@ namespace AtCoder
             return ok;
         }
     }
+    public class PriorityQueue<T> where T : IComparable<T>
+    {
+        private readonly T[] heap;
+        public int Count { get; private set; }
+
+        public PriorityQueue(int totalSize)
+        {
+            heap = new T[totalSize];
+        }
+
+        public void Enqueue(T item)
+        {
+            int index = Count++;
+            while (index > 0)
+            {
+                int p = (index - 1) / 2;
+                if (heap[p].CompareTo(item) <= 0) { break; }
+
+                heap[index] = heap[p];
+                index = p;
+            }
+
+            heap[index] = item;
+        }
+        
+        public T Dequeue()
+        {
+            var ret = heap[0];
+            var item = heap[--Count];
+
+            int index = 0;
+            while (index * 2 + 1 < Count)
+            {
+                int a = index * 2 + 1;
+                int b = index * 2 + 2;
+                if (b < Count && heap[b].CompareTo(heap[a]) < 0)
+                {
+                    a = b;
+                }
+                if (heap[a].CompareTo(item) >= 0) { break; }
+
+                heap[index] = heap[a];
+                index = a;
+            }
+
+            heap[index] = item;
+
+            return ret;
+        }
+    }
+
     #endregion
 }
