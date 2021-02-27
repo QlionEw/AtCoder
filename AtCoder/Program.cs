@@ -10,6 +10,10 @@ namespace AtCoder
 {
     internal static class Program
     {
+        private static int Si => Scanner.Integer();
+        private static long[] Sal(int count) => Scanner.ArrayLong(count);
+        private static long[][] Sql(int yCount, int xCount) => Scanner.SquareLong(yCount, xCount);
+        
         private static void Main(string[] args)
         {
         }
@@ -141,51 +145,62 @@ namespace AtCoder
     {
         public const long MaxValue = (long) 1 << 60;
         public const long MinValue = -((long) 1 << 60);
-        public long[][] Table { get; private set; }
-        private readonly int itemCount;
-        private readonly int selectionCount;
+        public long[][][] Table { get; private set; }
+        private readonly int xCount;
+        private readonly int yCount;
+        private readonly int zCount;
         private readonly bool isGetMax;
 
-        public DynamicProgramming(int itemCount, int selectionCount, bool isGetMax)
+        public DynamicProgramming(bool isGetMax, params int[] counts)
         {
-            this.itemCount = itemCount;
-            this.selectionCount = selectionCount;
             this.isGetMax = isGetMax;
+            xCount = counts[0] + 1;
+            yCount = counts.Length >= 2 ? counts[1] : 1;
+            zCount = counts.Length >= 3 ? counts[2] : 1;
 
             var initialDefaultValue = isGetMax ? MinValue : MaxValue;
-            Table = Enumerable.Repeat(0,itemCount).Select(_ => Enumerable.Repeat(initialDefaultValue, selectionCount).ToArray()).ToArray();
+            Table = Enumerable.Repeat(0,zCount)
+                .Select(_ => Enumerable.Repeat(0, yCount)
+                    .Select(__ => Enumerable.Repeat(initialDefaultValue, xCount).ToArray()).ToArray()).ToArray();
         }
 
-        public void SetFirstValue(long value)
+        public void SetFirstValue(long firstValue)
         {
-            for (int i = 0; i < Table[0].Length; i++)
+            for (int z = 0; z < zCount; z++)
             {
-                Table[0][i] = value;
-            }
-        }
-
-        public long Get(int startBy, Func<int, int, long> calcFunc)
-        {
-            return isGetMax 
-                ? Calculation(calcFunc, startBy).Max() 
-                : Calculation(calcFunc, startBy).Min();
-        }
-
-        private IEnumerable<long> Calculation(Func<int,int,long> calcFunc, int startBy)
-        {
-            for (int i = startBy; i < Table.Length; i++)
-            {
-                for (int selection = 0; selection < Table[0].Length; selection++)
+                for (int y = 0; y < yCount; y++)
                 {
-                    if (i < startBy)
-                    {
-                        continue;
-                    }
-                    Table[i][selection] = calcFunc(i, selection);
+                    Table[z][y][0] = firstValue;
                 }
             }
-            return Table.Last();
         }
+
+        private int xCurrent, yCurrent, zCurrent;
+        public void Solve(Func<int,int,int,long> calcFunc)
+        {
+            for (xCurrent = 1; xCurrent < xCount; xCurrent++)
+            {
+                for (yCurrent = 0; yCurrent < yCount; yCurrent++)
+                {
+                    for (zCurrent = 0; zCurrent < zCount; zCurrent++)
+                    {
+                        Table[zCurrent][yCurrent][xCurrent] = calcFunc(xCurrent-1,yCurrent,zCurrent);
+                    }
+                }
+            }
+        }
+
+        public long GetPrevious(int prevStep, int yIndex, int zIndex)
+        {
+            return xCurrent - prevStep >= 0
+                ? Table[zIndex][yIndex][xCurrent - prevStep]
+                : Table[zIndex][yIndex][0];
+        }
+        public long GetPrevious(int prevStep, int yIndex) => GetPrevious(prevStep, yIndex, zCurrent);
+        public long GetPrevious(int prevStep) => GetPrevious(prevStep, yCurrent, zCurrent);
+
+        public long Answer1D => Table[0][0][xCount - 1];
+        public long Answer2D => isGetMax ? Table[0].Max(xs => xs[xCount - 1]) : Table[0].Min(xs => xs[xCount - 1]);
     }
     public class LargeCalc
     {
