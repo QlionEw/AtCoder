@@ -10,7 +10,9 @@ namespace AtCoder
 {
     internal static class Program
     {
-        private static int Si => Scanner.Integer();
+        private static int Si() => Scanner.Integer();
+        private static long Sl() => Scanner.Long();
+        private static int[] Sai(int count) => Scanner.ArrayInt(count);
         private static long[] Sal(int count) => Scanner.ArrayLong(count);
         private static long[][] Sql(int yCount, int xCount) => Scanner.SquareLong(yCount, xCount);
         
@@ -145,6 +147,7 @@ namespace AtCoder
     {
         public const long MaxValue = (long) 1 << 60;
         public const long MinValue = -((long) 1 << 60);
+        public long FirstValue { get; set; }
         public long[][][] Table { get; private set; }
         private readonly int xCount;
         private readonly int yCount;
@@ -159,45 +162,76 @@ namespace AtCoder
             zCount = counts.Length >= 3 ? counts[2] : 1;
 
             var initialDefaultValue = isGetMax ? MinValue : MaxValue;
+            
             Table = Enumerable.Repeat(0,zCount)
                 .Select(_ => Enumerable.Repeat(0, yCount)
                     .Select(__ => Enumerable.Repeat(initialDefaultValue, xCount).ToArray()).ToArray()).ToArray();
         }
 
-        public void SetFirstValue(long firstValue)
+        public void SetFirstValue(long firstValue, bool isYAll = false, bool isZAll = false)
         {
-            for (int z = 0; z < zCount; z++)
+            FirstValue = firstValue;
+            
+            for (int x = 0; x < xCount; x++)
             {
+                Table[0][0][x] = firstValue;
+            }
+
+            if (isYAll)
+            {
+                yInitial = 1;
                 for (int y = 0; y < yCount; y++)
                 {
-                    Table[z][y][0] = firstValue;
+                    Table[0][y][0] = firstValue;
+                }
+            }
+
+            if (isZAll)
+            {
+                zInitial = 1;
+                for (int z = 0; z < zCount; z++)
+                {
+                    Table[z][0][0] = firstValue;
                 }
             }
         }
 
+        private int yInitial, zInitial;
         private int xCurrent, yCurrent, zCurrent;
         public void Solve(Func<int,int,int,long> calcFunc)
         {
             for (xCurrent = 1; xCurrent < xCount; xCurrent++)
             {
-                for (yCurrent = 0; yCurrent < yCount; yCurrent++)
+                for (yCurrent = yInitial; yCurrent < yCount; yCurrent++)
                 {
-                    for (zCurrent = 0; zCurrent < zCount; zCurrent++)
+                    for (zCurrent = zInitial; zCurrent < zCount; zCurrent++)
                     {
-                        Table[zCurrent][yCurrent][xCurrent] = calcFunc(xCurrent-1,yCurrent,zCurrent);
+                        Table[zCurrent][yCurrent][xCurrent] = calcFunc(xCurrent - 1,yCurrent,zCurrent);
                     }
                 }
             }
         }
 
-        public long GetPrevious(int prevStep, int yIndex, int zIndex)
+        public long GetPrevious(int prevX, int prevY, int prevZ)
         {
-            return xCurrent - prevStep >= 0
-                ? Table[zIndex][yIndex][xCurrent - prevStep]
-                : Table[zIndex][yIndex][0];
+            return xCurrent - prevX >= 0 && yCurrent - prevY >= 0 && zCurrent - prevZ >= 0 
+                ? Table[zCurrent - prevZ][yCurrent - prevY][xCurrent - prevX] 
+                : FirstValue;
         }
-        public long GetPrevious(int prevStep, int yIndex) => GetPrevious(prevStep, yIndex, zCurrent);
-        public long GetPrevious(int prevStep) => GetPrevious(prevStep, yCurrent, zCurrent);
+        
+        public long GetPrevious(int prevX, int prevY)
+        {
+            return xCurrent - prevX >= 0 && yCurrent - prevY >= 0
+                ? Table[zCurrent][yCurrent - prevY][xCurrent - prevX] 
+                : FirstValue;
+        }
+
+        public long GetPrevious(int prevX)
+        {
+            return xCurrent - prevX >= 0
+                ? Table[zCurrent][yCurrent][xCurrent - prevX] 
+                : FirstValue;
+        }
 
         public long Answer1D => Table[0][0][xCount - 1];
         public long Answer2D => isGetMax ? Table[0].Max(xs => xs[xCount - 1]) : Table[0].Min(xs => xs[xCount - 1]);
