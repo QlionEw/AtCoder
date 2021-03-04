@@ -12,8 +12,10 @@ namespace AtCoder
     {
         private static int Si() => Scanner.Integer();
         private static long Sl() => Scanner.Long();
+        private static string Ss() => Scanner.Scan();
         private static int[] Sai(int count) => Scanner.ArrayInt(count);
         private static long[] Sal(int count) => Scanner.ArrayLong(count);
+        private static int[][] Sqi(int yCount, int xCount) => Scanner.SquareInt(yCount, xCount);
         private static long[][] Sql(int yCount, int xCount) => Scanner.SquareLong(yCount, xCount);
         
         private static void Main(string[] args)
@@ -143,44 +145,63 @@ namespace AtCoder
             Console.WriteLine(sb);
         }
     }
-    public class DynamicProgramming
+    public class DynamicProgramming : DynamicProgramming<long>
     {
+        private readonly bool isGetMax;
         public const long MaxValue = (long) 1 << 60;
         public const long MinValue = -((long) 1 << 60);
-        public long FirstValue { get; set; }
-        public long[][][] Table { get; private set; }
-        private readonly int xCount;
-        private readonly int yCount;
-        private readonly int zCount;
-        private readonly bool isGetMax;
-
+        
         public DynamicProgramming(bool isGetMax, params int[] counts)
+            : base(isGetMax ? MinValue : MaxValue, counts)
         {
             this.isGetMax = isGetMax;
-            xCount = counts[0] + 1;
-            yCount = counts.Length >= 2 ? counts[1] : 1;
-            zCount = counts.Length >= 3 ? counts[2] : 1;
+        }
+        
+        public double Answer2D => isGetMax ? Table[0].Max(xs => xs[XCount - 1]) : Table[0].Min(xs => xs[XCount - 1]);
+    }
+    public class DynamicProgramming<T>
+    {
+        public T InvalidValue { get; set; } = default;
+        public T[][][] Table { get; private set; }
+        protected readonly int XCount;
+        protected readonly int YCount;
+        protected readonly int ZCount;
+        private bool isSetOrigin;
 
-            var initialDefaultValue = isGetMax ? MinValue : MaxValue;
+        public DynamicProgramming(T firstValue, params int[] counts)
+        {
+            XCount = counts[0];
+            YCount = counts.Length >= 2 ? counts[1] : 1;
+            ZCount = counts.Length >= 3 ? counts[2] : 1;
             
-            Table = Enumerable.Repeat(0,zCount)
-                .Select(_ => Enumerable.Repeat(0, yCount)
-                    .Select(__ => Enumerable.Repeat(initialDefaultValue, xCount).ToArray()).ToArray()).ToArray();
+            Table = Enumerable.Repeat(0,ZCount)
+                .Select(_ => Enumerable.Repeat(0, YCount)
+                    .Select(__ => Enumerable.Repeat(firstValue, XCount).ToArray()).ToArray()).ToArray();
         }
 
-        public void SetFirstValue(long firstValue, bool isYAll = false, bool isZAll = false)
+        public void SetOrigin(T originValue)
         {
-            FirstValue = firstValue;
-            
-            for (int x = 0; x < xCount; x++)
+            Table[0][0][0] = originValue;
+            isSetOrigin = true;
+        }
+
+        public T Origin { set => Table[0][0][0] = value; }
+
+        public void SetFirstValue(T firstValue, bool isXAll = false, bool isYAll = false, bool isZAll = false)
+        {
+            if (isXAll)
             {
-                Table[0][0][x] = firstValue;
+                xInitial = 1;
+                for (int x = 0; x < XCount; x++)
+                {
+                    Table[0][0][x] = firstValue;
+                }
             }
 
             if (isYAll)
             {
                 yInitial = 1;
-                for (int y = 0; y < yCount; y++)
+                for (int y = 0; y < YCount; y++)
                 {
                     Table[0][y][0] = firstValue;
                 }
@@ -189,52 +210,58 @@ namespace AtCoder
             if (isZAll)
             {
                 zInitial = 1;
-                for (int z = 0; z < zCount; z++)
+                for (int z = 0; z < ZCount; z++)
                 {
                     Table[z][0][0] = firstValue;
                 }
             }
         }
 
-        private int yInitial, zInitial;
+        private int xInitial, yInitial, zInitial;
         private int xCurrent, yCurrent, zCurrent;
-        public void Solve(Func<int,int,int,long> calcFunc)
+        public void Solve(Func<int,int,int,T> calcFunc)
         {
-            for (xCurrent = 1; xCurrent < xCount; xCurrent++)
+            bool isSkipFirst = isSetOrigin;
+            for (xCurrent = xInitial; xCurrent < XCount; xCurrent++)
             {
-                for (yCurrent = yInitial; yCurrent < yCount; yCurrent++)
+                for (yCurrent = yInitial; yCurrent < YCount; yCurrent++)
                 {
-                    for (zCurrent = zInitial; zCurrent < zCount; zCurrent++)
+                    for (zCurrent = zInitial; zCurrent < ZCount; zCurrent++)
                     {
-                        Table[zCurrent][yCurrent][xCurrent] = calcFunc(xCurrent - 1,yCurrent,zCurrent);
+                        if (isSkipFirst)
+                        {
+                            isSkipFirst = false;
+                            continue;
+                        }
+                        Table[zCurrent][yCurrent][xCurrent] = calcFunc(xCurrent,yCurrent,zCurrent);
                     }
                 }
             }
         }
 
-        public long GetPrevious(int prevX, int prevY, int prevZ)
+        public T GetPrevious(int prevX, int prevY, int prevZ)
         {
             return xCurrent - prevX >= 0 && yCurrent - prevY >= 0 && zCurrent - prevZ >= 0 
                 ? Table[zCurrent - prevZ][yCurrent - prevY][xCurrent - prevX] 
-                : FirstValue;
+                : InvalidValue;
         }
         
-        public long GetPrevious(int prevX, int prevY)
+        public T GetPrevious(int prevX, int prevY)
         {
             return xCurrent - prevX >= 0 && yCurrent - prevY >= 0
                 ? Table[zCurrent][yCurrent - prevY][xCurrent - prevX] 
-                : FirstValue;
+                : InvalidValue;
         }
 
-        public long GetPrevious(int prevX)
+        public T GetPrevious(int prevX)
         {
             return xCurrent - prevX >= 0
                 ? Table[zCurrent][yCurrent][xCurrent - prevX] 
-                : FirstValue;
+                : InvalidValue;
         }
 
-        public long Answer1D => Table[0][0][xCount - 1];
-        public long Answer2D => isGetMax ? Table[0].Max(xs => xs[xCount - 1]) : Table[0].Min(xs => xs[xCount - 1]);
+        public T Answer1D => Table[0][0][XCount - 1];
+        public IEnumerable<T> Last2D => Table[0].Select(xs => xs[XCount - 1]);
     }
     public class LargeCalc
     {
@@ -574,6 +601,6 @@ namespace AtCoder
             return ret;
         }
     }
-
+    
     #endregion
 }
