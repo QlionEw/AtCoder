@@ -601,6 +601,44 @@ namespace AtCoder
             return ret;
         }
     }
-    
+    public class UnionFindTree
+    {
+        public long[] Parents { get; }
+        
+        public UnionFindTree(int n)
+        {
+            Parents = Enumerable.Repeat((long)-1, n).ToArray();
+        }
+
+        public long Find(long x)
+        {
+            if (Parents[x] < 0) return x;
+            Parents[x] = Find(Parents[x]);
+            return Parents[x];
+        }
+
+        public long Size(long x) => -Parents[Find(x)];
+        public bool Same(long x, long y) => Find(x) == Find(y);
+
+        public bool Union(long x, long y)
+        {
+            x = Find(x);
+            y = Find(y);
+            
+            if (x == y) return false;
+
+            if (Size(x) < Size(y))
+            {
+                var tmp = x;
+                x = y;
+                y = tmp;
+            }
+
+            Parents[x] += Parents[y];
+            Parents[y] = x;
+            
+            return true;
+        }
+    }
     #endregion
 }
