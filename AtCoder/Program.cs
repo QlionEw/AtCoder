@@ -17,6 +17,7 @@ namespace AtCoder
         private static long[] Sal(int count) => Scanner.ArrayLong(count);
         private static int[][] Sqi(int yCount, int xCount) => Scanner.SquareInt(yCount, xCount);
         private static long[][] Sql(int yCount, int xCount) => Scanner.SquareLong(yCount, xCount);
+        private static string[] Sss(int count) => Enumerable.Repeat(0, count).Select(_ => Ss()).ToArray();
         
         private static void Main(string[] args)
         {
