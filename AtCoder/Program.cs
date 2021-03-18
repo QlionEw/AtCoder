@@ -164,6 +164,8 @@ namespace AtCoder
     {
         public T InvalidValue { get; set; } = default;
         public T[][][] Table { get; private set; }
+        public int[] Initials { get; set; } = new[] {0, 0, 0};
+        public bool IsSolveBack { get; set; }
         protected readonly int XCount;
         protected readonly int YCount;
         protected readonly int ZCount;
@@ -192,7 +194,6 @@ namespace AtCoder
         {
             if (isXAll)
             {
-                xInitial = 1;
                 for (int x = 0; x < XCount; x++)
                 {
                     Table[0][0][x] = firstValue;
@@ -201,7 +202,6 @@ namespace AtCoder
 
             if (isYAll)
             {
-                yInitial = 1;
                 for (int y = 0; y < YCount; y++)
                 {
                     Table[0][y][0] = firstValue;
@@ -210,7 +210,6 @@ namespace AtCoder
 
             if (isZAll)
             {
-                zInitial = 1;
                 for (int z = 0; z < ZCount; z++)
                 {
                     Table[z][0][0] = firstValue;
@@ -218,16 +217,40 @@ namespace AtCoder
             }
         }
 
-        private int xInitial, yInitial, zInitial;
         private int xCurrent, yCurrent, zCurrent;
         public void Solve(Func<int,int,int,T> calcFunc)
         {
-            bool isSkipFirst = isSetOrigin;
-            for (xCurrent = xInitial; xCurrent < XCount; xCurrent++)
+            if (IsSolveBack)
             {
-                for (yCurrent = yInitial; yCurrent < YCount; yCurrent++)
+                SolveBack(calcFunc);
+                return;
+            }
+            bool isSkipFirst = isSetOrigin;
+            for (xCurrent = Initials[0]; xCurrent < XCount; xCurrent++)
+            {
+                for (yCurrent = Initials[1]; yCurrent < YCount; yCurrent++)
                 {
-                    for (zCurrent = zInitial; zCurrent < ZCount; zCurrent++)
+                    for (zCurrent = Initials[2]; zCurrent < ZCount; zCurrent++)
+                    {
+                        if (isSkipFirst)
+                        {
+                            isSkipFirst = false;
+                            continue;
+                        }
+                        Table[zCurrent][yCurrent][xCurrent] = calcFunc(xCurrent,yCurrent,zCurrent);
+                    }
+                }
+            }
+        }
+
+        private void SolveBack(Func<int,int,int,T> calcFunc)
+        {
+            bool isSkipFirst = isSetOrigin;
+            for (xCurrent = XCount - 1; xCurrent >= Initials[0]; xCurrent--)
+            {
+                for (yCurrent = YCount - 1; yCurrent >= Initials[1]; yCurrent--)
+                {
+                    for (zCurrent = ZCount - 1; zCurrent >= Initials[2]; zCurrent--)
                     {
                         if (isSkipFirst)
                         {
