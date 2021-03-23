@@ -10,6 +10,15 @@ namespace AtCoder
 {
     internal static class Program
     {
+        private static void Main(string[] args)
+        {
+        }
+
+        
+        #region Utility
+        private const int InfinityInt = Common.InfinityInt;
+        private const long Infinity = Common.Infinity;
+        private static readonly StreamScanner Scanner = new StreamScanner(Console.OpenStandardInput());
         private static int Si() => Scanner.Integer();
         private static long Sl() => Scanner.Long();
         private static string Ss() => Scanner.Scan();
@@ -18,17 +27,16 @@ namespace AtCoder
         private static int[][] Sqi(int yCount, int xCount) => Scanner.SquareInt(yCount, xCount);
         private static long[][] Sql(int yCount, int xCount) => Scanner.SquareLong(yCount, xCount);
         private static string[] Sss(int count) => Enumerable.Repeat(0, count).Select(_ => Ss()).ToArray();
-        
-        private static void Main(string[] args)
-        {
-        }
-
-        #region Utility
-        private static readonly StreamScanner Scanner = new StreamScanner(Console.OpenStandardInput());
         #endregion
     }
 
     #region Utility Class
+
+    public static class Common
+    {
+        public const int InfinityInt = 1 << 30;
+        public const long Infinity = (long)1 << 60;
+    }
     public class StreamScanner
     {
         private const int Size = 1024 * 16;
@@ -149,11 +157,9 @@ namespace AtCoder
     public class DynamicProgramming : DynamicProgramming<long>
     {
         private readonly bool isGetMax;
-        public const long MaxValue = (long) 1 << 60;
-        public const long MinValue = -((long) 1 << 60);
         
         public DynamicProgramming(bool isGetMax, params int[] counts)
-            : base(isGetMax ? MinValue : MaxValue, counts)
+            : base(isGetMax ? -Common.Infinity : Common.Infinity, counts)
         {
             this.isGetMax = isGetMax;
         }
@@ -444,7 +450,7 @@ namespace AtCoder
 
         public BellmanFord(int nodeCount, IEnumerable<PathInfo> paths)
         {
-            Distances = Enumerable.Repeat(long.MaxValue, nodeCount + 1).ToArray();
+            Distances = Enumerable.Repeat(Common.Infinity, nodeCount + 1).ToArray();
             IsLoop = Enumerable.Repeat(false, nodeCount + 1).ToArray();
             pathInfos = paths.ToArray();
         }
@@ -458,7 +464,7 @@ namespace AtCoder
                 var isUpdated = false;
                 foreach (var path in pathInfos)
                 {
-                    if (Distances[path.From] == long.MaxValue) {continue;}
+                    if (Distances[path.From] == Common.Infinity) {continue;}
                     if (Distances[path.To] <= Distances[path.From] + path.Cost) {continue;}
                     
                     Distances[path.To] = Distances[path.From] + path.Cost;
@@ -480,7 +486,7 @@ namespace AtCoder
             {
                 foreach (var path in pathInfos)
                 {
-                    if (Distances[path.From] == long.MaxValue) {continue;}
+                    if (Distances[path.From] == Common.Infinity) {continue;}
 
                     if (Distances[path.To] > Distances[path.From] + path.Cost)
                     {
@@ -500,11 +506,13 @@ namespace AtCoder
     {
         private readonly List<PathInfo>[] pathInfos;
         public long[] Distances { get; }
+        public int[] Color { get; }
 
         public Dijkstra(int nodeCount)
         {
-            Distances = Enumerable.Repeat(long.MaxValue, nodeCount + 1).ToArray();
+            Distances = Enumerable.Repeat(Common.Infinity, nodeCount + 1).ToArray();
             pathInfos = Enumerable.Repeat(0, nodeCount + 1).Select(_ => new List<PathInfo>()).ToArray();
+            Color = Enumerable.Repeat(-1, nodeCount + 1).ToArray();
         }
 
         public void AddPath(long from, long to, long cost, params long[] additionalInfo)
