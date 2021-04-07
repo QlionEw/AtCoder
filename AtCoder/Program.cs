@@ -672,5 +672,53 @@ namespace AtCoder
             return true;
         }
     }
+
+    public class SegmentTree
+    {
+        private long[] data;
+        private Func<long, long, long> updateMethod;
+        private long firstValue;
+        private int n;
+
+        public void Init(int count, long firstValue, Func<long,long,long> updateMethod)
+        {
+            this.updateMethod = updateMethod;
+            this.firstValue = firstValue;
+            
+            n = 1;
+            while (n < count)
+            {
+                n *= 2;
+            }
+            data = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
+        }
+
+        public void Update(int index, long value)
+        {
+            index += n - 1;
+            data[index] = value;
+            while (index > 0)
+            {
+                index = (index - 1) / 2;
+                data[index] = updateMethod(data[index * 2 + 1], data[index * 2 + 2]);
+            }
+        }
+
+        public long Query(int indexStart, int indexEnd)
+        {
+            return Query(indexStart, indexEnd, 0, 0, n);
+        }
+        
+        private long Query(int indexStart, int indexEnd, int current, int left, int right)
+        {
+            if (right <= indexStart || indexEnd <= left) { return firstValue; }
+            if (indexStart <= left && right <= indexEnd) { return data[current]; }
+
+            long leftValue = Query(indexStart, indexEnd, current * 2 + 1, left, (left + right) / 2);
+            long rightValue = Query(indexStart, indexEnd, current * 2 + 2, (left + right) / 2, right);
+
+            return updateMethod(leftValue, rightValue);
+        }
+    }
     #endregion
 }
