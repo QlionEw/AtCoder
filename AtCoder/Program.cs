@@ -12,9 +12,12 @@ namespace AtCoder
     {
         private static void Main(string[] args)
         {
+            checked
+            {
+                
+            }
         }
 
-        
         #region Utility
         private const int InfinityInt = Common.InfinityInt;
         private const long Infinity = Common.Infinity;
