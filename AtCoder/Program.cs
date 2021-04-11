@@ -553,19 +553,31 @@ namespace AtCoder
     }
     public class BinarySearch
     {
+        public bool IsCheckListRange { get; set; }
         private long min;
         private long max;
-        
+
+        public BinarySearch()
+        {
+        }
+
         public BinarySearch(long min, long max)
+        {
+            SetRange(min, max);
+        }
+        
+        public void SetRange(long min, long max)
         {
             this.min = min;
             this.max = max;
         }
         
-        public long Solve(Func<long,bool> judge)
+        public long CountUnder(Func<long,bool> judge) => SolveMax(judge);
+        public long SolveMax(Func<long,bool> judge)
         {
-            var ok = min;
-            var ng = max + 1;
+            var addition = IsCheckListRange ? -1 : 0;
+            var ok = min + addition;
+            var ng = max + 1 + addition;
             long i = (ok + ng) / 2;
             while (ok + 1 < ng)
             {
@@ -580,7 +592,29 @@ namespace AtCoder
                 i = (ok + ng) / 2;
             }
 
-            return ok;
+            return IsCheckListRange ? ok + 1 : ok;
+        }
+        
+        public long CountOver(Func<long,bool> judge) => SolveMin(judge);
+        public long SolveMin(Func<long,bool> judge)
+        {
+            var ok = max;
+            var ng = min - 1;
+            long i = (ok + ng) / 2;
+            while (ng + 1 < ok)
+            {
+                if (judge(i))
+                {
+                    ok = i;
+                }
+                else
+                {
+                    ng = i;
+                }
+                i = (ok + ng) / 2;
+            }
+ 
+            return IsCheckListRange ? max - ok : ok;
         }
     }
     public class PriorityQueue<T> where T : IComparable<T>
@@ -672,7 +706,6 @@ namespace AtCoder
             return true;
         }
     }
-
     public class SegmentTree
     {
         private long[] data;
