@@ -155,6 +155,17 @@ namespace AtCoder
             sb = sb.Remove(sb.Length - 1, 1);
             Console.WriteLine(sb);
         }
+
+        public static void OutEachSpace<T>(IEnumerable<T> items)
+        {
+            var sb = new StringBuilder();
+            foreach (var result in items)
+            {
+                sb.Append(result + " ");
+            }
+            sb = sb.Remove(sb.Length - 1, 1);
+            Console.WriteLine(sb);
+        }
     }
     public class DynamicProgramming : DynamicProgramming<long>
     {
@@ -493,7 +504,7 @@ namespace AtCoder
     public class Dijkstra
     {
         private readonly List<PathInfo>[] pathInfos;
-        public long[] Distances { get; }
+        public long[] Distances { get; private set; }
         public int[] Color { get; }
 
         public Dijkstra(int nodeCount)
@@ -501,6 +512,11 @@ namespace AtCoder
             Distances = Enumerable.Repeat(Common.Infinity, nodeCount + 1).ToArray();
             pathInfos = Enumerable.Repeat(0, nodeCount + 1).Select(_ => new List<PathInfo>()).ToArray();
             Color = Enumerable.Repeat(-1, nodeCount + 1).ToArray();
+        }
+
+        public void Init()
+        {
+            Distances = Enumerable.Repeat(Common.Infinity, Distances.Length).ToArray();
         }
 
         public void AddPath(long from, long to, long cost, params long[] additionalInfo)
