@@ -14,10 +14,12 @@ namespace AtCoder
         {
             checked
             {
+                
             }
         }
 
         #region Utility
+
         private const int InfinityInt = Common.InfinityInt;
         private const long Infinity = Common.Infinity;
         private static readonly StreamScanner Scanner = new StreamScanner(Console.OpenStandardInput());
@@ -29,6 +31,7 @@ namespace AtCoder
         private static int[][] Sqi(int yCount, int xCount) => Scanner.SquareInt(yCount, xCount);
         private static long[][] Sql(int yCount, int xCount) => Scanner.SquareLong(yCount, xCount);
         private static string[] Sss(int count) => Enumerable.Repeat(0, count).Select(_ => Ss()).ToArray();
+
         #endregion
     }
 
@@ -37,20 +40,52 @@ namespace AtCoder
     public static class Common
     {
         public const int InfinityInt = 1 << 30;
-        public const long Infinity = (long)1 << 60;
+        public const long Infinity = (long) 1 << 60;
     }
+
+    public static class MathPlus
+    {
+        public static long Gcd(long a, long b)
+        {
+            return a > b ? GcdRecursive(a, b) : GcdRecursive(b, a);
+        }
+
+        private static long GcdRecursive(long a, long b)
+        {
+            while (true)
+            {
+                if (b == 0) return a;
+                var a1 = a;
+                a = b;
+                b = a1 % b;
+            }
+        }
+
+        public static long Lcm(long a, long b)
+        {
+            return a * b / Gcd(a, b);
+        }
+    }
+
     public class StreamScanner
     {
         private const int Size = 1024 * 16;
-        public StreamScanner(Stream stream) { str = stream; }
+
+        public StreamScanner(Stream stream)
+        {
+            str = stream;
+        }
+
         private readonly Stream str;
         private readonly byte[] buf = new byte[Size];
         private int len, ptr;
         public bool IsEof { get; private set; }
+
         private byte Read()
         {
             if (IsEof) throw new EndOfStreamException();
-            if (ptr >= len) {
+            if (ptr >= len)
+            {
                 ptr = 0;
                 if ((len = str.Read(buf, 0, Size)) <= 0)
                 {
@@ -58,35 +93,47 @@ namespace AtCoder
                     return 0;
                 }
             }
+
             return buf[ptr++];
         }
-        public char Char() 
+
+        public char Char()
         {
             byte b = 0;
             do b = Read();
             while (b < 33 || 126 < b);
-            return (char)b; 
+            return (char) b;
         }
+
         public string Scan()
         {
             var sb = new StringBuilder();
-            for (var b = Char(); b >= 33 && b <= 126; b = (char)Read())
+            for (var b = Char(); b >= 33 && b <= 126; b = (char) Read())
                 sb.Append(b);
             return sb.ToString();
         }
+
         public string ScanIncludeSpace()
         {
             var sb = new StringBuilder();
-            for (var b = Char(); b >= 32 && b <= 126; b = (char)Read())
+            for (var b = Char(); b >= 32 && b <= 126; b = (char) Read())
                 sb.Append(b);
             return sb.ToString();
         }
+
         public long Long()
         {
-            long ret = 0; byte b = 0; var ng = false;
+            long ret = 0;
+            byte b = 0;
+            var ng = false;
             do b = Read();
             while (b != '-' && (b < '0' || '9' < b));
-            if (b == '-') { ng = true; b = Read(); }
+            if (b == '-')
+            {
+                ng = true;
+                b = Read();
+            }
+
             for (; true; b = Read())
             {
                 if (b < '0' || '9' < b)
@@ -94,9 +141,17 @@ namespace AtCoder
                 else ret = ret * 10 + b - '0';
             }
         }
-        public int Integer() { return (int)Long(); }
-        public double Double() { return double.Parse(Scan(), CultureInfo.InvariantCulture); }
-        
+
+        public int Integer()
+        {
+            return (int) Long();
+        }
+
+        public double Double()
+        {
+            return double.Parse(Scan(), CultureInfo.InvariantCulture);
+        }
+
         /// <summary> 数値読み込み </summary>
         public long[] ArrayLong(int count = 0)
         {
@@ -105,8 +160,10 @@ namespace AtCoder
             {
                 scan[i] = Long();
             }
+
             return scan;
         }
+
         /// <summary> 数値読み込み </summary>
         public int[] ArrayInt(int count = 0)
         {
@@ -115,8 +172,10 @@ namespace AtCoder
             {
                 scan[i] = Integer();
             }
+
             return scan;
         }
+
         public long[][] SquareLong(int row, int col)
         {
             var scan = new long[row][];
@@ -124,8 +183,10 @@ namespace AtCoder
             {
                 scan[i] = ArrayLong(col);
             }
+
             return scan;
         }
+
         public int[][] SquareInt(int row, int col)
         {
             var scan = new int[row][];
@@ -133,9 +194,11 @@ namespace AtCoder
             {
                 scan[i] = ArrayInt(col);
             }
+
             return scan;
         }
     }
+
     public class Answerer
     {
         /// <summary> Yes/No型出力 </summary>
@@ -143,7 +206,7 @@ namespace AtCoder
         {
             Console.WriteLine(condition ? "Yes" : "No");
         }
-        
+
         /// <summary> 一括出力 </summary>
         public static void OutAllLine<T>(IEnumerable<T> items)
         {
@@ -152,6 +215,7 @@ namespace AtCoder
             {
                 sb.Append(result + "\n");
             }
+
             sb = sb.Remove(sb.Length - 1, 1);
             Console.WriteLine(sb);
         }
@@ -163,22 +227,25 @@ namespace AtCoder
             {
                 sb.Append(result + " ");
             }
+
             sb = sb.Remove(sb.Length - 1, 1);
             Console.WriteLine(sb);
         }
     }
+
     public class DynamicProgramming : DynamicProgramming<long>
     {
         private readonly bool isGetMax;
-        
-        public DynamicProgramming(bool isGetMax, params int[] counts)
-            : base(isGetMax ? -Common.Infinity : Common.Infinity, counts)
+
+        public DynamicProgramming(bool isGetMax, params int[] counts) : base(
+            isGetMax ? -Common.Infinity : Common.Infinity, counts)
         {
             this.isGetMax = isGetMax;
         }
-        
+
         public double Answer2D => isGetMax ? Table[0].Max(xs => xs[XCount - 1]) : Table[0].Min(xs => xs[XCount - 1]);
     }
+
     public class DynamicProgramming<T>
     {
         public T InvalidValue { get; set; } = default;
@@ -195,10 +262,11 @@ namespace AtCoder
             XCount = counts[0];
             YCount = counts.Length >= 2 ? counts[1] : 1;
             ZCount = counts.Length >= 3 ? counts[2] : 1;
-            
-            Table = Enumerable.Repeat(0,ZCount)
-                .Select(_ => Enumerable.Repeat(0, YCount)
-                    .Select(__ => Enumerable.Repeat(firstValue, XCount).ToArray()).ToArray()).ToArray();
+
+            Table = Enumerable.Repeat(0, ZCount).Select(_ =>
+                    Enumerable.Repeat(0, YCount).Select(__ => Enumerable.Repeat(firstValue, XCount).ToArray())
+                        .ToArray())
+                .ToArray();
         }
 
         public void SetOrigin(T originValue)
@@ -237,13 +305,15 @@ namespace AtCoder
         }
 
         private int xCurrent, yCurrent, zCurrent;
-        public void Solve(Func<int,int,int,T> calcFunc)
+
+        public void Solve(Func<int, int, int, T> calcFunc)
         {
             if (IsSolveBack)
             {
                 SolveBack(calcFunc);
                 return;
             }
+
             bool isSkipFirst = isSetOrigin;
             for (xCurrent = Initials[0]; xCurrent < XCount; xCurrent++)
             {
@@ -256,13 +326,14 @@ namespace AtCoder
                             isSkipFirst = false;
                             continue;
                         }
-                        Table[zCurrent][yCurrent][xCurrent] = calcFunc(xCurrent,yCurrent,zCurrent);
+
+                        Table[zCurrent][yCurrent][xCurrent] = calcFunc(xCurrent, yCurrent, zCurrent);
                     }
                 }
             }
         }
 
-        private void SolveBack(Func<int,int,int,T> calcFunc)
+        private void SolveBack(Func<int, int, int, T> calcFunc)
         {
             bool isSkipFirst = isSetOrigin;
             for (xCurrent = XCount - 1; xCurrent >= Initials[0]; xCurrent--)
@@ -276,7 +347,8 @@ namespace AtCoder
                             isSkipFirst = false;
                             continue;
                         }
-                        Table[zCurrent][yCurrent][xCurrent] = calcFunc(xCurrent,yCurrent,zCurrent);
+
+                        Table[zCurrent][yCurrent][xCurrent] = calcFunc(xCurrent, yCurrent, zCurrent);
                     }
                 }
             }
@@ -284,28 +356,27 @@ namespace AtCoder
 
         public T GetPrevious(int prevX, int prevY, int prevZ)
         {
-            return xCurrent - prevX >= 0 && yCurrent - prevY >= 0 && zCurrent - prevZ >= 0 
-                ? Table[zCurrent - prevZ][yCurrent - prevY][xCurrent - prevX] 
+            return xCurrent - prevX >= 0 && yCurrent - prevY >= 0 && zCurrent - prevZ >= 0
+                ? Table[zCurrent - prevZ][yCurrent - prevY][xCurrent - prevX]
                 : InvalidValue;
         }
-        
+
         public T GetPrevious(int prevX, int prevY)
         {
             return xCurrent - prevX >= 0 && yCurrent - prevY >= 0
-                ? Table[zCurrent][yCurrent - prevY][xCurrent - prevX] 
+                ? Table[zCurrent][yCurrent - prevY][xCurrent - prevX]
                 : InvalidValue;
         }
 
         public T GetPrevious(int prevX)
         {
-            return xCurrent - prevX >= 0
-                ? Table[zCurrent][yCurrent][xCurrent - prevX] 
-                : InvalidValue;
+            return xCurrent - prevX >= 0 ? Table[zCurrent][yCurrent][xCurrent - prevX] : InvalidValue;
         }
 
         public T Answer1D => Table[0][0][XCount - 1];
         public IEnumerable<T> Last2D => Table[0].Select(xs => xs[XCount - 1]);
     }
+
     public class LargeCalc
     {
         public IEnumerable<long> Surplus(long baseNum, long power, int division)
@@ -322,20 +393,24 @@ namespace AtCoder
             }
         }
     }
+
     public class Primer
     {
         /// <summary> 素数判定 </summary>
         public bool IsPrime(long num)
         {
-            if (num < 2) {return false;}
-            if (num == 2) {return true;}
-            if (num % 2 == 0) {return false;}
+            if (num < 2) { return false; }
+
+            if (num == 2) { return true; }
+
+            if (num % 2 == 0) { return false; }
 
             double sqrtNum = Math.Sqrt(num);
             for (int i = 3; i <= sqrtNum; i += 2)
             {
                 if (num % i == 0) { return false; }
             }
+
             return true;
         }
 
@@ -346,7 +421,8 @@ namespace AtCoder
 
             while (i * i <= tmp)
             {
-                if(tmp % i == 0){
+                if (tmp % i == 0)
+                {
                     tmp /= i;
                     yield return i;
                     if (IsPrime(tmp))
@@ -355,17 +431,20 @@ namespace AtCoder
                         tmp = 1;
                         break;
                     }
-                }else{
+                }
+                else
+                {
                     i++;
                 }
             }
-            if(tmp != 1) yield return tmp;
+
+            if (tmp != 1) yield return tmp;
         }
 
         public int GetDivisor(long n)
         {
             var count = 0;
-            var sq = (long)Math.Sqrt(n);
+            var sq = (long) Math.Sqrt(n);
             for (long i = 1; i <= sq; i++)
             {
                 if (n % i == 0)
@@ -373,6 +452,7 @@ namespace AtCoder
                     count += 2;
                 }
             }
+
             if (sq * sq == n)
             {
                 count--;
@@ -381,6 +461,7 @@ namespace AtCoder
             return count;
         }
     }
+
     public struct ModInt
     {
         long value;
@@ -388,21 +469,36 @@ namespace AtCoder
         public const int _9 = 1000000009;
         public const int _3 = 998244353;
         public static int ModValue { get; set; } = _7;
-        static List<ModInt> fact = new List<ModInt> { 1 };
+        static List<ModInt> fact = new List<ModInt> {1};
         public ModInt(long value) => this.value = value;
         public static implicit operator ModInt(long a) => new ModInt(a % ModValue + (a < 0 ? ModValue : 0));
-        public static explicit operator int(ModInt a) => (int)a.value;
+        public static explicit operator int(ModInt a) => (int) a.value;
         public override string ToString() => value.ToString();
         public static ModInt operator +(ModInt a, ModInt b) => a.value + b.value;
         public static ModInt operator -(ModInt a, ModInt b) => a.value - b.value;
         public static ModInt operator *(ModInt a, ModInt b) => a.value * b.value;
         public static ModInt operator /(ModInt a, ModInt b) => a * Inv(b);
-        public static ModInt Pow(ModInt a, int n) { if (n == 0) return 1; if (n == 1) return a; var p = Pow(a, n / 2); return p * p * Pow(a, n % 2); }
+
+        public static ModInt Pow(ModInt a, int n)
+        {
+            if (n == 0) return 1;
+            if (n == 1) return a;
+            var p = Pow(a, n / 2);
+            return p * p * Pow(a, n % 2);
+        }
+
         public static ModInt Inv(ModInt a) => Pow(a, ModValue - 2);
-        public static ModInt Fact(int n) { for (int i = fact.Count; i <= n; i++) fact.Add(fact[^1] * i); return fact[n]; }
+
+        public static ModInt Fact(int n)
+        {
+            for (int i = fact.Count; i <= n; i++) fact.Add(fact[^1] * i);
+            return fact[n];
+        }
+
         public static ModInt Perm(int n, int r) => Fact(n) / Fact(n - r);
         public static ModInt Comb(int n, int r) => Fact(n) / Fact(n - r) / Fact(r);
     }
+
     public class BitArrayMaker
     {
         public List<int> Integer(int bitValue, int length)
@@ -414,11 +510,13 @@ namespace AtCoder
                 {
                     list.Add(i);
                 }
+
                 bitValue /= 2;
             }
+
             return list;
         }
-        
+
         public bool[] Boolean(int bitValue, int length)
         {
             var list = new bool[length];
@@ -427,9 +525,11 @@ namespace AtCoder
                 list[i] = bitValue % 2 == 1;
                 bitValue /= 2;
             }
+
             return list;
         }
     }
+
     public struct PathInfo : IComparable<PathInfo>
     {
         public long From { get; set; }
@@ -438,9 +538,10 @@ namespace AtCoder
 
         public int CompareTo(PathInfo other)
         {
-            return (int)(Cost - other.Cost);
+            return (int) (Cost - other.Cost);
         }
     }
+
     public class BellmanFord
     {
         public bool[] IsLoop { get; }
@@ -463,14 +564,15 @@ namespace AtCoder
                 var isUpdated = false;
                 foreach (var path in pathInfos)
                 {
-                    if (Distances[path.From] == Common.Infinity) {continue;}
-                    if (Distances[path.To] <= Distances[path.From] + path.Cost) {continue;}
-                    
+                    if (Distances[path.From] == Common.Infinity) { continue; }
+
+                    if (Distances[path.To] <= Distances[path.From] + path.Cost) { continue; }
+
                     Distances[path.To] = Distances[path.From] + path.Cost;
                     isUpdated = true;
                 }
 
-                if (!isUpdated){ break; }
+                if (!isUpdated) { break; }
             }
 
             if (isDetectLoop)
@@ -478,14 +580,14 @@ namespace AtCoder
                 DetectBellmanFordLoop();
             }
         }
-        
+
         private void DetectBellmanFordLoop()
         {
             for (int i = 0; i <= Distances.Length; i++)
             {
                 foreach (var path in pathInfos)
                 {
-                    if (Distances[path.From] == Common.Infinity) {continue;}
+                    if (Distances[path.From] == Common.Infinity) { continue; }
 
                     if (Distances[path.To] > Distances[path.From] + path.Cost)
                     {
@@ -501,6 +603,7 @@ namespace AtCoder
             }
         }
     }
+
     public class Dijkstra
     {
         private readonly List<PathInfo>[] pathInfos;
@@ -521,12 +624,7 @@ namespace AtCoder
 
         public void AddPath(long from, long to, long cost, params long[] additionalInfo)
         {
-            pathInfos[from].Add(new PathInfo
-            {
-                From = from,
-                To = to,
-                Cost = cost
-            });
+            pathInfos[from].Add(new PathInfo {From = from, To = to, Cost = cost});
         }
 
         public void Solve(int point)
@@ -544,17 +642,14 @@ namespace AtCoder
                 {
                     var nextValue = Distances[pop.To] + path.Cost;
                     if (Distances[path.To] <= nextValue) { continue; }
+
                     Distances[path.To] = nextValue;
-                    queue.Enqueue(new PathInfo
-                    {
-                        From = path.From,
-                        To = path.To,
-                        Cost = Distances[path.To]
-                    });
+                    queue.Enqueue(new PathInfo {From = path.From, To = path.To, Cost = Distances[path.To]});
                 }
             }
         }
     }
+
     public class BinarySearch
     {
         public bool IsCheckListRange { get; set; }
@@ -569,15 +664,16 @@ namespace AtCoder
         {
             SetRange(min, max);
         }
-        
+
         public void SetRange(long min, long max)
         {
             this.min = min;
             this.max = max;
         }
-        
-        public long CountUnder(Func<long,bool> judge) => SolveMax(judge);
-        public long SolveMax(Func<long,bool> judge)
+
+        public long CountUnder(Func<long, bool> judge) => SolveMax(judge);
+
+        public long SolveMax(Func<long, bool> judge)
         {
             var addition = IsCheckListRange ? -1 : 0;
             var ok = min + addition;
@@ -593,14 +689,16 @@ namespace AtCoder
                 {
                     ng = i;
                 }
+
                 i = (ok + ng) / 2;
             }
 
             return IsCheckListRange ? ok + 1 : ok;
         }
-        
-        public long CountOver(Func<long,bool> judge) => SolveMin(judge);
-        public long SolveMin(Func<long,bool> judge)
+
+        public long CountOver(Func<long, bool> judge) => SolveMin(judge);
+
+        public long SolveMin(Func<long, bool> judge)
         {
             var ok = max;
             var ng = min - 1;
@@ -615,12 +713,14 @@ namespace AtCoder
                 {
                     ng = i;
                 }
+
                 i = (ok + ng) / 2;
             }
- 
+
             return IsCheckListRange ? max - ok : ok;
         }
     }
+
     public class PriorityQueue<T> where T : IComparable<T>
     {
         private readonly T[] heap;
@@ -645,7 +745,7 @@ namespace AtCoder
 
             heap[index] = item;
         }
-        
+
         public T Dequeue()
         {
             var ret = heap[0];
@@ -660,6 +760,7 @@ namespace AtCoder
                 {
                     a = b;
                 }
+
                 if (heap[a].CompareTo(item) >= 0) { break; }
 
                 heap[index] = heap[a];
@@ -671,13 +772,14 @@ namespace AtCoder
             return ret;
         }
     }
+
     public class UnionFindTree
     {
         public long[] Parents { get; }
-        
+
         public UnionFindTree(int n)
         {
-            Parents = Enumerable.Repeat((long)-1, n).ToArray();
+            Parents = Enumerable.Repeat((long) -1, n).ToArray();
         }
 
         public long Find(long x)
@@ -694,7 +796,7 @@ namespace AtCoder
         {
             x = Find(x);
             y = Find(y);
-            
+
             if (x == y) return false;
 
             if (Size(x) < Size(y))
@@ -706,10 +808,11 @@ namespace AtCoder
 
             Parents[x] += Parents[y];
             Parents[y] = x;
-            
+
             return true;
         }
     }
+
     public class SegmentTree
     {
         private long[] data;
@@ -717,16 +820,17 @@ namespace AtCoder
         private long firstValue;
         private int n;
 
-        public void Init(int count, long firstValue, Func<long,long,long> updateMethod)
+        public void Init(int count, long firstValue, Func<long, long, long> updateMethod)
         {
             this.updateMethod = updateMethod;
             this.firstValue = firstValue;
-            
+
             n = 1;
             while (n < count)
             {
                 n *= 2;
             }
+
             data = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
         }
 
@@ -745,10 +849,11 @@ namespace AtCoder
         {
             return Query(indexStart, indexEnd, 0, 0, n);
         }
-        
+
         private long Query(int indexStart, int indexEnd, int current, int left, int right)
         {
             if (right <= indexStart || indexEnd <= left) { return firstValue; }
+
             if (indexStart <= left && right <= indexEnd) { return data[current]; }
 
             long leftValue = Query(indexStart, indexEnd, current * 2 + 1, left, (left + right) / 2);
@@ -757,5 +862,6 @@ namespace AtCoder
             return updateMethod(leftValue, rightValue);
         }
     }
+
     #endregion
 }
