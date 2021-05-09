@@ -1,24 +1,29 @@
 @echo off
-SET contest=%1
-SET question=%2
+setlocal EnableDelayedExpansion
+
+set contest=%1
+set question=%2
+echo %submit%
 
 set current=%CD%
 set contestPath=%HOMEPATH%\atcoder-workspace\%contest%
 set questionPath=%HOMEPATH%\atcoder-workspace\%contest%\%question%
 
-if not exist %contestPath%\ (
+if not exist %questionPath%\ (
     atcoder-tools gen %contest%
 )
 
 xcopy /e bin\Debug\netcoreapp3.1 %questionPath% /Y
-rem copy Program.cs %questionPath%\main.cs /Y
+copy Program.cs %questionPath%\main.cs /Y
 cd %questionPath%
 atcoder-tools test
 
-rem set /P submit="Submit?(y/n)"
-rem if %submit% == y (
-rem     atcoder-tools submit -u
-rem ) 
-rem set submit=n
+if %ERRORLEVEL% == 0 (
+    set submit=n
+    set /P submit="Submit?(y/n)"
+    if !submit! == y (
+        atcoder-tools submit -u
+    ) 
+)
 
 cd %current%
