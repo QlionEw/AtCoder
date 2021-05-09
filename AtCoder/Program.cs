@@ -55,7 +55,7 @@ namespace AtCoder
             while (true)
             {
                 if (b == 0) return a;
-                var a1 = a;
+                long a1 = a;
                 a = b;
                 b = a1 % b;
             }
@@ -68,12 +68,12 @@ namespace AtCoder
         
         public static IEnumerable<IEnumerable<T>> GetPermutations<T>(params T[] array) where T : IComparable
         {
-            var a = new List<T>(array);
-            var n = a.Count;
+            List<T> a = new List<T>(array);
+            int n = a.Count;
             
             yield return array;
             
-            var next = true;
+            bool next = true;
             while (next)
             {
                 next = false;
@@ -84,7 +84,7 @@ namespace AtCoder
                 }
                 if (i < 0) break;
 
-                var j = n;
+                int j = n;
                 do
                 {
                     j--;
@@ -92,7 +92,7 @@ namespace AtCoder
 
                 if (a[i].CompareTo(a[j]) < 0)
                 {
-                    var tmp = a[i];
+                    T tmp = a[i];
                     a[i] = a[j];
                     a[j] = tmp;
                     a.Reverse(i + 1, n - i - 1);
@@ -143,16 +143,16 @@ namespace AtCoder
 
         public string Scan()
         {
-            var sb = new StringBuilder();
-            for (var b = Char(); b >= 33 && b <= 126; b = (char) Read())
+            StringBuilder sb = new StringBuilder();
+            for (char b = Char(); b >= 33 && b <= 126; b = (char) Read())
                 sb.Append(b);
             return sb.ToString();
         }
 
         public string ScanIncludeSpace()
         {
-            var sb = new StringBuilder();
-            for (var b = Char(); b >= 32 && b <= 126; b = (char) Read())
+            StringBuilder sb = new StringBuilder();
+            for (char b = Char(); b >= 32 && b <= 126; b = (char) Read())
                 sb.Append(b);
             return sb.ToString();
         }
@@ -161,7 +161,7 @@ namespace AtCoder
         {
             long ret = 0;
             byte b = 0;
-            var ng = false;
+            bool ng = false;
             do b = Read();
             while (b != '-' && (b < '0' || '9' < b));
             if (b == '-')
@@ -191,7 +191,7 @@ namespace AtCoder
         /// <summary> 数値読み込み </summary>
         public long[] ArrayLong(int count = 0)
         {
-            var scan = new long[count];
+            long[] scan = new long[count];
             for (int i = 0; i < count; i++)
             {
                 scan[i] = Long();
@@ -203,7 +203,7 @@ namespace AtCoder
         /// <summary> 数値読み込み </summary>
         public int[] ArrayInt(int count = 0)
         {
-            var scan = new int[count];
+            int[] scan = new int[count];
             for (int i = 0; i < count; i++)
             {
                 scan[i] = Integer();
@@ -214,7 +214,7 @@ namespace AtCoder
 
         public long[][] SquareLong(int row, int col)
         {
-            var scan = new long[row][];
+            long[][] scan = new long[row][];
             for (int i = 0; i < row; i++)
             {
                 scan[i] = ArrayLong(col);
@@ -225,7 +225,7 @@ namespace AtCoder
 
         public int[][] SquareInt(int row, int col)
         {
-            var scan = new int[row][];
+            int[][] scan = new int[row][];
             for (int i = 0; i < row; i++)
             {
                 scan[i] = ArrayInt(col);
@@ -246,8 +246,8 @@ namespace AtCoder
         /// <summary> 一括出力 </summary>
         public static void OutAllLine<T>(IEnumerable<T> items)
         {
-            var sb = new StringBuilder();
-            foreach (var result in items)
+            StringBuilder sb = new StringBuilder();
+            foreach (T result in items)
             {
                 sb.Append(result + "\n");
             }
@@ -258,8 +258,8 @@ namespace AtCoder
 
         public static void OutEachSpace<T>(IEnumerable<T> items)
         {
-            var sb = new StringBuilder();
-            foreach (var result in items)
+            StringBuilder sb = new StringBuilder();
+            foreach (T result in items)
             {
                 sb.Append(result + " ");
             }
@@ -479,8 +479,8 @@ namespace AtCoder
 
         public int GetDivisor(long n)
         {
-            var count = 0;
-            var sq = (long) Math.Sqrt(n);
+            int count = 0;
+            long sq = (long) Math.Sqrt(n);
             for (long i = 1; i <= sq; i++)
             {
                 if (n % i == 0)
@@ -519,7 +519,7 @@ namespace AtCoder
         {
             if (n == 0) return 1;
             if (n == 1) return a;
-            var p = Pow(a, n / 2);
+            ModInt p = Pow(a, n / 2);
             return p * p * Pow(a, n % 2);
         }
 
@@ -539,7 +539,7 @@ namespace AtCoder
     {
         public List<int> Integer(int bitValue, int length)
         {
-            var list = new List<int>();
+            List<int> list = new List<int>();
             for (int i = 0; i < length; i++)
             {
                 if (bitValue % 2 == 1)
@@ -555,7 +555,7 @@ namespace AtCoder
 
         public bool[] Boolean(int bitValue, int length)
         {
-            var list = new bool[length];
+            bool[] list = new bool[length];
             for (int i = 0; i < length; i++)
             {
                 list[i] = bitValue % 2 == 1;
@@ -597,8 +597,8 @@ namespace AtCoder
             int count;
             for (count = 0; count < Distances.Length; count++)
             {
-                var isUpdated = false;
-                foreach (var path in pathInfos)
+                bool isUpdated = false;
+                foreach (PathInfo path in pathInfos)
                 {
                     if (Distances[path.From] == Common.Infinity) { continue; }
 
@@ -621,7 +621,7 @@ namespace AtCoder
         {
             for (int i = 0; i <= Distances.Length; i++)
             {
-                foreach (var path in pathInfos)
+                foreach (PathInfo path in pathInfos)
                 {
                     if (Distances[path.From] == Common.Infinity) { continue; }
 
@@ -665,18 +665,18 @@ namespace AtCoder
 
         public void Solve(int point)
         {
-            var queue = new PriorityQueue<PathInfo>(pathInfos.Select(x => x.Count).Sum() + 1);
+            PriorityQueue<PathInfo> queue = new PriorityQueue<PathInfo>(pathInfos.Select(x => x.Count).Sum() + 1);
             Distances[point] = 0;
             queue.Enqueue(new PathInfo {To = point, Cost = 0});
 
             while (queue.Count != 0)
             {
-                var pop = queue.Dequeue();
+                PathInfo pop = queue.Dequeue();
                 if (Distances[pop.To] < pop.Cost) { continue; }
 
-                foreach (var path in pathInfos[pop.To])
+                foreach (PathInfo path in pathInfos[pop.To])
                 {
-                    var nextValue = Distances[pop.To] + path.Cost;
+                    long nextValue = Distances[pop.To] + path.Cost;
                     if (Distances[path.To] <= nextValue) { continue; }
 
                     Distances[path.To] = nextValue;
@@ -711,9 +711,9 @@ namespace AtCoder
 
         public long SolveMax(Func<long, bool> judge)
         {
-            var addition = IsCheckListRange ? -1 : 0;
-            var ok = min + addition;
-            var ng = max + 1 + addition;
+            int addition = IsCheckListRange ? -1 : 0;
+            long ok = min + addition;
+            long ng = max + 1 + addition;
             long i = (ok + ng) / 2;
             while (ok + 1 < ng)
             {
@@ -736,8 +736,8 @@ namespace AtCoder
 
         public long SolveMin(Func<long, bool> judge)
         {
-            var ok = max;
-            var ng = min - 1;
+            long ok = max;
+            long ng = min - 1;
             long i = (ok + ng) / 2;
             while (ng + 1 < ok)
             {
@@ -784,8 +784,8 @@ namespace AtCoder
 
         public T Dequeue()
         {
-            var ret = heap[0];
-            var item = heap[--Count];
+            T ret = heap[0];
+            T item = heap[--Count];
 
             int index = 0;
             while (index * 2 + 1 < Count)
@@ -837,7 +837,7 @@ namespace AtCoder
 
             if (Size(x) < Size(y))
             {
-                var tmp = x;
+                long tmp = x;
                 x = y;
                 y = tmp;
             }
