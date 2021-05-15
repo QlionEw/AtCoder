@@ -14,7 +14,6 @@ namespace AtCoder
         {
             checked
             {
-                
             }
         }
 
@@ -31,7 +30,13 @@ namespace AtCoder
         private static int[][] Sqi(int yCount, int xCount) => Scanner.SquareInt(yCount, xCount);
         private static long[][] Sql(int yCount, int xCount) => Scanner.SquareLong(yCount, xCount);
         private static string[] Sss(int count) => Enumerable.Repeat(0, count).Select(_ => Ss()).ToArray();
-
+        private static void Loop(long n, Action<int> action)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                action(i);
+            }
+        }
         #endregion
     }
 
@@ -63,7 +68,10 @@ namespace AtCoder
 
         public static long Lcm(long a, long b)
         {
-            return a * b / Gcd(a, b);
+            checked
+            {
+                return (a / Gcd(a, b)) * b;
+            }
         }
         
         public static IEnumerable<IEnumerable<T>> GetPermutations<T>(params T[] array) where T : IComparable
@@ -277,6 +285,7 @@ namespace AtCoder
             isGetMax ? -Common.Infinity : Common.Infinity, counts)
         {
             this.isGetMax = isGetMax;
+            InvalidValue = isGetMax ? -Common.Infinity : Common.Infinity;
         }
 
         public double Answer2D => isGetMax ? Table[0].Max(xs => xs[XCount - 1]) : Table[0].Min(xs => xs[XCount - 1]);
