@@ -3,7 +3,6 @@ setlocal EnableDelayedExpansion
 
 set contest=%1
 set question=%2
-echo %submit%
 
 set current=%CD%
 set contestPath=%HOMEPATH%\atcoder-workspace\%contest%
@@ -20,7 +19,7 @@ atcoder-tools test
 
 if %ERRORLEVEL% == 0 (
     set submit=n
-    set /P submit="Submit?(y/n)"
+    set /P submit="Submit?(y/n) "
     if !submit! == y (
         atcoder-tools submit -u
     ) 
