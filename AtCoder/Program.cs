@@ -74,6 +74,26 @@ namespace AtCoder
             }
         }
         
+        public static long Combination(long n, long m)
+        {
+            if (m == 0) return 1;
+            if (n == 0) return 0;
+            return n * Combination(n - 1, m - 1) / m;
+        }
+        
+        public static long Permutation(long n, long m)
+        {
+            if (m == 0) return 1;
+            if (n == 0) return 0;
+            long value = 1;
+            for (long i = n; i >= n - m + 1; i--)
+            {
+                value *= i;
+            }
+
+            return value;
+        }
+        
         public static IEnumerable<IEnumerable<T>> GetPermutations<T>(params T[] array) where T : IComparable
         {
             List<T> a = new List<T>(array);
@@ -546,7 +566,7 @@ namespace AtCoder
 
     public class BitArrayMaker
     {
-        public List<int> Integer(int bitValue, int length)
+        public List<int> Integer(long bitValue, long length)
         {
             List<int> list = new List<int>();
             for (int i = 0; i < length; i++)
@@ -562,7 +582,7 @@ namespace AtCoder
             return list;
         }
 
-        public bool[] Boolean(int bitValue, int length)
+        public bool[] Boolean(long bitValue, long length)
         {
             bool[] list = new bool[length];
             for (int i = 0; i < length; i++)
