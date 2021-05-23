@@ -14,6 +14,7 @@ namespace AtCoder
         {
             checked
             {
+                
             }
         }
 
@@ -717,7 +718,6 @@ namespace AtCoder
 
     public class BinarySearch
     {
-        public bool IsCheckListRange { get; set; }
         private long min;
         private long max;
 
@@ -732,20 +732,23 @@ namespace AtCoder
 
         public void SetRange(long min, long max)
         {
-            this.min = min;
-            this.max = max;
+            this.min = min - 1;
+            this.max = max + 1;
         }
 
         public long CountUnder(Func<long, bool> judge) => SolveMax(judge);
 
         public long SolveMax(Func<long, bool> judge)
         {
-            int addition = IsCheckListRange ? -1 : 0;
-            long ok = min + addition;
-            long ng = max + 1 + addition;
+            long ok = min;
+            long ng = max;
             long i = (ok + ng) / 2;
             while (ok + 1 < ng)
             {
+                if (i == min || i == max)
+                {
+                    break;
+                }
                 if (judge(i))
                 {
                     ok = i;
@@ -758,7 +761,7 @@ namespace AtCoder
                 i = (ok + ng) / 2;
             }
 
-            return IsCheckListRange ? ok + 1 : ok;
+            return ok;
         }
 
         public long CountOver(Func<long, bool> judge) => SolveMin(judge);
@@ -766,10 +769,14 @@ namespace AtCoder
         public long SolveMin(Func<long, bool> judge)
         {
             long ok = max;
-            long ng = min - 1;
+            long ng = min;
             long i = (ok + ng) / 2;
             while (ng + 1 < ok)
             {
+                if (i == min || i == max)
+                {
+                    break;
+                }
                 if (judge(i))
                 {
                     ok = i;
@@ -782,7 +789,7 @@ namespace AtCoder
                 i = (ok + ng) / 2;
             }
 
-            return IsCheckListRange ? max - ok : ok;
+            return ok;
         }
     }
 
@@ -942,10 +949,12 @@ namespace AtCoder
         
         public Dictionary<long, long> Cost { get; set; } = new Dictionary<long, long>();
         public TreePath[] Vertexes { get; }
+        public List<List<TreePath>> Lists;
 
         public TreeStructure(int size)
         {
             Vertexes = Enumerable.Range(0, size + 1).Select(_ => new TreePath()).ToArray();
+            Lists = Enumerable.Range(0, size + 1).Select(x => new List<TreePath>()).ToList();
         }
 
         public void Connect(long index, long index2) => Connect(index, index2, 1);
@@ -972,6 +981,7 @@ namespace AtCoder
         {
             costArray[current] = cost;
             Vertexes[current].InTime = time++;
+            Lists[(int)cost].Add(Vertexes[current]);
             foreach ((long Way, long Cost) way in Vertexes[current].GetWayData())
             {
                 if (way.Way == from)
