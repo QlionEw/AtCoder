@@ -927,6 +927,63 @@ namespace AtCoder
             return updateMethod(leftValue, rightValue);
         }
     }
+    
+    public class TreeStructure
+    {
+        public class TreePath
+        {
+            public List<long> Ways { get; } = new List<long>();
+            public List<long> Costs { get; } = new List<long>();
+            public int InTime { get; set; }
+            public int OutTime { get; set; }
 
+            public IEnumerable<(long Way, long Cost)> GetWayData() => Ways.Select((t, i) => (t, Costs[i]));
+        }
+        
+        public Dictionary<long, long> Cost { get; set; } = new Dictionary<long, long>();
+        public TreePath[] Vertexes { get; }
+
+        public TreeStructure(int size)
+        {
+            Vertexes = Enumerable.Range(0, size + 1).Select(_ => new TreePath()).ToArray();
+        }
+
+        public void Connect(long index, long index2) => Connect(index, index2, 1);
+
+        public void Connect(long index, long index2, long cost)
+        {
+            Vertexes[index].Ways.Add(index2);
+            Vertexes[index].Costs.Add(cost);
+            Vertexes[index2].Ways.Add(index);
+            Vertexes[index2].Costs.Add(cost);
+        }
+
+        private long[] costArray;
+
+        public IEnumerable<long> CheckCost(int origin)
+        {
+            costArray = new long[Vertexes.Length];
+            int time = 0;
+            CheckCost(origin, 0, 0, ref time);
+            return costArray;
+        }
+
+        private void CheckCost(long current, long cost, long from, ref int time)
+        {
+            costArray[current] = cost;
+            Vertexes[current].InTime = time++;
+            foreach ((long Way, long Cost) way in Vertexes[current].GetWayData())
+            {
+                if (way.Way == from)
+                {
+                    continue;
+                }
+
+                CheckCost(way.Way, cost + way.Cost, current, ref time);
+            }
+            Vertexes[current].OutTime = time++;
+        }
+    }
+    
     #endregion
 }
