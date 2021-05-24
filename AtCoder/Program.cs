@@ -14,7 +14,6 @@ namespace AtCoder
         {
             checked
             {
-                
             }
         }
 
@@ -340,9 +339,7 @@ namespace AtCoder
             Table[0][0][0] = originValue;
             isSetOrigin = true;
         }
-
-        public T Origin { set => Table[0][0][0] = value; }
-
+        
         public void SetFirstValue(T firstValue, bool isXAll = false, bool isYAll = false, bool isZAll = false)
         {
             if (isXAll)
@@ -351,6 +348,7 @@ namespace AtCoder
                 {
                     Table[0][0][x] = firstValue;
                 }
+                Initials[0] = 1;
             }
 
             if (isYAll)
@@ -359,6 +357,7 @@ namespace AtCoder
                 {
                     Table[0][y][0] = firstValue;
                 }
+                Initials[1] = 1;
             }
 
             if (isZAll)
@@ -367,6 +366,7 @@ namespace AtCoder
                 {
                     Table[z][0][0] = firstValue;
                 }
+                Initials[2] = 1;
             }
         }
 
