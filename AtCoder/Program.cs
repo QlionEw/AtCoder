@@ -96,7 +96,7 @@ namespace AtCoder
         
         public static IEnumerable<IEnumerable<T>> GetPermutations<T>(params T[] array) where T : IComparable
         {
-            List<T> a = new List<T>(array);
+            var a = new List<T>(array);
             int n = a.Count;
             
             yield return array;
@@ -171,7 +171,7 @@ namespace AtCoder
 
         public string Scan()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             for (char b = Char(); b >= 33 && b <= 126; b = (char) Read())
                 sb.Append(b);
             return sb.ToString();
@@ -179,7 +179,7 @@ namespace AtCoder
 
         public string ScanIncludeSpace()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             for (char b = Char(); b >= 32 && b <= 126; b = (char) Read())
                 sb.Append(b);
             return sb.ToString();
@@ -274,7 +274,7 @@ namespace AtCoder
         /// <summary> 一括出力 </summary>
         public static void OutAllLine<T>(IEnumerable<T> items)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             foreach (T result in items)
             {
                 sb.Append(result + "\n");
@@ -286,7 +286,7 @@ namespace AtCoder
 
         public static void OutEachSpace<T>(IEnumerable<T> items)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             foreach (T result in items)
             {
                 sb.Append(result + " ");
@@ -949,7 +949,7 @@ namespace AtCoder
         
         public Dictionary<long, long> Cost { get; set; } = new Dictionary<long, long>();
         public TreePath[] Vertexes { get; }
-        public List<List<TreePath>> Lists;
+        public readonly List<List<TreePath>> Lists;
 
         public TreeStructure(int size)
         {
@@ -982,14 +982,14 @@ namespace AtCoder
             costArray[current] = cost;
             Vertexes[current].InTime = time++;
             Lists[(int)cost].Add(Vertexes[current]);
-            foreach ((long Way, long Cost) way in Vertexes[current].GetWayData())
+            foreach ((long way, long l) in Vertexes[current].GetWayData())
             {
-                if (way.Way == from)
+                if (way == from)
                 {
                     continue;
                 }
 
-                CheckCost(way.Way, cost + way.Cost, current, ref time);
+                CheckCost(way, cost + l, current, ref time);
             }
             Vertexes[current].OutTime = time++;
         }
