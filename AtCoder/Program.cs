@@ -934,7 +934,86 @@ namespace AtCoder
             return updateMethod(leftValue, rightValue);
         }
     }
-    
+
+    public class LazySegmentTree
+    {
+        private long[] data;
+        private long[] lazyData;
+        private bool[] isEvaluated;
+        private Func<long, long, long> updateMethod;
+        private long firstValue;
+        private int n;
+
+        public void Init(int count, long firstValue, Func<long, long, long> updateMethod)
+        {
+            this.updateMethod = updateMethod;
+            this.firstValue = firstValue;
+
+            n = 1;
+            while (n < count)
+            {
+                n *= 2;
+            }
+
+            data = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
+            lazyData = Enumerable.Repeat((long)0, 2 * n - 1).ToArray();
+            isEvaluated = Enumerable.Repeat(false, 2 * n - 1).ToArray();
+        }
+        
+        private void Evaluate(int k,int l,int r)
+        {
+            if (!isEvaluated[k]) return;
+            
+            data[k] = lazyData[k];
+            if (l + 1 < r)
+            {
+                lazyData[2 * k + 1] = lazyData[k];
+                lazyData[2 * k + 2] = lazyData[k];
+                isEvaluated[2 * k + 1] = true;
+                isEvaluated[2 * k + 2] = true;
+            }
+
+            isEvaluated[k] = false;
+        }
+
+        public void Update(int left, int right, long value)
+        {
+            Update(left, right, value, 0, 0, n);
+        }
+        
+        private void Update(int a, int b, long x, int k, int l, int r)
+        {
+            Evaluate(k, l, r);
+            if (r <= a || b <= l) return;
+            if(a<=l&&r<=b)
+            {
+                isEvaluated[k] = true;
+                lazyData[k] = x;
+                Evaluate(k, l, r);
+            }
+            else
+            {
+                Update(a, b, x, 2 * k + 1, l, (l + r) / 2);
+                Update(a, b, x, 2 * k + 2, (l + r) / 2, r);
+                data[k] = updateMethod(data[2 * k + 1], data[2 * k + 2]);
+            }
+        }
+
+        public long Query(int left, int right)
+        {
+            return Query(left, right, 0, 0, n);
+        }
+        
+        private long Query(int a, int b, int k, int l, int r){
+            Evaluate(k,l,r);
+            if (r <= a || b <= l) return firstValue;
+            if (a <= l && r <= b) return data[k];
+            long vl = Query(a, b, 2 * k + 1, l, (l + r) / 2);
+            long vr = Query(a, b, 2 * k + 2, (l + r) / 2, r);
+            return updateMethod(vl,vr);
+        }
+    }
+
     public class TreeStructure
     {
         public class TreePath
