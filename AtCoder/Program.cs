@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -50,6 +51,11 @@ namespace AtCoder
 
     public static class MathPlus
     {
+        public static long CeilingLong(long value, long div)
+        {
+            return value % div == 0 ? value / div : value / div + 1;
+        }
+        
         public static long Gcd(long a, long b)
         {
             return a > b ? GcdRecursive(a, b) : GcdRecursive(b, a);
