@@ -947,6 +947,8 @@ namespace AtCoder
         private long[] lazyData;
         private bool[] isEvaluated;
         private Func<long, long, long> updateMethod;
+        public Func<long, long, long> UpdateSelfMethod { get; set; } = (x, m) => m;
+        public Func<long, long, long> UpdateChildMethod { get; set; } = (m1, m2) => m2;
         private long firstValue;
         private int n;
 
@@ -970,15 +972,15 @@ namespace AtCoder
         {
             if (!isEvaluated[k]) return;
             
-            data[k] = lazyData[k];
             if (l + 1 < r)
             {
-                lazyData[2 * k + 1] = lazyData[k];
-                lazyData[2 * k + 2] = lazyData[k];
+                lazyData[2 * k + 1] = UpdateChildMethod(lazyData[2 * k + 1], lazyData[k] );
+                lazyData[2 * k + 2] = UpdateChildMethod(lazyData[2 * k + 1], lazyData[k] );
                 isEvaluated[2 * k + 1] = true;
                 isEvaluated[2 * k + 2] = true;
             }
 
+            data[k] = UpdateSelfMethod(data[k], lazyData[k]);
             isEvaluated[k] = false;
         }
 
@@ -994,7 +996,7 @@ namespace AtCoder
             if(a<=l&&r<=b)
             {
                 isEvaluated[k] = true;
-                lazyData[k] = x;
+                lazyData[k] = UpdateChildMethod(lazyData[k], x);
                 Evaluate(k, l, r);
             }
             else
