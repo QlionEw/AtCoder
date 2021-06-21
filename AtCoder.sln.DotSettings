@@ -61,7 +61,7 @@ $SELECTION$$END$</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=38C4E9BA896E0A45A174B95BAFA6C06B/Scope/=C3001E7C0DA78E4487072B7E050D86C5/Type/@EntryValue">InCSharpFile</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=38C4E9BA896E0A45A174B95BAFA6C06B/Shortcut/@EntryValue">n</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=38C4E9BA896E0A45A174B95BAFA6C06B/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
-	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=38C4E9BA896E0A45A174B95BAFA6C06B/Text/@EntryValue">long $VALUE$ = Scanner.Long();
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=38C4E9BA896E0A45A174B95BAFA6C06B/Text/@EntryValue">int $VALUE$ = Scanner.Integer();
 $END$</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=473A913CF3AC9948B7AF4BF4F9D7F3CC/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=473A913CF3AC9948B7AF4BF4F9D7F3CC/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
@@ -198,6 +198,19 @@ $SELECTION$$END$</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C251FED96B291546B8D61F6204BC2A1B/Text/@EntryValue">int $INDEX$ = Si();
 long[][] $ARRAY$ = Sql($INDEX$,3);
 $SELECTION$$END$</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Field/=VALUE/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Field/=VALUE/Expression/@EntryValue">constant("n")</s:String>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Field/=VALUE/Order/@EntryValue">0</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Scope/=C3001E7C0DA78E4487072B7E050D86C5/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Scope/=C3001E7C0DA78E4487072B7E050D86C5/CustomProperties/=minimumLanguageVersion/@EntryIndexedValue">2.0</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Scope/=C3001E7C0DA78E4487072B7E050D86C5/Type/@EntryValue">InCSharpFile</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Shortcut/@EntryValue">l</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Text/@EntryValue">long $VALUE$ = Scanner.Long();
+$END$</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DDE5CEC20B44DA41A1177690B19A1C94/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DDE5CEC20B44DA41A1177690B19A1C94/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DDE5CEC20B44DA41A1177690B19A1C94/Field/=ARRAY/@KeyIndexDefined">True</s:Boolean>
