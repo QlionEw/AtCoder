@@ -1159,6 +1159,66 @@ namespace AtCoder
             Vertexes[current].OutTime = time++;
         }
     }
+
+    public class DagPath
+    {
+        public int Index { get; set; }
+        public List<int> To { get; } = new List<int>();
+        public List<int> From { get; } = new List<int>();
+        public List<long> Cost { get; } = new List<long>();
+        public int InDegree { get; set; }
+        public long CurrentCost { get; set; }
+    }
+
+    public class TopologicalListGenerator
+    {
+        private List<DagPath> list;
+        
+        public TopologicalListGenerator(int size)
+        {
+            list = Enumerable.Range(0, size).Select(i => new DagPath(){ Index = i }).ToList();
+        }
+        
+        public void Connect(int from, int to, long cost, params long[] additionalInfo)
+        {
+            list[from].To.Add(to);
+            list[from].Cost.Add(cost);
+            list[to].From.Add(from);
+        }
+
+        public IEnumerable<DagPath> Get()
+        {
+            var dagPaths = new List<DagPath>();
+            var queue = new Queue<DagPath>();
+
+            foreach (DagPath dagPath in list)
+            {
+                dagPath.InDegree = dagPath.From.Count;
+                if (dagPath.InDegree == 0)
+                {
+                    queue.Enqueue(dagPath);
+                }
+            }
+
+            while (queue.Count != 0)
+            {
+                var top = queue.Dequeue();
+
+                foreach (int index in top.To)
+                {
+                    list[index].InDegree--;
+                    if (list[index].InDegree == 0)
+                    {
+                        queue.Enqueue(list[index]);
+                    }
+                }
+                
+                dagPaths.Add(top);
+            }
+
+            return dagPaths;
+        }
+    }
     
     #endregion
 }
