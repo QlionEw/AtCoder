@@ -45,7 +45,7 @@ namespace AtCoder
 
     public static class Common
     {
-        public const int InfinityInt = 1 << 30;
+        public const int InfinityInt = 1 << 29;
         public const long Infinity = (long) 1 << 60;
     }
 
@@ -132,6 +132,23 @@ namespace AtCoder
                     a.Reverse(i + 1, n - i - 1);
                     yield return a;
                     next = true;
+                }
+            }
+        }
+        
+        public static IEnumerable<T[]> GetCombinations<T>(IEnumerable<T> items, int k, bool withRepetition = false) {
+            if (k == 1) {
+                foreach (var item in items)
+                    yield return new T[] { item };
+                yield break;
+            }
+            foreach (var item in items) {
+                var leftside = new T[] { item };
+
+                var unused = withRepetition ? items : items.SkipWhile(e => !e.Equals(item)).Skip(1).ToList();
+
+                foreach (var rightside in GetCombinations(unused, k - 1, withRepetition)) {
+                    yield return leftside.Concat(rightside).ToArray();
                 }
             }
         }
@@ -745,10 +762,46 @@ namespace AtCoder
                 foreach (PathInfo path in pathInfos[pop.To])
                 {
                     long nextValue = Distances[pop.To] + path.Cost;
-                    if (Distances[path.To] <= nextValue) { continue; }
+                    if(Distances[path.To] >= nextValue)
+                    {
+                        Distances[path.To] = nextValue;
+                        queue.Enqueue(new PathInfo {From = path.From, To = path.To, Cost = Distances[path.To]});
+                    }
+                }
+            }
+        }
+    }
 
-                    Distances[path.To] = nextValue;
-                    queue.Enqueue(new PathInfo {From = path.From, To = path.To, Cost = Distances[path.To]});
+    public class WarshallFloyd
+    {
+        private long[][] route;
+        private int size;
+        
+        public WarshallFloyd(int size)
+        {
+            this.size = size;
+            route = Enumerable.Repeat(0, size).Select(_ => Enumerable.Repeat(Common.Infinity, size).ToArray()).ToArray();
+            for (int i = 0; i < size; i++)
+            {
+                route[i][i] = 0;
+            }
+        }
+
+        public void CreatePath(int from, int to, long cost = 1)
+        {
+            route[from][to] = cost;
+        }
+
+        public void Solve()
+        {
+            for (int k = 0; k < size; k++)
+            {
+                for (int i = 0; i < size; i++)
+                {
+                    for (int j = 0; j < size; j++)
+                    {
+                        route[i][j] = Math.Min(route[i][j], route[i][k] + route[k][j]);
+                    }
                 }
             }
         }
@@ -1122,14 +1175,16 @@ namespace AtCoder
             Lists = Enumerable.Range(0, size + 1).Select(x => new List<TreePath>()).ToList();
         }
 
-        public void Connect(long index, long index2) => Connect(index, index2, 1);
-
-        public void Connect(long index, long index2, long cost)
+        public void Connect(long index, long index2, long cost = 1)
         {
             Vertexes[index].Ways.Add(index2);
             Vertexes[index].Costs.Add(cost);
-            Vertexes[index2].Ways.Add(index);
-            Vertexes[index2].Costs.Add(cost);
+        }
+        
+        public void ConnectEach(long index, long index2, long cost = 1)
+        {
+            Connect(index, index2, cost);
+            Connect(index2, index, cost);
         }
 
         private long[] costArray;
