@@ -376,6 +376,8 @@ namespace AtCoder
         protected readonly int YCount;
         protected readonly int ZCount;
         private bool isSetOrigin;
+        public T Answer1D => Table[0][0][XCount - 1];
+        public IEnumerable<T> Last2D => Table[0].Select(xs => xs[XCount - 1]);
 
         public DynamicProgramming(T firstValue, params int[] counts)
         {
@@ -488,14 +490,18 @@ namespace AtCoder
                 ? Table[zCurrent][yCurrent - prevY][xCurrent - prevX]
                 : InvalidValue;
         }
+        
+        public T GetPreviousIndex(int prevX, int index)
+        {
+            return xCurrent - prevX >= 0
+                ? Table[zCurrent][index][xCurrent - prevX]
+                : InvalidValue;
+        }
 
         public T GetPrevious(int prevX)
         {
             return xCurrent - prevX >= 0 ? Table[zCurrent][yCurrent][xCurrent - prevX] : InvalidValue;
         }
-
-        public T Answer1D => Table[0][0][XCount - 1];
-        public IEnumerable<T> Last2D => Table[0].Select(xs => xs[XCount - 1]);
     }
 
     public class LargeCalc
