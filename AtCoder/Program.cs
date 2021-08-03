@@ -592,10 +592,10 @@ namespace AtCoder
     public struct ModInt
     {
         long value;
-        public const int _7 = 1000000007;
-        public const int _9 = 1000000009;
-        public const int _3 = 998244353;
-        public static int ModValue { get; set; } = _7;
+        public const int _1000000007 = 1000000007;
+        public const int _1000000009 = 1000000009;
+        public const int _998244353 = 998244353;
+        public static int ModValue { get; set; } = _1000000007;
         static List<ModInt> fact = new List<ModInt> {1};
         public ModInt(long value) => this.value = value;
         public static implicit operator ModInt(long a) => new ModInt(a % ModValue + (a < 0 ? ModValue : 0));

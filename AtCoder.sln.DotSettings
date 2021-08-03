@@ -209,7 +209,7 @@ $SELECTION$$END$</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Scope/=C3001E7C0DA78E4487072B7E050D86C5/Type/@EntryValue">InCSharpFile</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Shortcut/@EntryValue">l</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
-	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Text/@EntryValue">long $VALUE$ = Scanner.Long();
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Text/@EntryValue">long $VALUE$ = Sl();
 $END$</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DDE5CEC20B44DA41A1177690B19A1C94/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=DDE5CEC20B44DA41A1177690B19A1C94/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
