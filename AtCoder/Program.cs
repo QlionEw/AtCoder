@@ -1014,9 +1014,14 @@ namespace AtCoder
             }
         }
 
+        public long Query(int index)
+        {
+            return Query(index, index);
+        }
+        
         public long Query(int indexStart, int indexEnd)
         {
-            return Query(indexStart, indexEnd, 0, 0, n);
+            return Query(indexStart, indexEnd+1, 0, 0, n);
         }
 
         private long Query(int indexStart, int indexEnd, int current, int left, int right)
@@ -1077,7 +1082,7 @@ namespace AtCoder
 
         public void Update(int left, int right, long value)
         {
-            Update(left, right, value, 0, 0, n);
+            Update(left, right+1, value, 0, 0, n);
         }
         
         private void Update(int a, int b, long x, int k, int l, int r)
@@ -1100,7 +1105,7 @@ namespace AtCoder
 
         public long Query(int left, int right)
         {
-            return Query(left, right, 0, 0, n);
+            return Query(left, right+1, 0, 0, n);
         }
         
         private long Query(int a, int b, int k, int l, int r){
