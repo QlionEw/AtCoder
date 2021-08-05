@@ -543,7 +543,7 @@ namespace AtCoder
 
         public IEnumerable<long> GetPrimeFactors(long n)
         {
-            int i = 2;
+            long i = 2;
             long tmp = n;
 
             while (i * i <= tmp)
@@ -568,7 +568,7 @@ namespace AtCoder
             if (tmp != 1) yield return tmp;
         }
 
-        public int GetDivisor(long n)
+        public int GetDivisorCount(long n)
         {
             int count = 0;
             long sq = (long) Math.Sqrt(n);
@@ -586,6 +586,20 @@ namespace AtCoder
             }
 
             return count;
+        }
+        
+        public IEnumerable<long> GetDivisors(long n)
+        {
+            HashSet<long> divisors = new HashSet<long>();
+
+            for (long i = 1; i * i <= n; i++)
+            {
+                if (n % i != 0) { continue; }
+                divisors.Add(i);
+                divisors.Add(n / i);
+            }
+            
+            return divisors.OrderBy(x => x).ToArray();
         }
     }
 
