@@ -750,6 +750,7 @@ namespace AtCoder
         private readonly List<PathInfo>[] pathInfos;
         public long[] Distances { get; private set; }
         public int[] Color { get; }
+        private int pathCount = 0;
 
         public Dijkstra(int nodeCount)
         {
@@ -765,12 +766,13 @@ namespace AtCoder
 
         public void AddPath(long from, long to, long cost, params long[] additionalInfo)
         {
+            pathCount++;
             pathInfos[from].Add(new PathInfo {From = from, To = to, Cost = cost});
         }
 
         public void Solve(int point)
         {
-            PriorityQueue<PathInfo> queue = new PriorityQueue<PathInfo>(pathInfos.Select(x => x.Count).Sum() + 1);
+            PriorityQueue<PathInfo> queue = new PriorityQueue<PathInfo>(pathCount + 1);
             Distances[point] = 0;
             queue.Enqueue(new PathInfo {To = point, Cost = 0});
 
@@ -782,7 +784,7 @@ namespace AtCoder
                 foreach (PathInfo path in pathInfos[pop.To])
                 {
                     long nextValue = Distances[pop.To] + path.Cost;
-                    if(Distances[path.To] >= nextValue)
+                    if(Distances[path.To] > nextValue)
                     {
                         Distances[path.To] = nextValue;
                         queue.Enqueue(new PathInfo {From = path.From, To = path.To, Cost = Distances[path.To]});
@@ -1151,7 +1153,7 @@ namespace AtCoder
 
         public int IndexOf(T index)
         {
-            if (list != null)
+            if (list != null && dict == null)
             {
                 Generate(list);
             }
