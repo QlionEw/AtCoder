@@ -671,39 +671,78 @@ namespace AtCoder
         }
     }
 
-    public struct PathInfo : IComparable<PathInfo>
+    public class GraphSolver
     {
-        public long From { get; set; }
-        public long To { get; set; }
-        public long Cost { get; set; }
-
-        public int CompareTo(PathInfo other)
+        public struct PathInfo : IComparable<PathInfo>
         {
-            return (int) (Cost - other.Cost);
+            public int From { get; set; }
+            public int To { get; set; }
+            public long Cost { get; set; }
+
+            public int CompareTo(PathInfo other)
+            {
+                return (int) (Cost - other.Cost);
+            }
         }
-    }
+        
+        private readonly List<PathInfo>[] pathInfos;
+        public long[] Distances { get; private set; }
+        private int pathCount = 0;
+        private int nodeCount;
 
-    public class BellmanFord
-    {
-        public bool[] IsLoop { get; }
-        public long[] Distances { get; }
-        private PathInfo[] pathInfos;
-
-        public BellmanFord(int nodeCount, IEnumerable<PathInfo> paths)
+        public GraphSolver(int nodeCount)
         {
+            this.nodeCount = nodeCount;
             Distances = Enumerable.Repeat(Common.Infinity, nodeCount + 1).ToArray();
-            IsLoop = Enumerable.Repeat(false, nodeCount + 1).ToArray();
-            pathInfos = paths.ToArray();
+            pathInfos = Enumerable.Repeat(0, nodeCount + 1).Select(_ => new List<PathInfo>()).ToArray();
         }
 
-        public void Solve(int point, bool isDetectLoop = false)
+        public void Init()
         {
+            Distances = Enumerable.Repeat(Common.Infinity, Distances.Length).ToArray();
+        }
+
+        public void AddPath(int from, int to, long cost, params long[] additionalInfo)
+        {
+            pathCount++;
+            pathInfos[from].Add(new PathInfo {From = from, To = to, Cost = cost});
+        }
+
+        public void Dijkstra(int point)
+        {
+            PriorityQueue<PathInfo> queue = new PriorityQueue<PathInfo>(pathCount + 1);
+            Distances[point] = 0;
+            queue.Enqueue(new PathInfo {To = point, Cost = 0});
+
+            while (queue.Count != 0)
+            {
+                PathInfo pop = queue.Dequeue();
+                if (Distances[pop.To] < pop.Cost) { continue; }
+
+                foreach (PathInfo path in pathInfos[pop.To])
+                {
+                    long nextValue = Distances[pop.To] + path.Cost;
+                    if(Distances[path.To] > nextValue)
+                    {
+                        Distances[path.To] = nextValue;
+                        queue.Enqueue(new PathInfo {From = path.From, To = path.To, Cost = Distances[path.To]});
+                    }
+                }
+            }
+        }
+
+        private PathInfo[] bellmanFordList;
+        public bool[] IsLoop { get; private set; }
+        public void BellmanFord(int point, bool isDetectLoop = false)
+        {
+            bellmanFordList = pathInfos.SelectMany(x => x).ToArray();
+            IsLoop = Enumerable.Repeat(false, nodeCount + 1).ToArray();
             Distances[point] = 0;
             int count;
             for (count = 0; count < Distances.Length; count++)
             {
                 bool isUpdated = false;
-                foreach (PathInfo path in pathInfos)
+                foreach (PathInfo path in bellmanFordList)
                 {
                     if (Distances[path.From] == Common.Infinity) { continue; }
 
@@ -726,7 +765,7 @@ namespace AtCoder
         {
             for (int i = 0; i <= Distances.Length; i++)
             {
-                foreach (PathInfo path in pathInfos)
+                foreach (PathInfo path in bellmanFordList)
                 {
                     if (Distances[path.From] == Common.Infinity) { continue; }
 
@@ -743,89 +782,96 @@ namespace AtCoder
                 }
             }
         }
-    }
-
-    public class Dijkstra
-    {
-        private readonly List<PathInfo>[] pathInfos;
-        public long[] Distances { get; private set; }
-        public int[] Color { get; }
-        private int pathCount = 0;
-
-        public Dijkstra(int nodeCount)
-        {
-            Distances = Enumerable.Repeat(Common.Infinity, nodeCount + 1).ToArray();
-            pathInfos = Enumerable.Repeat(0, nodeCount + 1).Select(_ => new List<PathInfo>()).ToArray();
-            Color = Enumerable.Repeat(-1, nodeCount + 1).ToArray();
-        }
-
-        public void Init()
-        {
-            Distances = Enumerable.Repeat(Common.Infinity, Distances.Length).ToArray();
-        }
-
-        public void AddPath(long from, long to, long cost, params long[] additionalInfo)
-        {
-            pathCount++;
-            pathInfos[from].Add(new PathInfo {From = from, To = to, Cost = cost});
-        }
-
-        public void Solve(int point)
-        {
-            PriorityQueue<PathInfo> queue = new PriorityQueue<PathInfo>(pathCount + 1);
-            Distances[point] = 0;
-            queue.Enqueue(new PathInfo {To = point, Cost = 0});
-
-            while (queue.Count != 0)
-            {
-                PathInfo pop = queue.Dequeue();
-                if (Distances[pop.To] < pop.Cost) { continue; }
-
-                foreach (PathInfo path in pathInfos[pop.To])
-                {
-                    long nextValue = Distances[pop.To] + path.Cost;
-                    if(Distances[path.To] > nextValue)
-                    {
-                        Distances[path.To] = nextValue;
-                        queue.Enqueue(new PathInfo {From = path.From, To = path.To, Cost = Distances[path.To]});
-                    }
-                }
-            }
-        }
-    }
-
-    public class WarshallFloyd
-    {
-        private long[][] route;
-        private int size;
         
-        public WarshallFloyd(int size)
+        private bool[] sccUsed;
+        private List<int> sccOrder;
+        private List<PathInfo>[] reversePathInfos;
+        private int[] sccGroups;
+        public IEnumerable<int> StronglyConnectedComponent()
         {
-            this.size = size;
-            route = Enumerable.Repeat(0, size).Select(_ => Enumerable.Repeat(Common.Infinity, size).ToArray()).ToArray();
-            for (int i = 0; i < size; i++)
+            sccUsed = new bool[nodeCount + 1];
+            sccOrder = new List<int>();
+            reversePathInfos = Enumerable.Repeat(0, nodeCount + 1).Select(_ => new List<PathInfo>()).ToArray();
+            foreach (var path in pathInfos.SelectMany(x => x))
             {
-                route[i][i] = 0;
+                reversePathInfos[path.To].Add(new PathInfo {From = path.To, To = path.From, Cost = path.Cost});
+            }
+            
+            for (int i = 1; i <= nodeCount; i++)
+            {
+                if (!sccUsed[i])
+                {
+                    SccDfs(i);
+                }
+            }
+            
+            sccUsed = new bool[nodeCount + 1];
+            sccGroups = new int[nodeCount];
+            int groupNumber = 0;
+            for (int i = sccOrder.Count - 1; i >= 0; i--)
+            {
+                if (!sccUsed[sccOrder[i]])
+                {
+                    ReverseScc(sccOrder[i], groupNumber++);
+                }
+            }
+
+            return sccGroups;
+        }
+
+        private void SccDfs(int index)
+        {
+            sccUsed[index] = true;
+            foreach (var to in pathInfos[index].Select(x => x.To))
+            {
+                if (!sccUsed[to])
+                {
+                    SccDfs(to);
+                }
+            }
+            sccOrder.Add(index);
+        }
+
+        private void ReverseScc(int index, int groupNumber)
+        {
+            sccUsed[index] = true;
+            sccGroups[index - 1] = groupNumber;
+            foreach (var to in reversePathInfos[index].Select(x => x.To))
+            {
+                if (!sccUsed[to])
+                {
+                    ReverseScc(to, groupNumber);
+                }
             }
         }
-
-        public void CreatePath(int from, int to, long cost = 1)
+        
+        private long[][] warshallFloydDp;
+        public long[][] WarshallFloyd()
         {
-            route[from][to] = cost;
-        }
-
-        public void Solve()
-        {
-            for (int k = 0; k < size; k++)
+            warshallFloydDp = Enumerable.Repeat(0, nodeCount).Select(_ => Enumerable.Repeat(Common.Infinity, nodeCount).ToArray()).ToArray();
+            for (int i = 0; i < nodeCount; i++)
             {
-                for (int i = 0; i < size; i++)
+                warshallFloydDp[i][i] = 0;
+            }
+
+            foreach (var path in pathInfos.SelectMany(x => x))
+            {
+                warshallFloydDp[path.From - 1][path.To - 1] = path.Cost;
+            }
+
+            long sum = 0;
+            for (int k = 0; k < nodeCount; k++)
+            {
+                for (int i = 0; i < nodeCount; i++)
                 {
-                    for (int j = 0; j < size; j++)
+                    for (int j = 0; j < nodeCount; j++)
                     {
-                        route[i][j] = Math.Min(route[i][j], route[i][k] + route[k][j]);
+                        warshallFloydDp[i][j] = Math.Min(warshallFloydDp[i][j], warshallFloydDp[i][k] + warshallFloydDp[k][j]);
                     }
                 }
             }
+
+            return warshallFloydDp;
         }
     }
 
