@@ -693,9 +693,9 @@ namespace AtCoder
 
         public void PushBack(T data)
         {
-            if (this.Length == this.capacity) this.Resize();
-            this.buffer[this.LastIndex] = data;
-            this.Length++;
+            if (Length == capacity) Resize();
+            buffer[LastIndex] = data;
+            Length++;
         }
 
         public void PushFront(T data)
@@ -1132,6 +1132,34 @@ namespace AtCoder
                     {
                         Distances[path.To] = nextValue;
                         queue.Enqueue(new PathInfo {From = path.From, To = path.To, Cost = Distances[path.To]});
+                    }
+                }
+            }
+        }
+
+        public void _01Bfs(int point)
+        {
+            Deque<int> deque = new Deque<int>();
+            Distances[point] = 0;
+            deque.PushBack(point);
+
+            while (deque.Length != 0)
+            {
+                int index = deque.PopFront();
+                foreach (PathInfo path in pathInfos[index])
+                {
+                    long d = Distances[index] + path.Cost;
+                    if (d < Distances[path.To])
+                    {
+                        Distances[path.To] = d;
+                        if (Distances[path.Cost] != 0)
+                        {
+                            deque.PushBack(path.To);
+                        }
+                        else
+                        {
+                            deque.PushFront(path.To);
+                        }
                     }
                 }
             }
