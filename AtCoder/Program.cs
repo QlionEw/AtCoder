@@ -1165,6 +1165,19 @@ namespace AtCoder
             }
         }
 
+        public long Kruskal()
+        {
+            var edges = pathInfos.SelectMany(pathInfo => pathInfo).OrderBy(x => x.Cost).ToList();
+            long totalCost = 0;
+            var uft = new UnionFindTree(nodeCount + 1);
+            foreach (PathInfo edge in edges.Where(edge => !uft.Same(edge.From, edge.To)))
+            {
+                uft.Union(edge.From, edge.To);
+                totalCost += edge.Cost;
+            }
+            return totalCost;
+        }
+
         private PathInfo[] bellmanFordList;
         public bool[] IsLoop { get; private set; }
 
