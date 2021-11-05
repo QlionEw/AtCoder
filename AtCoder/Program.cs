@@ -15,7 +15,6 @@ namespace AtCoder
         {
             checked
             {
-                
             }
         }
 
@@ -32,6 +31,7 @@ namespace AtCoder
         private static int[][] Sqi(int yCount, int xCount) => Scanner.SquareInt(yCount, xCount);
         private static long[][] Sql(int yCount, int xCount) => Scanner.SquareLong(yCount, xCount);
         private static string[] Sss(int count) => Enumerable.Repeat(0, count).Select(_ => Ss()).ToArray();
+
         private static void Loop(long n, Action action)
         {
             for (int i = 0; i < n; i++)
@@ -39,6 +39,7 @@ namespace AtCoder
                 action();
             }
         }
+
         #endregion
     }
 
@@ -56,7 +57,7 @@ namespace AtCoder
         {
             return value % div == 0 ? value / div : value / div + 1;
         }
-        
+
         public static long Gcd(long a, long b)
         {
             return a > b ? GcdRecursive(a, b) : GcdRecursive(b, a);
@@ -80,14 +81,14 @@ namespace AtCoder
                 return (a / Gcd(a, b)) * b;
             }
         }
-        
+
         public static long Combination(long n, long m)
         {
             if (m == 0) return 1;
             if (n == 0) return 0;
             return n * Combination(n - 1, m - 1) / m;
         }
-        
+
         public static long Permutation(long n, long m)
         {
             if (m == 0) return 1;
@@ -100,14 +101,14 @@ namespace AtCoder
 
             return value;
         }
-        
+
         public static IEnumerable<IEnumerable<T>> GetPermutations<T>(params T[] array) where T : IComparable
         {
             var a = new List<T>(array);
             int n = a.Count;
-            
+
             yield return array;
-            
+
             bool next = true;
             while (next)
             {
@@ -117,6 +118,7 @@ namespace AtCoder
                 {
                     if (a[i].CompareTo(a[i + 1]) < 0) break;
                 }
+
                 if (i < 0) break;
 
                 int j = n;
@@ -136,19 +138,25 @@ namespace AtCoder
                 }
             }
         }
-        
-        public static IEnumerable<T[]> GetCombinations<T>(IEnumerable<T> items, int k, bool withRepetition = false) {
-            if (k == 1) {
+
+        public static IEnumerable<T[]> GetCombinations<T>(IEnumerable<T> items, int k, bool withRepetition = false)
+        {
+            if (k == 1)
+            {
                 foreach (var item in items)
-                    yield return new T[] { item };
+                    yield return new T[] {item};
                 yield break;
             }
-            foreach (var item in items) {
-                var leftside = new T[] { item };
 
-                var unused = withRepetition ? items : items.SkipWhile(e => !e.Equals(item)).Skip(1).ToList();
+            IEnumerable<T> enumerable = items as T[] ?? items.ToArray();
+            foreach (var item in enumerable)
+            {
+                var leftside = new T[] {item};
 
-                foreach (var rightside in GetCombinations(unused, k - 1, withRepetition)) {
+                var unused = withRepetition ? enumerable : enumerable.SkipWhile(e => !e.Equals(item)).Skip(1).ToList();
+
+                foreach (var rightside in GetCombinations(unused, k - 1, withRepetition))
+                {
                     yield return leftside.Concat(rightside).ToArray();
                 }
             }
@@ -157,34 +165,34 @@ namespace AtCoder
 
     public static class Utility
     {
-        private static T[,] Rotate90<T>( this T[,] self )
+        private static T[,] Rotate90<T>(this T[,] self)
         {
-            int rows    = self.GetLength( 0 );
-            int columns = self.GetLength( 1 );
-            var result  = new T[columns, rows];
+            int rows = self.GetLength(0);
+            int columns = self.GetLength(1);
+            var result = new T[columns, rows];
 
-            for ( int i = 0; i < rows; i++ )
+            for (int i = 0; i < rows; i++)
             {
-                for ( int j = 0; j < columns; j++ )
+                for (int j = 0; j < columns; j++)
                 {
-                    result[ j, rows - i - 1 ] = self[ i, j ];
+                    result[j, rows - i - 1] = self[i, j];
                 }
             }
 
             return result;
         }
-        
-        public static T[,] Rotate90<T>( this T[,] self, int count )
+
+        public static T[,] Rotate90<T>(this T[,] self, int count)
         {
-            for ( int i = 0; i < count; i++ )
+            for (int i = 0; i < count; i++)
             {
                 self = self.Rotate90();
             }
 
             return self;
         }
-        
-        public static T[,] Rotate90<T>( this T[][] self, int count )
+
+        public static T[,] Rotate90<T>(this T[][] self, int count)
         {
             var rows = self.Length;
             var columns = self.First().Length;
@@ -201,13 +209,13 @@ namespace AtCoder
             return Rotate90(array, count);
         }
     }
-    
+
     public static class BaseN
     {
         public static string ToString(long value, int baseValue)
         {
             string s = "";
-            
+
             while (value > 0)
             {
                 var c = value % baseValue;
@@ -225,6 +233,7 @@ namespace AtCoder
             {
                 value = ((value * baseValue) + (s[i] - '0'));
             }
+
             return value;
         }
 
@@ -406,22 +415,33 @@ namespace AtCoder
         private readonly IComparer<T> comparer;
         private readonly Node nil;
         public bool IsMultiSet { get; set; }
-        public Set(IComparer<T> comparer)
+
+        public Set(IComparer<T> comparer, bool isMultiSet = false)
         {
             nil = new Node(default(T));
             root = nil;
             this.comparer = comparer;
+            IsMultiSet = isMultiSet;
         }
-        public Set(Comparison<T> comparision) : this(Comparer<T>.Create(comparision)) { }
-        public Set() : this(Comparer<T>.Default) { }
+
+        public Set(Comparison<T> comparision, bool isMultiSet) : this(Comparer<T>.Create(comparision), isMultiSet)
+        {
+        }
+
+        public Set(bool isMultiSet) : this(Comparer<T>.Default, isMultiSet)
+        {
+        }
+
         public bool Add(T v)
         {
             return Insert(ref root, v);
         }
+
         public bool Remove(T v)
         {
             return Remove(ref root, v);
         }
+
         public T this[int index] => Find(root, index);
         public int Count => root.Count;
 
@@ -430,6 +450,7 @@ namespace AtCoder
             if (k < 0 || k >= root.Count) throw new ArgumentOutOfRangeException();
             RemoveAt(ref root, k);
         }
+
         public T[] Items
         {
             get
@@ -441,7 +462,7 @@ namespace AtCoder
             }
         }
 
-        static void Walk(Node t, IList<T> a, ref int k)
+        private static void Walk(Node t, IList<T> a, ref int k)
         {
             while (true)
             {
@@ -454,7 +475,14 @@ namespace AtCoder
 
         private bool Insert(ref Node t, T key)
         {
-            if (t.Count == 0) { t = new Node(key); t.Lst = t.Rst = nil; t.Update(); return true; }
+            if (t.Count == 0)
+            {
+                t = new Node(key);
+                t.Lst = t.Rst = nil;
+                t.Update();
+                return true;
+            }
+
             var cmp = comparer.Compare(t.Key, key);
             bool res;
             if (cmp > 0)
@@ -465,6 +493,7 @@ namespace AtCoder
                 else return false;
             }
             else res = Insert(ref t.Rst, key);
+
             Balance(ref t);
             return res;
         }
@@ -480,13 +509,23 @@ namespace AtCoder
             {
                 ret = true;
                 var k = t.Lst.Count;
-                if (k == 0) { t = t.Rst; return true; }
-                if (t.Rst.Count == 0) { t = t.Lst; return true; }
- 
- 
+                if (k == 0)
+                {
+                    t = t.Rst;
+                    return true;
+                }
+
+                if (t.Rst.Count == 0)
+                {
+                    t = t.Lst;
+                    return true;
+                }
+
+
                 t.Key = Find(t.Lst, k - 1);
                 RemoveAt(ref t.Lst, k - 1);
             }
+
             Balance(ref t);
             return ret;
         }
@@ -498,21 +537,32 @@ namespace AtCoder
             else if (cnt > k) RemoveAt(ref t.Lst, k);
             else
             {
-                if (cnt == 0) { t = t.Rst; return; }
-                if (t.Rst.Count == 0) { t = t.Lst; return; }
- 
+                if (cnt == 0)
+                {
+                    t = t.Rst;
+                    return;
+                }
+
+                if (t.Rst.Count == 0)
+                {
+                    t = t.Lst;
+                    return;
+                }
+
                 t.Key = Find(t.Lst, k - 1);
                 RemoveAt(ref t.Lst, k - 1);
             }
+
             Balance(ref t);
         }
 
-        private void Balance(ref Node t)
+        private static void Balance(ref Node t)
         {
             var balance = t.Lst.Height - t.Rst.Height;
             if (balance == -2)
             {
                 if (t.Rst.Lst.Height - t.Rst.Rst.Height > 0) { RotR(ref t.Rst); }
+
                 RotL(ref t);
             }
             else if (balance == 2)
@@ -526,34 +576,46 @@ namespace AtCoder
         private T Find(Node t, int k)
         {
             if (k < 0 || k > root.Count) throw new ArgumentOutOfRangeException();
-            for (; ; )
+            for (;;)
             {
                 if (k == t.Lst.Count) return t.Key;
                 else if (k < t.Lst.Count) t = t.Lst;
-                else { k -= t.Lst.Count + 1; t = t.Rst; }
+                else
+                {
+                    k -= t.Lst.Count + 1;
+                    t = t.Rst;
+                }
             }
         }
-        
+
         public int LowerBound(T v)
         {
             var k = 0;
             var t = root;
-            for (; ; )
+            for (;;)
             {
                 if (t.Count == 0) return k;
                 if (comparer.Compare(v, t.Key) <= 0) t = t.Lst;
-                else { k += t.Lst.Count + 1; t = t.Rst; }
+                else
+                {
+                    k += t.Lst.Count + 1;
+                    t = t.Rst;
+                }
             }
         }
-        
+
         public int UpperBound(T v)
         {
             var k = 0;
             var t = root;
-            for (; ; )
+            for (;;)
             {
                 if (t.Count == 0) return k;
-                if (comparer.Compare(t.Key, v) <= 0) { k += t.Lst.Count + 1; t = t.Rst; }
+                if (comparer.Compare(t.Key, v) <= 0)
+                {
+                    k += t.Lst.Count + 1;
+                    t = t.Rst;
+                }
                 else t = t.Lst;
             }
         }
@@ -585,22 +647,115 @@ namespace AtCoder
             {
                 Key = key;
             }
+
             public int Count { get; private set; }
             public sbyte Height { get; private set; }
             public T Key { get; set; }
             public Node Lst, Rst;
+
             public void Update()
             {
                 Count = 1 + Lst.Count + Rst.Count;
-                Height = (sbyte)(1 + Math.Max(Lst.Height, Rst.Height));
+                Height = (sbyte) (1 + Math.Max(Lst.Height, Rst.Height));
             }
+
             public override string ToString()
             {
                 return $"Count = {Count}, Key = {Key}";
             }
         }
     }
-    
+
+    public class Deque<T> : IEnumerable<T>
+    {
+        public T this[int i]
+        {
+            get => buffer[(firstIndex + i) % capacity];
+            set
+            {
+                if (i < 0) throw new ArgumentOutOfRangeException();
+                buffer[(firstIndex + i) % capacity] = value;
+            }
+        }
+
+        private T[] buffer;
+        private int capacity;
+        private int firstIndex;
+        private int LastIndex => (this.firstIndex + this.Length) % this.capacity;
+        public int Length { get; private set; }
+
+        public Deque(int capacity = 16)
+        {
+            this.capacity = capacity;
+            buffer = new T[this.capacity];
+            firstIndex = 0;
+        }
+
+        public void PushBack(T data)
+        {
+            if (this.Length == this.capacity) this.Resize();
+            this.buffer[this.LastIndex] = data;
+            this.Length++;
+        }
+
+        public void PushFront(T data)
+        {
+            if (Length == capacity) Resize();
+            var index = firstIndex - 1;
+            if (index < 0) index = capacity - 1;
+            buffer[index] = data;
+            Length++;
+            firstIndex = index;
+        }
+
+        public T PopBack()
+        {
+            if (Length == 0) throw new InvalidOperationException("データが空です。");
+            var data = this[Length - 1];
+            Length--;
+            return data;
+        }
+
+        public T PopFront()
+        {
+            if (Length == 0) throw new InvalidOperationException("データが空です。");
+            var data = this[0];
+            firstIndex++;
+            firstIndex %= capacity;
+            Length--;
+            return data;
+        }
+
+        private void Resize()
+        {
+            var newArray = new T[capacity * 2];
+            for (int i = 0; i < Length; i++)
+            {
+                newArray[i] = this[i];
+            }
+
+            firstIndex = 0;
+            capacity *= 2;
+            buffer = newArray;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (int i = 0; i < Length; i++)
+            {
+                yield return this[i];
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            for (int i = 0; i < Length; i++)
+            {
+                yield return this[i];
+            }
+        }
+    }
+
     public class DynamicProgramming : DynamicProgramming<long>
     {
         private readonly bool isGetMax;
@@ -645,7 +800,7 @@ namespace AtCoder
             Table[0][0][0] = originValue;
             isSetOrigin = true;
         }
-        
+
         public void SetFirstValue(T firstValue, bool isXAll = false, bool isYAll = false, bool isZAll = false)
         {
             if (isXAll)
@@ -654,6 +809,7 @@ namespace AtCoder
                 {
                     Table[0][0][x] = firstValue;
                 }
+
                 Initials[0] = 1;
             }
 
@@ -663,6 +819,7 @@ namespace AtCoder
                 {
                     Table[0][y][0] = firstValue;
                 }
+
                 Initials[1] = 1;
             }
 
@@ -672,6 +829,7 @@ namespace AtCoder
                 {
                     Table[z][0][0] = firstValue;
                 }
+
                 Initials[2] = 1;
             }
         }
@@ -739,12 +897,10 @@ namespace AtCoder
                 ? Table[zCurrent][yCurrent - prevY][xCurrent - prevX]
                 : InvalidValue;
         }
-        
+
         public T GetPreviousIndex(int prevX, int index)
         {
-            return xCurrent - prevX >= 0
-                ? Table[zCurrent][index][xCurrent - prevX]
-                : InvalidValue;
+            return xCurrent - prevX >= 0 ? Table[zCurrent][index][xCurrent - prevX] : InvalidValue;
         }
 
         public T GetPrevious(int prevX)
@@ -836,7 +992,7 @@ namespace AtCoder
 
             return count;
         }
-        
+
         public IEnumerable<long> GetDivisors(long n)
         {
             HashSet<long> divisors = new HashSet<long>();
@@ -844,10 +1000,11 @@ namespace AtCoder
             for (long i = 1; i * i <= n; i++)
             {
                 if (n % i != 0) { continue; }
+
                 divisors.Add(i);
                 divisors.Add(n / i);
             }
-            
+
             return divisors.OrderBy(x => x).ToArray();
         }
     }
@@ -933,7 +1090,7 @@ namespace AtCoder
                 return (int) (Cost - other.Cost);
             }
         }
-        
+
         private readonly List<PathInfo>[] pathInfos;
         public long[] Distances { get; private set; }
         private int pathCount = 0;
@@ -971,7 +1128,7 @@ namespace AtCoder
                 foreach (PathInfo path in pathInfos[pop.To])
                 {
                     long nextValue = Distances[pop.To] + path.Cost;
-                    if(Distances[path.To] > nextValue)
+                    if (Distances[path.To] > nextValue)
                     {
                         Distances[path.To] = nextValue;
                         queue.Enqueue(new PathInfo {From = path.From, To = path.To, Cost = Distances[path.To]});
@@ -982,6 +1139,7 @@ namespace AtCoder
 
         private PathInfo[] bellmanFordList;
         public bool[] IsLoop { get; private set; }
+
         public void BellmanFord(int point, bool isDetectLoop = false)
         {
             bellmanFordList = pathInfos.SelectMany(x => x).ToArray();
@@ -1031,11 +1189,12 @@ namespace AtCoder
                 }
             }
         }
-        
+
         private bool[] sccUsed;
         private List<int> sccOrder;
         private List<PathInfo>[] reversePathInfos;
         private int[] sccGroups;
+
         public IEnumerable<int> StronglyConnectedComponent()
         {
             sccUsed = new bool[nodeCount + 1];
@@ -1045,7 +1204,7 @@ namespace AtCoder
             {
                 reversePathInfos[path.To].Add(new PathInfo {From = path.To, To = path.From, Cost = path.Cost});
             }
-            
+
             for (int i = 1; i <= nodeCount; i++)
             {
                 if (!sccUsed[i])
@@ -1053,7 +1212,7 @@ namespace AtCoder
                     SccDfs(i);
                 }
             }
-            
+
             sccUsed = new bool[nodeCount + 1];
             sccGroups = new int[nodeCount];
             int groupNumber = 0;
@@ -1078,6 +1237,7 @@ namespace AtCoder
                     SccDfs(to);
                 }
             }
+
             sccOrder.Add(index);
         }
 
@@ -1093,11 +1253,13 @@ namespace AtCoder
                 }
             }
         }
-        
+
         private long[][] warshallFloydDp;
+
         public long[][] WarshallFloyd()
         {
-            warshallFloydDp = Enumerable.Repeat(0, nodeCount).Select(_ => Enumerable.Repeat(Common.Infinity, nodeCount).ToArray()).ToArray();
+            warshallFloydDp = Enumerable.Repeat(0, nodeCount)
+                .Select(_ => Enumerable.Repeat(Common.Infinity, nodeCount).ToArray()).ToArray();
             for (int i = 0; i < nodeCount; i++)
             {
                 warshallFloydDp[i][i] = 0;
@@ -1114,7 +1276,8 @@ namespace AtCoder
                 {
                     for (int j = 0; j < nodeCount; j++)
                     {
-                        warshallFloydDp[i][j] = Math.Min(warshallFloydDp[i][j], warshallFloydDp[i][k] + warshallFloydDp[k][j]);
+                        warshallFloydDp[i][j] = Math.Min(warshallFloydDp[i][j],
+                            warshallFloydDp[i][k] + warshallFloydDp[k][j]);
                     }
                 }
             }
@@ -1156,6 +1319,7 @@ namespace AtCoder
                 {
                     break;
                 }
+
                 if (judge(i))
                 {
                     ok = i;
@@ -1184,6 +1348,7 @@ namespace AtCoder
                 {
                     break;
                 }
+
                 if (judge(i))
                 {
                     ok = i;
@@ -1328,10 +1493,10 @@ namespace AtCoder
         {
             return Query(index, index);
         }
-        
+
         public long Query(int indexStart, int indexEnd)
         {
-            return Query(indexStart, indexEnd+1, 0, 0, n);
+            return Query(indexStart, indexEnd + 1, 0, 0, n);
         }
 
         private long Query(int indexStart, int indexEnd, int current, int left, int right)
@@ -1370,18 +1535,18 @@ namespace AtCoder
             }
 
             data = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
-            lazyData = Enumerable.Repeat((long)0, 2 * n - 1).ToArray();
+            lazyData = Enumerable.Repeat((long) 0, 2 * n - 1).ToArray();
             isEvaluated = Enumerable.Repeat(false, 2 * n - 1).ToArray();
         }
-        
-        private void Evaluate(int k,int l,int r)
+
+        private void Evaluate(int k, int l, int r)
         {
             if (!isEvaluated[k]) return;
-            
+
             if (l + 1 < r)
             {
-                lazyData[2 * k + 1] = UpdateChildMethod(lazyData[2 * k + 1], lazyData[k] );
-                lazyData[2 * k + 2] = UpdateChildMethod(lazyData[2 * k + 1], lazyData[k] );
+                lazyData[2 * k + 1] = UpdateChildMethod(lazyData[2 * k + 1], lazyData[k]);
+                lazyData[2 * k + 2] = UpdateChildMethod(lazyData[2 * k + 1], lazyData[k]);
                 isEvaluated[2 * k + 1] = true;
                 isEvaluated[2 * k + 2] = true;
             }
@@ -1392,14 +1557,14 @@ namespace AtCoder
 
         public void Update(int left, int right, long value)
         {
-            Update(left, right+1, value, 0, 0, n);
+            Update(left, right + 1, value, 0, 0, n);
         }
-        
+
         private void Update(int a, int b, long x, int k, int l, int r)
         {
             Evaluate(k, l, r);
             if (r <= a || b <= l) return;
-            if(a<=l&&r<=b)
+            if (a <= l && r <= b)
             {
                 isEvaluated[k] = true;
                 lazyData[k] = UpdateChildMethod(lazyData[k], x);
@@ -1415,16 +1580,17 @@ namespace AtCoder
 
         public long Query(int left, int right)
         {
-            return Query(left, right+1, 0, 0, n);
+            return Query(left, right + 1, 0, 0, n);
         }
-        
-        private long Query(int a, int b, int k, int l, int r){
-            Evaluate(k,l,r);
+
+        private long Query(int a, int b, int k, int l, int r)
+        {
+            Evaluate(k, l, r);
             if (r <= a || b <= l) return firstValue;
             if (a <= l && r <= b) return data[k];
             long vl = Query(a, b, 2 * k + 1, l, (l + r) / 2);
             long vr = Query(a, b, 2 * k + 2, (l + r) / 2, r);
-            return updateMethod(vl,vr);
+            return updateMethod(vl, vr);
         }
     }
 
@@ -1440,9 +1606,10 @@ namespace AtCoder
             {
                 list = new List<T>();
             }
+
             list.Add(value);
         }
-        
+
         public int this[T index] => IndexOf(index);
 
         public int IndexOf(T index)
@@ -1451,6 +1618,7 @@ namespace AtCoder
             {
                 Generate(list);
             }
+
             return dict[index];
         }
 
@@ -1473,7 +1641,7 @@ namespace AtCoder
             return cp;
         }
     }
-    
+
     public class TreeStructure
     {
         public class TreePath
@@ -1485,9 +1653,10 @@ namespace AtCoder
 
             public IEnumerable<(long Way, long Cost)> GetWayData() => Ways.Select((t, i) => (t, Costs[i]));
         }
-        
+
         public Dictionary<long, long> Cost { get; set; } = new Dictionary<long, long>();
         public TreePath[] Vertexes { get; }
+        public long[] TreeDp { get; private set; }
         public readonly List<List<TreePath>> Lists;
 
         public TreeStructure(int size)
@@ -1501,7 +1670,7 @@ namespace AtCoder
             Vertexes[index].Ways.Add(index2);
             Vertexes[index].Costs.Add(cost);
         }
-        
+
         public void ConnectEach(long index, long index2, long cost = 1)
         {
             Connect(index, index2, cost);
@@ -1522,7 +1691,7 @@ namespace AtCoder
         {
             costArray[current] = cost;
             Vertexes[current].InTime = time++;
-            Lists[(int)cost].Add(Vertexes[current]);
+            Lists[(int) cost].Add(Vertexes[current]);
             foreach ((long way, long l) in Vertexes[current].GetWayData())
             {
                 if (way == from)
@@ -1532,6 +1701,7 @@ namespace AtCoder
 
                 CheckCost(way, cost + l, current, ref time);
             }
+
             Vertexes[current].OutTime = time++;
         }
     }
@@ -1549,12 +1719,12 @@ namespace AtCoder
     public class TopologicalListGenerator
     {
         private List<DagPath> list;
-        
+
         public TopologicalListGenerator(int size)
         {
-            list = Enumerable.Range(0, size).Select(i => new DagPath(){ Index = i }).ToList();
+            list = Enumerable.Range(0, size).Select(i => new DagPath() {Index = i}).ToList();
         }
-        
+
         public void Connect(int from, int to, long cost, params long[] additionalInfo)
         {
             list[from].To.Add(to);
@@ -1588,13 +1758,13 @@ namespace AtCoder
                         queue.Enqueue(list[index]);
                     }
                 }
-                
+
                 dagPaths.Add(top);
             }
 
             return dagPaths;
         }
     }
-    
+
     #endregion
 }
