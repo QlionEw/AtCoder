@@ -424,11 +424,11 @@ namespace AtCoder
             IsMultiSet = isMultiSet;
         }
 
-        public Set(Comparison<T> comparision, bool isMultiSet) : this(Comparer<T>.Create(comparision), isMultiSet)
+        public Set(Comparison<T> comparision, bool isMultiSet = false) : this(Comparer<T>.Create(comparision), isMultiSet)
         {
         }
 
-        public Set(bool isMultiSet) : this(Comparer<T>.Default, isMultiSet)
+        public Set(bool isMultiSet = false) : this(Comparer<T>.Default, isMultiSet)
         {
         }
 
