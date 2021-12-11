@@ -208,6 +208,18 @@ namespace AtCoder
 
             return Rotate90(array, count);
         }
+
+        public static void SafeAdd<T1, T2>(this Dictionary<T1, T2> self, T1 key, Func<T2,T2> onContain, T2 initial)
+        {
+            if (self.ContainsKey(key))
+            {
+                self[key] = onContain(self[key]);
+            }
+            else
+            {
+                self.Add(key, initial);
+            }
+        }
     }
 
     public static class BaseN
