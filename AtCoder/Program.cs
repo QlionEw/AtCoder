@@ -73,6 +73,28 @@ namespace AtCoder
                 b = a1 % b;
             }
         }
+        
+        /// <summary> a*x + b*y = 1 となるx,yを求める(1をnにする場合返り値をn倍) </summary>
+        public static (long, long, long) ExtGcd(long a, long b, long x = 0, long y = 0)
+        {
+            if (b == 0) {
+                return (1, 0, a);
+            }
+            (long xx, long yy, long aa) = ExtGcd(b, a%b, y, x);
+            xx -= a/b * yy;
+            return (yy, xx, aa);
+        }
+
+        /// <summary> Ax ≡ B mod Mとなるxを求める </summary>
+        public static long Inv(long a, long b, long mod)
+        {
+            var dd = ExtGcd(a, mod);
+            if (dd.Item1 < 0)
+            {
+                dd.Item1 += mod;
+            }
+            return (dd.Item1 * b) % mod;
+        }
 
         public static long Lcm(long a, long b)
         {
