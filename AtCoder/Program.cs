@@ -411,6 +411,12 @@ namespace AtCoder
 
     public class Answerer
     {
+        /// <summary> Yes出力 </summary>
+        public static void Yes() => Console.WriteLine("Yes");
+        
+        /// <summary> Yes出力 </summary>
+        public static void No() => Console.WriteLine("No");
+        
         /// <summary> Yes/No型出力 </summary>
         public static void YesNo(bool condition)
         {
@@ -1049,7 +1055,7 @@ namespace AtCoder
         public const int _1000000007 = 1000000007;
         public const int _1000000009 = 1000000009;
         public const int _998244353 = 998244353;
-        public static int ModValue { get; set; } = _1000000007;
+        public static int ModValue { get; set; } = _998244353;
         static List<ModInt> fact = new List<ModInt> {1};
         public ModInt(long value) => this.value = value;
         public static implicit operator ModInt(long a) => new ModInt(a % ModValue + (a < 0 ? ModValue : 0));
