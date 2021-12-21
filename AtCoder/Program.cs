@@ -1526,9 +1526,7 @@ namespace AtCoder
 
             if (Size(x) < Size(y))
             {
-                long tmp = x;
-                x = y;
-                y = tmp;
+                (x, y) = (y, x);
             }
 
             Parents[x] += Parents[y];
@@ -1544,11 +1542,13 @@ namespace AtCoder
         private Func<long, long, long> updateMethod;
         private long firstValue;
         private int n;
+        private int count;
 
         public void Init(int count, long firstValue, Func<long, long, long> updateMethod)
         {
             this.updateMethod = updateMethod;
             this.firstValue = firstValue;
+            this.count = count;
 
             n = 1;
             while (n < count)
@@ -1557,6 +1557,18 @@ namespace AtCoder
             }
 
             data = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
+        }
+        
+        public void Build(Func<int, long> update)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                data[n + i - 1] = update(i);
+            }
+            for (int i = n - 2; i >= 0; i--)
+            {
+                data[i] = updateMethod(data[2 * i + 1], data[2 * i + 2]);
+            }
         }
 
         public void Update(int index, long value)
@@ -1593,21 +1605,28 @@ namespace AtCoder
         }
     }
 
+    public enum LazySegmentTreeMode
+    {
+        UpdateMin,
+        UpdateMax,
+        Addition,
+    }
+    
     public class LazySegmentTree
     {
         private long[] data;
         private long[] lazyData;
-        private bool[] isEvaluated;
-        private Func<long, long, long> updateMethod;
-        public Func<long, long, long> UpdateSelfMethod { get; set; } = (x, m) => m;
-        public Func<long, long, long> UpdateChildMethod { get; set; } = (m1, m2) => m2;
+        public Func<long, long, long> UpdateMethod { get; set; } 
+        public Func<long, long, long> UpdateSelfMethod { get; set; }
+        public Func<long, long, long> UpdateChildMethod { get; set; }
         private long firstValue;
         private int n;
+        private int count;
 
-        public void Init(int count, long firstValue, Func<long, long, long> updateMethod)
+        public void Init(int count, long firstValue, LazySegmentTreeMode mode)
         {
-            this.updateMethod = updateMethod;
             this.firstValue = firstValue;
+            this.count = count;
 
             n = 1;
             while (n < count)
@@ -1616,24 +1635,55 @@ namespace AtCoder
             }
 
             data = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
-            lazyData = Enumerable.Repeat((long) 0, 2 * n - 1).ToArray();
-            isEvaluated = Enumerable.Repeat(false, 2 * n - 1).ToArray();
+            lazyData = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
+
+            SetMode(mode);
         }
 
-        private void Evaluate(int k, int l, int r)
+        private void SetMode(LazySegmentTreeMode mode)
         {
-            if (!isEvaluated[k]) return;
+            UpdateMethod = mode switch
+            {
+                LazySegmentTreeMode.UpdateMin => Math.Min,
+                LazySegmentTreeMode.UpdateMax => Math.Max,
+                _ => (l1, l2) => l1 + l2,
+            };
+            UpdateSelfMethod = mode switch
+            {
+                LazySegmentTreeMode.Addition => (l1, l2) => l1 + l2,
+                _ => (x, m) => m
+            };
+            UpdateChildMethod = mode switch
+            {
+                LazySegmentTreeMode.Addition => (l1, l2) => l1 + l2,
+                _ => (m1, m2) => m2
+            };
+        }
+        
+        public void Build(Func<int, long> update)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                data[n + i - 1] = update(i);
+            }
+            for (int i = n - 2; i >= 0; i--)
+            {
+                data[i] = UpdateMethod(data[2 * i + 1], data[2 * i + 2]);
+            }
+        }
 
-            if (l + 1 < r)
+        private void Evaluate(int k)
+        {
+            if (lazyData[k] == firstValue) {return;}
+
+            if (k < n - 1)
             {
                 lazyData[2 * k + 1] = UpdateChildMethod(lazyData[2 * k + 1], lazyData[k]);
-                lazyData[2 * k + 2] = UpdateChildMethod(lazyData[2 * k + 1], lazyData[k]);
-                isEvaluated[2 * k + 1] = true;
-                isEvaluated[2 * k + 2] = true;
+                lazyData[2 * k + 2] = UpdateChildMethod(lazyData[2 * k + 2], lazyData[k]);
             }
 
             data[k] = UpdateSelfMethod(data[k], lazyData[k]);
-            isEvaluated[k] = false;
+            lazyData[k] = firstValue;
         }
 
         public void Update(int left, int right, long value)
@@ -1643,19 +1693,18 @@ namespace AtCoder
 
         private void Update(int a, int b, long x, int k, int l, int r)
         {
-            Evaluate(k, l, r);
-            if (r <= a || b <= l) return;
+            Evaluate(k);
+            if (r <= a || b <= l) {return;}
             if (a <= l && r <= b)
             {
-                isEvaluated[k] = true;
                 lazyData[k] = UpdateChildMethod(lazyData[k], x);
-                Evaluate(k, l, r);
+                Evaluate(k);
             }
             else
             {
                 Update(a, b, x, 2 * k + 1, l, (l + r) / 2);
                 Update(a, b, x, 2 * k + 2, (l + r) / 2, r);
-                data[k] = updateMethod(data[2 * k + 1], data[2 * k + 2]);
+                data[k] = UpdateMethod(data[2 * k + 1], data[2 * k + 2]);
             }
         }
 
@@ -1666,12 +1715,12 @@ namespace AtCoder
 
         private long Query(int a, int b, int k, int l, int r)
         {
-            Evaluate(k, l, r);
+            Evaluate(k);
             if (r <= a || b <= l) return firstValue;
             if (a <= l && r <= b) return data[k];
             long vl = Query(a, b, 2 * k + 1, l, (l + r) / 2);
             long vr = Query(a, b, 2 * k + 2, (l + r) / 2, r);
-            return updateMethod(vl, vr);
+            return UpdateMethod(vl, vr);
         }
     }
 
