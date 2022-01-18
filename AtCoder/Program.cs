@@ -1536,15 +1536,19 @@ namespace AtCoder
         }
     }
 
-    public class SegmentTree
+    public abstract class SegmentTree : SegmentTreeExtend<long>
     {
-        private long[] data;
-        private Func<long, long, long> updateMethod;
-        private long firstValue;
+    }
+
+    public class SegmentTreeExtend<T>
+    {
+        private T[] data;
+        private Func<T, T, T> updateMethod;
+        private T firstValue;
         private int n;
         private int count;
 
-        public void Init(int count, long firstValue, Func<long, long, long> updateMethod)
+        public void Init(int count, T firstValue, Func<T, T, T> updateMethod)
         {
             this.updateMethod = updateMethod;
             this.firstValue = firstValue;
@@ -1559,7 +1563,7 @@ namespace AtCoder
             data = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
         }
         
-        public void Build(Func<int, long> update)
+        public void Build(Func<int, T> update)
         {
             for (int i = 0; i < count; i++)
             {
@@ -1571,7 +1575,7 @@ namespace AtCoder
             }
         }
 
-        public void Update(int index, long value)
+        public void Update(int index, T value)
         {
             index += n - 1;
             data[index] = value;
@@ -1582,24 +1586,24 @@ namespace AtCoder
             }
         }
 
-        public long Query(int index)
+        public T Query(int index)
         {
             return Query(index, index);
         }
 
-        public long Query(int indexStart, int indexEnd)
+        public T Query(int indexStart, int indexEnd)
         {
             return Query(indexStart, indexEnd + 1, 0, 0, n);
         }
 
-        private long Query(int indexStart, int indexEnd, int current, int left, int right)
+        private T Query(int indexStart, int indexEnd, int current, int left, int right)
         {
             if (right <= indexStart || indexEnd <= left) { return firstValue; }
 
             if (indexStart <= left && right <= indexEnd) { return data[current]; }
 
-            long leftValue = Query(indexStart, indexEnd, current * 2 + 1, left, (left + right) / 2);
-            long rightValue = Query(indexStart, indexEnd, current * 2 + 2, (left + right) / 2, right);
+            T leftValue = Query(indexStart, indexEnd, current * 2 + 1, left, (left + right) / 2);
+            T rightValue = Query(indexStart, indexEnd, current * 2 + 2, (left + right) / 2, right);
 
             return updateMethod(leftValue, rightValue);
         }
@@ -1776,52 +1780,73 @@ namespace AtCoder
     {
         public class TreePath
         {
-            public List<long> Ways { get; } = new List<long>();
+            public List<int> Ways { get; } = new List<int>();
             public List<long> Costs { get; } = new List<long>();
-            public int InTime { get; set; }
-            public int OutTime { get; set; }
 
-            public IEnumerable<(long Way, long Cost)> GetWayData() => Ways.Select((t, i) => (t, Costs[i]));
+            public IEnumerable<(int Way, long Cost)> GetWayData() => Ways.Select((t, i) => (t, Costs[i]));
         }
 
-        public Dictionary<long, long> Cost { get; set; } = new Dictionary<long, long>();
         public TreePath[] Vertexes { get; }
-        public long[] TreeDp { get; private set; }
-        public readonly List<List<TreePath>> Lists;
-
         public TreeStructure(int size)
         {
             Vertexes = Enumerable.Range(0, size + 1).Select(_ => new TreePath()).ToArray();
-            Lists = Enumerable.Range(0, size + 1).Select(x => new List<TreePath>()).ToList();
         }
 
-        public void Connect(long index, long index2, long cost = 1)
+        public void Connect(int index, int index2, long cost = 1)
         {
             Vertexes[index].Ways.Add(index2);
             Vertexes[index].Costs.Add(cost);
         }
 
-        public void ConnectEach(long index, long index2, long cost = 1)
+        public void ConnectEach(int index, int index2, long cost = 1)
         {
             Connect(index, index2, cost);
             Connect(index2, index, cost);
         }
 
         private long[] costArray;
-
-        public IEnumerable<long> CheckCost(int origin)
+        public IEnumerable<long> CheckCost(int origin, bool isTouring = true)
         {
             costArray = new long[Vertexes.Length];
-            int time = 0;
-            CheckCost(origin, 0, 0, ref time);
+            if (isTouring)
+            {
+                int time = 0;
+                tourTime = new List<(int, int)>();
+                firstTime = new int[Vertexes.Length];
+                CheckCostAndTour(origin, 0, 0, ref time);
+            }
+            else
+            {
+                CheckCost(origin, 0, 0);
+            }
             return costArray;
         }
 
-        private void CheckCost(long current, long cost, long from, ref int time)
+        private List<(int, int)> tourTime;
+        private int[] firstTime;
+        private void CheckCostAndTour(int current, long cost, int from, ref int time, int depth = 0)
         {
             costArray[current] = cost;
-            Vertexes[current].InTime = time++;
-            Lists[(int) cost].Add(Vertexes[current]);
+            if (firstTime[current] == 0)
+            {
+                firstTime[current] = time++;
+            }
+            tourTime.Add((current, depth));
+            foreach ((int way, long l) in Vertexes[current].GetWayData())
+            {
+                if (way == from)
+                {
+                    continue;
+                }
+                CheckCostAndTour(way, cost + l, current, ref time, depth + 1);
+                tourTime.Add((current, depth));
+                time++;
+            }
+        }
+        
+        private void CheckCost(long current, long cost, long from)
+        {
+            costArray[current] = cost;
             foreach ((long way, long l) in Vertexes[current].GetWayData())
             {
                 if (way == from)
@@ -1829,10 +1854,49 @@ namespace AtCoder
                     continue;
                 }
 
-                CheckCost(way, cost + l, current, ref time);
+                CheckCost(way, cost + l, current);
             }
+        }
 
-            Vertexes[current].OutTime = time++;
+        private SegmentTreeExtend<(int,int)> seg;
+        public int GetLowestCommonAncestor(int index1, int index2)
+        {
+            if (seg == null)
+            {
+                InitLca();
+            }
+            var min = Math.Min(firstTime[index1], firstTime[index2]);
+            var max = Math.Max(firstTime[index1], firstTime[index2]);
+            var item = seg.Query(min, max);
+            return item.Item1;
+        }
+
+        private void InitLca()
+        {
+            seg = new SegmentTreeExtend<(int,int)>();
+            seg.Init(tourTime.Count, (Common.InfinityInt,Common.InfinityInt), (a,b) => a.Item2 < b.Item2 ? a : b);
+            seg.Build(i => tourTime[i]);
+        }
+
+        public int GetDistance(int index1, int index2)
+        {
+            if (seg == null)
+            {
+                InitLca();
+            }
+            var target = GetLowestCommonAncestor(index1, index2);
+            return tourTime[firstTime[index1]].Item2 + tourTime[firstTime[index2]].Item2 -
+                   2 * tourTime[firstTime[target]].Item2;
+        }
+
+        public long GetCost(int index1, int index2)
+        {
+            if (seg == null)
+            {
+                InitLca();
+            }
+            var target = GetLowestCommonAncestor(index1, index2);
+            return costArray[index1] + costArray[index2] - 2 * costArray[target];
         }
     }
 
