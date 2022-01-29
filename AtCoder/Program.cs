@@ -15,6 +15,7 @@ namespace AtCoder
         {
             checked
             {
+                
             }
         }
 
@@ -1536,7 +1537,7 @@ namespace AtCoder
         }
     }
 
-    public abstract class SegmentTree : SegmentTreeExtend<long>
+    public class SegmentTree : SegmentTreeExtend<long>
     {
     }
 
