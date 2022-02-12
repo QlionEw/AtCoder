@@ -15,7 +15,6 @@ namespace AtCoder
         {
             checked
             {
-                
             }
         }
 
@@ -1616,32 +1615,12 @@ namespace AtCoder
         UpdateMax,
         Addition,
     }
-    
-    public class LazySegmentTree
-    {
-        private long[] data;
-        private long[] lazyData;
-        public Func<long, long, long> UpdateMethod { get; set; } 
-        public Func<long, long, long> UpdateSelfMethod { get; set; }
-        public Func<long, long, long> UpdateChildMethod { get; set; }
-        private long firstValue;
-        private int n;
-        private int count;
 
+    public class LazySegmentTree : LazySegmentTreeExtend<long>
+    {
         public void Init(int count, long firstValue, LazySegmentTreeMode mode)
         {
-            this.firstValue = firstValue;
-            this.count = count;
-
-            n = 1;
-            while (n < count)
-            {
-                n *= 2;
-            }
-
-            data = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
-            lazyData = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
-
+            Init(count, firstValue);
             SetMode(mode);
         }
 
@@ -1664,8 +1643,35 @@ namespace AtCoder
                 _ => (m1, m2) => m2
             };
         }
+    }
+    
+    public class LazySegmentTreeExtend<T> where T : IEquatable<T>
+    {
+        private T[] data;
+        private T[] lazyData;
+        public Func<T, T, T> UpdateMethod { get; set; }
+        public Func<T, T, T> UpdateSelfMethod { get; set; }
+        public Func<T, T, T> UpdateChildMethod { get; set; }
+        private T firstValue;
+        private int n;
+        private int count;
+
+        public void Init(int count, T firstValue)
+        {
+            this.firstValue = firstValue;
+            this.count = count;
+
+            n = 1;
+            while (n < count)
+            {
+                n *= 2;
+            }
+
+            data = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
+            lazyData = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
+        }
         
-        public void Build(Func<int, long> update)
+        public void Build(Func<int, T> update)
         {
             for (int i = 0; i < count; i++)
             {
@@ -1679,7 +1685,7 @@ namespace AtCoder
 
         private void Evaluate(int k)
         {
-            if (lazyData[k] == firstValue) {return;}
+            if (lazyData[k].Equals(firstValue)) {return;}
 
             if (k < n - 1)
             {
@@ -1691,12 +1697,12 @@ namespace AtCoder
             lazyData[k] = firstValue;
         }
 
-        public void Update(int left, int right, long value)
+        public void Update(int left, int right, T value)
         {
             Update(left, right + 1, value, 0, 0, n);
         }
 
-        private void Update(int a, int b, long x, int k, int l, int r)
+        private void Update(int a, int b, T x, int k, int l, int r)
         {
             Evaluate(k);
             if (r <= a || b <= l) {return;}
@@ -1713,18 +1719,18 @@ namespace AtCoder
             }
         }
 
-        public long Query(int left, int right)
+        public T Query(int left, int right)
         {
             return Query(left, right + 1, 0, 0, n);
         }
 
-        private long Query(int a, int b, int k, int l, int r)
+        private T Query(int a, int b, int k, int l, int r)
         {
             Evaluate(k);
             if (r <= a || b <= l) return firstValue;
             if (a <= l && r <= b) return data[k];
-            long vl = Query(a, b, 2 * k + 1, l, (l + r) / 2);
-            long vr = Query(a, b, 2 * k + 2, (l + r) / 2, r);
+            T vl = Query(a, b, 2 * k + 1, l, (l + r) / 2);
+            T vr = Query(a, b, 2 * k + 2, (l + r) / 2, r);
             return UpdateMethod(vl, vr);
         }
     }
