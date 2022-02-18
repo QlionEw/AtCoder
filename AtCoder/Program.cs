@@ -1632,12 +1632,12 @@ namespace AtCoder
                 LazySegmentTreeMode.UpdateMax => Math.Max,
                 _ => (l1, l2) => l1 + l2,
             };
-            UpdateSelfMethod = mode switch
+            UpdateTreeBottomMethod = mode switch
             {
                 LazySegmentTreeMode.Addition => (l1, l2) => l1 + l2,
                 _ => (x, m) => m
             };
-            UpdateChildMethod = mode switch
+            SetLazyDataMethod = mode switch
             {
                 LazySegmentTreeMode.Addition => (l1, l2) => l1 + l2,
                 _ => (m1, m2) => m2
@@ -1650,8 +1650,8 @@ namespace AtCoder
         private T[] data;
         private T[] lazyData;
         public Func<T, T, T> UpdateMethod { get; set; }
-        public Func<T, T, T> UpdateSelfMethod { get; set; }
-        public Func<T, T, T> UpdateChildMethod { get; set; }
+        public Func<T, T, T> UpdateTreeBottomMethod { get; set; }
+        public Func<T, T, T> SetLazyDataMethod { get; set; }
         private T firstValue;
         private int n;
         private int count;
@@ -1689,11 +1689,11 @@ namespace AtCoder
 
             if (k < n - 1)
             {
-                lazyData[2 * k + 1] = UpdateChildMethod(lazyData[2 * k + 1], lazyData[k]);
-                lazyData[2 * k + 2] = UpdateChildMethod(lazyData[2 * k + 2], lazyData[k]);
+                lazyData[2 * k + 1] = SetLazyDataMethod(lazyData[2 * k + 1], lazyData[k]);
+                lazyData[2 * k + 2] = SetLazyDataMethod(lazyData[2 * k + 2], lazyData[k]);
             }
 
-            data[k] = UpdateSelfMethod(data[k], lazyData[k]);
+            data[k] = UpdateTreeBottomMethod(data[k], lazyData[k]);
             lazyData[k] = firstValue;
         }
 
@@ -1708,7 +1708,7 @@ namespace AtCoder
             if (r <= a || b <= l) {return;}
             if (a <= l && r <= b)
             {
-                lazyData[k] = UpdateChildMethod(lazyData[k], x);
+                lazyData[k] = SetLazyDataMethod(lazyData[k], x);
                 Evaluate(k);
             }
             else
