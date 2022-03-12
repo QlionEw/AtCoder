@@ -1134,7 +1134,7 @@ namespace AtCoder
         private readonly List<PathInfo>[] pathInfos;
         public long[] Distances { get; private set; }
         private int pathCount = 0;
-        private int nodeCount;
+        private readonly int nodeCount;
 
         public GraphSolver(int nodeCount)
         {
@@ -1148,7 +1148,18 @@ namespace AtCoder
             Distances = Enumerable.Repeat(Common.Infinity, Distances.Length).ToArray();
         }
 
-        public void AddPath(int from, int to, long cost, params long[] additionalInfo)
+        public void AddDirectedPath(int from, int to, long cost)
+        {
+            AddPath(from, to, cost);
+        }
+        
+        public void AddUndirectedPath(int from, int to, long cost)
+        {
+            AddPath(from, to, cost);
+            AddPath(to, from, cost);
+        }
+
+        private void AddPath(int from, int to, long cost, params long[] additionalInfo)
         {
             pathCount++;
             pathInfos[from].Add(new PathInfo {From = from, To = to, Cost = cost});
@@ -1336,34 +1347,66 @@ namespace AtCoder
         }
 
         private long[][] warshallFloydDp;
+        private int[][] warshallFloydPathPrev;
 
-        public long[][] WarshallFloyd()
+        public long[][] WarshallFloyd(int nIndexed)
         {
-            warshallFloydDp = Enumerable.Repeat(0, nodeCount)
-                .Select(_ => Enumerable.Repeat(Common.Infinity, nodeCount).ToArray()).ToArray();
-            for (int i = 0; i < nodeCount; i++)
+            var loopCount = nodeCount + nIndexed;
+            warshallFloydDp = Enumerable.Repeat(0, loopCount)
+                .Select(_ => Enumerable.Repeat(Common.Infinity, loopCount).ToArray()).ToArray();
+            for (int i = 0; i < loopCount; i++)
             {
                 warshallFloydDp[i][i] = 0;
+            }
+            warshallFloydPathPrev = Enumerable.Repeat(0, loopCount)
+                .Select(_ => Enumerable.Repeat(0, loopCount).ToArray()).ToArray();
+            for (int i = nIndexed; i < loopCount; i++)
+            {
+                for (int j = nIndexed; j < loopCount; j++)
+                {
+                    warshallFloydPathPrev[i][j] = i;
+                }
             }
 
             foreach (var path in pathInfos.SelectMany(x => x))
             {
-                warshallFloydDp[path.From - 1][path.To - 1] = path.Cost;
+                warshallFloydDp[path.From][path.To] = path.Cost;
             }
 
-            for (int k = 0; k < nodeCount; k++)
+            for (int k = nIndexed; k < loopCount; k++)
             {
-                for (int i = 0; i < nodeCount; i++)
+                for (int i = nIndexed; i < loopCount; i++)
                 {
-                    for (int j = 0; j < nodeCount; j++)
+                    for (int j = nIndexed; j < loopCount; j++)
                     {
-                        warshallFloydDp[i][j] = Math.Min(warshallFloydDp[i][j],
-                            warshallFloydDp[i][k] + warshallFloydDp[k][j]);
+                        if (warshallFloydDp[i][k] + warshallFloydDp[k][j] < warshallFloydDp[i][j])
+                        {
+                            warshallFloydPathPrev[i][j] = warshallFloydPathPrev[k][j];
+                            warshallFloydDp[i][j] = Math.Min(warshallFloydDp[i][j],
+                                warshallFloydDp[i][k] + warshallFloydDp[k][j]);
+                        }
                     }
                 }
             }
 
             return warshallFloydDp;
+        }
+        
+        public IEnumerable<(int,int)> GetWarshallFloydPaths(int start, int goal)
+        {
+            var stack = new Stack<int>();
+            for (int cur = goal; cur != start; cur = warshallFloydPathPrev[start][cur])
+            {
+                stack.Push(cur);
+            }
+
+            int a = start;
+            while (stack.Count != 0)
+            {
+                int c = stack.Pop();
+                yield return (a, c);
+                a = c;
+            }
         }
     }
 
@@ -1967,5 +2010,106 @@ namespace AtCoder
         }
     }
 
+    public class Flow
+    {
+        private class FlowEdge
+        {
+            public int To { get; set; }
+            public int Capacity { get; set; }
+            public int Reverse { get; set; }
+        }
+
+        private List<FlowEdge>[] graphs;
+        private int[] level;
+        private int[] iter;
+        private int size;
+
+        public Flow(int size)
+        {
+            this.size = size;
+            graphs = Enumerable.Range(0, size+1).Select(_ => new List<FlowEdge>()).ToArray();
+        }
+
+        public void AddEdge(int from, int to, int capacity)
+        {
+            graphs[from].Add(new FlowEdge{ To = to, Capacity = capacity, Reverse = graphs[to].Count});
+            graphs[to].Add(new FlowEdge{ To = from, Capacity = 0, Reverse = graphs[from].Count - 1});
+        }
+
+        public int GetMaxFlow(int from, int to)
+        {
+            int flow = 0;
+            while (true)
+            {
+                FlowBfs(from);
+                if (level[to] < 0)
+                {
+                    return flow;
+                }
+                iter = new int[size+1];
+                int f;
+                while ((f = FlowDfs(from, to, Common.InfinityInt)) > 0)
+                {
+                    flow += f;
+                }
+            }
+        }
+
+        private int FlowDfs(int from, int to, int flow)
+        {
+            if (from == to)
+            {
+                return flow;
+            }
+            for (; iter[from] < graphs[from].Count; iter[from]++)
+            {
+                int i = iter[from];
+                var e = graphs[from][i];
+                if (e.Capacity <= 0 || level[from] >= level[e.To]) {continue;}
+                int d = FlowDfs(e.To, to, Math.Min(flow, e.Capacity));
+                if (d <= 0) {continue;}
+                e.Capacity -= d;
+                graphs[e.To][e.Reverse].Capacity += d;
+                return d;
+            }
+            return 0;
+        }
+
+        private void FlowBfs(int from)
+        {
+            level = Enumerable.Repeat(-1, size + 1).ToArray();
+            var q = new Queue<int>();
+            level[from] = 0;
+            q.Enqueue(from);
+            while (q.Count != 0)
+            {
+                int v = q.Dequeue();
+                for (int i = 0; i < graphs[v].Count; i++)
+                {
+                    var e = graphs[v][i];
+                    if (e.Capacity <= 0 || level[e.To] >= 0) {continue;}
+                    level[e.To] = level[v] + 1;
+                    q.Enqueue(e.To);
+                }
+            }
+        }
+
+        public int BipartiteMatching(int indexStart, int part1Size, int part2Size)
+        {
+            int start = size - 2;
+            int end = size - 1;
+            for (int i = indexStart; i < indexStart + part1Size; i++)
+            {
+                AddEdge(start, i, 1);
+            }
+            for (int i = indexStart + part1Size; i < indexStart + part1Size + part2Size; i++)
+            {
+                AddEdge(i, end, 1);
+            }
+
+            return GetMaxFlow(start, end);
+        }
+    }
+    
     #endregion
 }
