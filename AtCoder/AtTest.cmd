@@ -22,6 +22,7 @@ if %ERRORLEVEL% == 0 (
     set /P submit="Submit?(y/n) "
     if !submit! == y (
         atcoder-tools submit -u
+        start chrome https://atcoder.jp/contests/%contest%/submissions/me
     ) 
 )
 

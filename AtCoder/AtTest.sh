@@ -21,6 +21,7 @@ if [ $? -eq 0 ]; then
     read submit
     if [ "$submit" = "y" ]; then
         atcoder-tools submit -u
+        open -a "Google Chrome" https://atcoder.jp/contests/$1/submissions/me
     fi
 fi
 
