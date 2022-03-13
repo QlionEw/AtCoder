@@ -58,6 +58,17 @@ namespace AtCoder
             return value % div == 0 ? value / div : value / div + 1;
         }
 
+        public static int Digit(long num, int b)
+        {
+            int digit = 0;
+            while (num > 0)
+            {
+                num /= b;
+                digit++;
+            }
+            return digit;
+        }
+
         public static long Gcd(long a, long b)
         {
             return a > b ? GcdRecursive(a, b) : GcdRecursive(b, a);
