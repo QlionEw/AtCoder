@@ -162,9 +162,7 @@ namespace AtCoder
 
                 if (a[i].CompareTo(a[j]) < 0)
                 {
-                    T tmp = a[i];
-                    a[i] = a[j];
-                    a[j] = tmp;
+                    (a[i], a[j]) = (a[j], a[i]);
                     a.Reverse(i + 1, n - i - 1);
                     yield return a;
                     next = true;
@@ -1441,8 +1439,6 @@ namespace AtCoder
             this.max = max + 1;
         }
 
-        public long CountUnder(Func<long, bool> judge) => SolveMax(judge);
-
         public long SolveMax(Func<long, bool> judge)
         {
             long ok = min;
@@ -1470,8 +1466,6 @@ namespace AtCoder
             return ok;
         }
 
-        public long CountOver(Func<long, bool> judge) => SolveMin(judge);
-
         public long SolveMin(Func<long, bool> judge)
         {
             long ok = max;
@@ -1494,6 +1488,60 @@ namespace AtCoder
                 }
 
                 i = (ok + ng) / 2;
+            }
+
+            return ok;
+        }
+        
+        public double SolveDoubleMax(Func<double, bool> judge, int loops = 100)
+        {
+            double ok = min;
+            double ng = max;
+            double i = (ok + ng) / 2.0;
+            for (int j = 0; j < loops; j++)
+            {
+                if (i == min || i == max)
+                {
+                    break;
+                }
+
+                if (judge(i))
+                {
+                    ok = i;
+                }
+                else
+                {
+                    ng = i;
+                }
+
+                i = (ok + ng) / 2.0;
+            }
+
+            return ok;
+        }
+
+        public double SolveDoubleMin(Func<double, bool> judge, int loops = 100)
+        {
+            double ok = max;
+            double ng = min;
+            double i = (ok + ng) / 2.0;
+            for (int j = 0; j < 100; j++)
+            {
+                if (i == min || i == max)
+                {
+                    break;
+                }
+
+                if (judge(i))
+                {
+                    ok = i;
+                }
+                else
+                {
+                    ng = i;
+                }
+
+                i = (ok + ng) / 2.0;
             }
 
             return ok;
@@ -2119,6 +2167,79 @@ namespace AtCoder
             }
 
             return GetMaxFlow(start, end);
+        }
+    }
+
+    public class TrinarySearch
+    {
+        // 実際は黄金分割探索をやる
+        private static readonly double Phi = (1 + Math.Sqrt(5.0)) * 0.5;
+        private double min;
+        private double max;
+
+        public TrinarySearch()
+        {
+        }
+
+        public TrinarySearch(double min, double max)
+        {
+            SetRange(min, max);
+        }
+
+        public void SetRange(double min, double max)
+        {
+            this.min = min;
+            this.max = max;
+        }
+
+        public double SolveMax(Func<double, double> func, int loops = 100)
+        {
+            double left = min;
+            double right = max;
+            double leftValue = func((left * Phi + right) / (1 + Phi));
+            double rightValue = func((left + Phi * right) / (1 + Phi));
+            for (int j = 0; j < loops; j++)
+            {
+                if (leftValue > rightValue)
+                {
+                    right = (left + Phi * right) / (1 + Phi);
+                    rightValue = leftValue;
+                    leftValue = func((left * Phi + right) / (1 + Phi));
+                }
+                else
+                {
+                    left = (left * Phi + right) / (1 + Phi);
+                    leftValue = rightValue;
+                    rightValue = func((left + Phi * right) / (1 + Phi));
+                }
+            }
+
+            return (right + left) * 0.5;
+        }
+        
+        public double SolveMin(Func<double, double> func, int loops = 100)
+        {
+            double left = min;
+            double right = max;
+            double leftValue = func((left * Phi + right) / (1 + Phi));
+            double rightValue = func((left + Phi * right) / (1 + Phi));
+            for (int j = 0; j < loops; j++)
+            {
+                if (leftValue < rightValue)
+                {
+                    right = (left + Phi * right) / (1 + Phi);
+                    rightValue = leftValue;
+                    leftValue = func((left * Phi + right) / (1 + Phi));
+                }
+                else
+                {
+                    left = (left * Phi + right) / (1 + Phi);
+                    leftValue = rightValue;
+                    rightValue = func((left + Phi * right) / (1 + Phi));
+                }
+            }
+
+            return (right + left) * 0.5;
         }
     }
     
