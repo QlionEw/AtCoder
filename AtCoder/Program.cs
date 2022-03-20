@@ -192,6 +192,23 @@ namespace AtCoder
                 }
             }
         }
+        
+        public static long BigPow(long baseValue, long pow, long mod)
+        {
+            long p = baseValue % mod;
+            long x = 1;
+            long ret = 1;
+
+            while (true) {
+                if ((pow & x) > 0) {
+                    ret = (ret * p) % mod;
+                }
+
+                x *= 2;
+                if (x > pow) return ret;
+                p = (p * p) % mod;
+            }
+        }
     }
 
     public static class Utility
