@@ -257,16 +257,13 @@ namespace AtCoder
             return Rotate90(array, count);
         }
 
-        public static void SafeAdd<T1, T2>(this Dictionary<T1, T2> self, T1 key, Func<T2,T2> onContain, T2 initial)
+        public static void SafeAdd<T1, T2>(this Dictionary<T1, T2> self, T1 key, Action<T2> action) where T2 : new()
         {
-            if (self.ContainsKey(key))
+            if (!self.ContainsKey(key))
             {
-                self[key] = onContain(self[key]);
+                self.Add(key, new T2());
             }
-            else
-            {
-                self.Add(key, initial);
-            }
+            action(self[key]);
         }
     }
 
@@ -494,7 +491,11 @@ namespace AtCoder
         {
         }
 
-        public Set(bool isMultiSet = false) : this(Comparer<T>.Default, isMultiSet)
+        public Set(bool isMultiSet) : this(Comparer<T>.Default, isMultiSet)
+        {
+        }
+        
+        public Set() : this(false)
         {
         }
 
@@ -660,7 +661,7 @@ namespace AtCoder
             var t = root;
             for (;;)
             {
-                if (t.Count == 0) return k;
+                if (t.Count == 0) return k - 1;
                 if (comparer.Compare(v, t.Key) <= 0) t = t.Lst;
                 else
                 {
