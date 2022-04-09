@@ -1093,6 +1093,11 @@ namespace AtCoder
         public static ModInt operator *(ModInt a, ModInt b) => a.value * b.value;
         public static ModInt operator /(ModInt a, ModInt b) => a * Inv(b);
 
+        public static ModInt Fraction(long top, long bottom)
+        {
+            return new ModInt(top) / bottom;
+        }
+        
         public static ModInt Pow(ModInt a, int n)
         {
             if (n == 0) return 1;
