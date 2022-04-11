@@ -1,10 +1,11 @@
 #!/bin/sh
 
-contestPath=~/atcoder-workspace/$1
-questionPath=~/atcoder-workspace/$1/$2
+contestName=$(echo "$1" | sed 's/.\+/\L\0/')
+contestPath=~/atcoder-workspace/$contestName
+questionPath=~/atcoder-workspace/$contestName/$2
 
 if [ ! -d $questionPath ]; then
-    atcoder-tools gen $1
+    atcoder-tools gen $contestName
 fi
 
 cd ..
@@ -21,7 +22,7 @@ if [ $? -eq 0 ]; then
     read submit
     if [ "$submit" = "y" ]; then
         atcoder-tools submit -u
-        open -a "Google Chrome" https://atcoder.jp/contests/$1/submissions/me
+        open -a "Google Chrome" https://atcoder.jp/contests/$contestName/submissions/me
     fi
 fi
 

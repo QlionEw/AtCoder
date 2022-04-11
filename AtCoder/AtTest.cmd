@@ -4,6 +4,8 @@ setlocal EnableDelayedExpansion
 set contest=%1
 set question=%2
 
+for %%i in (a b c d e f g h i j k l m n o p q r s t u v w x y z) do call set contest=%%contest:%%i=%%i%%
+
 set current=%CD%
 set contestPath=%HOMEPATH%\atcoder-workspace\%contest%
 set questionPath=%HOMEPATH%\atcoder-workspace\%contest%\%question%
