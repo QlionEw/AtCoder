@@ -193,7 +193,7 @@ namespace AtCoder
             }
         }
         
-        public static long BigPow(long baseValue, long pow, long mod)
+        public static long BigPow(long baseValue, long pow, long mod = long.MaxValue)
         {
             long p = baseValue % mod;
             long x = 1;
@@ -1072,7 +1072,7 @@ namespace AtCoder
                 divisors.Add(n / i);
             }
 
-            return divisors.OrderBy(x => x).ToArray();
+            return divisors.ToArray();
         }
     }
 
@@ -1886,6 +1886,15 @@ namespace AtCoder
             }
 
             return dict[index];
+        }
+
+        public int Count()
+        {
+            if (list != null && dict == null)
+            {
+                Generate(list);
+            }
+            return dict.Count;
         }
 
         public T Restore(int index)
