@@ -1062,17 +1062,16 @@ namespace AtCoder
 
         public IEnumerable<long> GetDivisors(long n)
         {
-            HashSet<long> divisors = new HashSet<long>();
-
             for (long i = 1; i * i <= n; i++)
             {
                 if (n % i != 0) { continue; }
 
-                divisors.Add(i);
-                divisors.Add(n / i);
+                yield return i;
+                if (i != n / i)
+                {
+                    yield return n / i;
+                }
             }
-
-            return divisors.ToArray();
         }
     }
 
