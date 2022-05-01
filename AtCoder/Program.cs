@@ -455,6 +455,12 @@ namespace AtCoder
                 sb.Append(result + "\n");
             }
 
+            if (sb.Length == 0)
+            {
+                Console.WriteLine();
+                return;
+            }
+
             sb = sb.Remove(sb.Length - 1, 1);
             Console.WriteLine(sb);
         }
@@ -467,6 +473,12 @@ namespace AtCoder
                 sb.Append(result + " ");
             }
 
+            if (sb.Length == 0)
+            {
+                Console.WriteLine();
+                return;
+            }
+            
             sb = sb.Remove(sb.Length - 1, 1);
             Console.WriteLine(sb);
         }
