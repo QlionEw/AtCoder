@@ -2046,9 +2046,8 @@ namespace AtCoder
     public class DagPath
     {
         public int Index { get; set; }
-        public List<int> To { get; } = new List<int>();
-        public List<int> From { get; } = new List<int>();
-        public List<long> Cost { get; } = new List<long>();
+        public HashSet<int> To { get; } = new HashSet<int>();
+        public HashSet<int> From { get; } = new HashSet<int>();
         public int InDegree { get; set; }
         public long CurrentCost { get; set; }
     }
@@ -2062,10 +2061,9 @@ namespace AtCoder
             list = Enumerable.Range(0, size).Select(i => new DagPath() {Index = i}).ToList();
         }
 
-        public void Connect(int from, int to, long cost, params long[] additionalInfo)
+        public void Connect(int from, int to, params long[] additionalInfo)
         {
             list[from].To.Add(to);
-            list[from].Cost.Add(cost);
             list[to].From.Add(from);
         }
 
