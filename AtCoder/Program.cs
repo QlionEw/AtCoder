@@ -31,6 +31,7 @@ namespace AtCoder
         private static int[][] Sqi(int yCount, int xCount) => Scanner.SquareInt(yCount, xCount);
         private static long[][] Sql(int yCount, int xCount) => Scanner.SquareLong(yCount, xCount);
         private static string[] Sss(int count) => Enumerable.Repeat(0, count).Select(_ => Ss()).ToArray();
+        private static T[] Make<T>(int n, Func<T> creator) => Enumerable.Repeat(0, n).Select(_ => creator()).ToArray();
 
         private static void Loop(long n, Action action)
         {
@@ -434,10 +435,34 @@ namespace AtCoder
 
     public class Answerer
     {
+
+        public static StringBuilder sb;
+
+        public static void Build<T>(T item) => Build(item, "\n");
+        public static void BuildByLine<T>(T item) => Build(item, "\n");
+        public static void BuildBySpace<T>(T item) => Build(item, " ");
+        public static void Build<T>(T item, string splitter)
+        {
+            if (sb != null)
+            {
+                sb.Append(splitter);
+            }
+            else
+            {
+                sb = new StringBuilder();
+            }
+            sb.Append(item);
+        }
+
+        public static void OutBuild()
+        {
+            Console.WriteLine(sb);
+        }
+        
         /// <summary> Yes出力 </summary>
         public static void Yes() => Console.WriteLine("Yes");
         
-        /// <summary> Yes出力 </summary>
+        /// <summary> No出力 </summary>
         public static void No() => Console.WriteLine("No");
         
         /// <summary> Yes/No型出力 </summary>
