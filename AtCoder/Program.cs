@@ -1216,15 +1216,15 @@ namespace AtCoder
             Distances = Enumerable.Repeat(Common.Infinity, Distances.Length).ToArray();
         }
 
-        public void AddDirectedPath(int from, int to, long cost)
+        public void AddDirectedPath(int from, int to, long cost, params long[] additionalInfo)
         {
-            AddPath(from, to, cost);
+            AddPath(from, to, cost, additionalInfo);
         }
         
-        public void AddUndirectedPath(int from, int to, long cost)
+        public void AddUndirectedPath(int from, int to, long cost, params long[] additionalInfo)
         {
-            AddPath(from, to, cost);
-            AddPath(to, from, cost);
+            AddPath(from, to, cost, additionalInfo);
+            AddPath(to, from, cost, additionalInfo);
         }
 
         private void AddPath(int from, int to, long cost, params long[] additionalInfo)
