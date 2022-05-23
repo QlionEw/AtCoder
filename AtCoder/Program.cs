@@ -1134,7 +1134,7 @@ namespace AtCoder
             return new ModInt(top) / bottom;
         }
         
-        public static ModInt Pow(ModInt a, int n)
+        public static ModInt Pow(ModInt a, long n)
         {
             if (n == 0) return 1;
             if (n == 1) return a;
@@ -1150,8 +1150,25 @@ namespace AtCoder
             return fact[n];
         }
 
-        public static ModInt Perm(int n, int r) => Fact(n) / Fact(n - r);
-        public static ModInt Comb(int n, int r) => Fact(n) / Fact(n - r) / Fact(r);
+        public static ModInt Perm(int n, int r)
+        {
+            if (r < 0 || n < 0) return 0;
+            if (r == 0) return 1;
+            if (n <= 0) return 0;
+            if (n < r) return 0;
+            
+            return Fact(n) / Fact(n - r);
+        }
+
+        public static ModInt Comb(int n, int r)
+        {
+            if (r < 0 || n < 0) return 0;
+            if (r == 0) return 1;
+            if (n <= 0) return 0;
+            if (n < r) return 0;
+
+            return Fact(n) / Fact(n - r) / Fact(r);
+        }
     }
 
     public class BitArrayMaker
