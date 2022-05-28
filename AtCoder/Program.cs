@@ -1792,13 +1792,13 @@ namespace AtCoder
         UpdateMin,
         UpdateMax,
         Addition,
+        ModAddition,
     }
 
     public class LazySegmentTree : LazySegmentTreeExtend<long>
     {
-        public void Init(int count, long firstValue, LazySegmentTreeMode mode)
+        public LazySegmentTree(int count, LazySegmentTreeMode mode) : base(count, GetInvalidValue(mode))
         {
-            Init(count, firstValue);
             SetMode(mode);
         }
 
@@ -1808,19 +1808,30 @@ namespace AtCoder
             {
                 LazySegmentTreeMode.UpdateMin => Math.Min,
                 LazySegmentTreeMode.UpdateMax => Math.Max,
-                _ => (l1, l2) => l1 + l2,
+                LazySegmentTreeMode.ModAddition => (l1, l2) => (l1 + l2) % ModInt.ModValue,
+                _ => (l1, l2) => (l1 + l2),
             };
-            UpdateTreeBottomMethod = mode switch
+            UpdateLazyToActualMethod = mode switch
             {
-                LazySegmentTreeMode.Addition => (l1, l2) => l1 + l2,
-                _ => (x, m) => m
+                LazySegmentTreeMode.Addition => (l1, l2, count) => l1 + l2 * count ,
+                LazySegmentTreeMode.ModAddition => (l1, l2, count) => (l1 + (l2 * count) % ModInt.ModValue) % ModInt.ModValue,
+                _ => (x, m, _) => m
             };
             SetLazyDataMethod = mode switch
             {
-                LazySegmentTreeMode.Addition => (l1, l2) => l1 + l2,
+                LazySegmentTreeMode.Addition => (l1, l2) => (l1 + l2),
+                LazySegmentTreeMode.ModAddition => (l1, l2) => (l1 + l2) % ModInt.ModValue,
                 _ => (m1, m2) => m2
             };
         }
+
+        private static long GetInvalidValue(LazySegmentTreeMode mode) =>
+            mode switch
+            {
+                LazySegmentTreeMode.UpdateMin => Common.Infinity,
+                LazySegmentTreeMode.UpdateMax => -Common.Infinity,
+                _ => 0
+            };
     }
     
     public class LazySegmentTreeExtend<T> where T : IEquatable<T>
@@ -1828,16 +1839,16 @@ namespace AtCoder
         private T[] data;
         private T[] lazyData;
         public Func<T, T, T> UpdateMethod { get; set; }
-        public Func<T, T, T> UpdateTreeBottomMethod { get; set; }
+        public Func<T, T, int, T> UpdateLazyToActualMethod { get; set; }
         public Func<T, T, T> SetLazyDataMethod { get; set; }
-        private T firstValue;
+        public T InvalidValue { get; set; }
         private int n;
         private int count;
 
-        public void Init(int count, T firstValue)
+        public LazySegmentTreeExtend(int count, T invalidValue = default)
         {
-            this.firstValue = firstValue;
             this.count = count;
+            InvalidValue = invalidValue;
 
             n = 1;
             while (n < count)
@@ -1845,8 +1856,8 @@ namespace AtCoder
                 n *= 2;
             }
 
-            data = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
-            lazyData = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
+            data = Enumerable.Repeat(InvalidValue, 2 * n - 1).ToArray();
+            lazyData = Enumerable.Repeat(InvalidValue, 2 * n - 1).ToArray();
         }
         
         public void Build(Func<int, T> update)
@@ -1863,7 +1874,7 @@ namespace AtCoder
 
         private void Evaluate(int k)
         {
-            if (lazyData[k].Equals(firstValue)) {return;}
+            if (lazyData[k].Equals(InvalidValue)) {return;}
 
             if (k < n - 1)
             {
@@ -1871,8 +1882,13 @@ namespace AtCoder
                 lazyData[2 * k + 2] = SetLazyDataMethod(lazyData[2 * k + 2], lazyData[k]);
             }
 
-            data[k] = UpdateTreeBottomMethod(data[k], lazyData[k]);
-            lazyData[k] = firstValue;
+            int cc = k switch
+            {
+                0 => n,
+                _ => 1 << (MathPlus.Digit(n, 2) - MathPlus.Digit(k+1, 2))
+            };
+            data[k] = UpdateLazyToActualMethod(data[k], lazyData[k], cc);
+            lazyData[k] = InvalidValue;
         }
 
         public void Update(int left, int right, T value)
@@ -1905,7 +1921,7 @@ namespace AtCoder
         private T Query(int a, int b, int k, int l, int r)
         {
             Evaluate(k);
-            if (r <= a || b <= l) return firstValue;
+            if (r <= a || b <= l) return InvalidValue;
             if (a <= l && r <= b) return data[k];
             T vl = Query(a, b, 2 * k + 1, l, (l + r) / 2);
             T vr = Query(a, b, 2 * k + 2, (l + r) / 2, r);
