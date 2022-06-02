@@ -1712,6 +1712,21 @@ namespace AtCoder
 
             return true;
         }
+
+        public IEnumerable<List<int>> GetUnions(int count, int indexStart = 0)
+        {
+            Dictionary<long, List<int>> dict = new Dictionary<long, List<int>>();
+            for (int i = indexStart; i < count + indexStart; i++)
+            {
+                var parent = Find(i);
+                if (!dict.ContainsKey(parent))
+                {
+                    dict.Add(parent,new List<int>());
+                }
+                dict[parent].Add(i);
+            }
+            return dict.Values;
+        }
     }
 
     public class SegmentTree : SegmentTreeExtend<long>
