@@ -14,16 +14,17 @@ if not exist %questionPath%\ (
     atcoder-tools gen %contest%
 )
 
-xcopy /e bin\Debug\netcoreapp3.1 %questionPath% /Y
+dotnet publish -c release
+xcopy /e bin\Release\netcoreapp3.1 %questionPath% /Y
 copy Program.cs %questionPath%\main.cs /Y
 cd %questionPath%
-atcoder-tools test
+atcoder-tools test -t1800
 
 if %ERRORLEVEL% == 0 (
     set submit=n
     set /P submit="Submit?(y/n) "
     if !submit! == y (
-        atcoder-tools submit -u
+        atcoder-tools submit -u -t1800
         start chrome https://atcoder.jp/contests/%contest%/submissions/me
     ) 
 )

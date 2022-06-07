@@ -15,13 +15,13 @@ cd AtCoder
 cp -r bin/Release/netcoreapp3.1/osx.11.0-x64/* $questionPath
 cp -f Program.cs $questionPath/main.cs 
 cd $questionPath
-atcoder-tools test
+atcoder-tools test -t1800
 
 if [ $? -eq 0 ]; then
     echo "Submit?(y/n) "
     read submit
     if [ "$submit" = "y" ]; then
-        atcoder-tools submit -u
+        atcoder-tools submit -u -t1800
         open -a "Google Chrome" https://atcoder.jp/contests/$contestName/submissions/me
     fi
 fi
