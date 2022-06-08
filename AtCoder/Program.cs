@@ -1120,22 +1120,33 @@ namespace AtCoder
             }
         }
 
-        public void _01Bfs(int point)
+        private bool[] isVisited; 
+        public long _01Bfs(int start, int end)
         {
             Deque<int> deque = new Deque<int>();
-            Distances[point] = 0;
-            deque.PushBack(point);
+            isVisited = new bool[nodeCount];
+            Distances[start] = 0;
+            deque.PushBack(start);
 
             while (deque.Length != 0)
             {
                 int index = deque.PopFront();
+                if (index == end)
+                {
+                    return Distances[index];
+                }
+                if (isVisited[index])
+                {
+                    continue;
+                }
+                isVisited[index] = true;
                 foreach (PathInfo path in pathInfos[index])
                 {
                     long d = Distances[index] + path.Cost;
                     if (d < Distances[path.To])
                     {
                         Distances[path.To] = d;
-                        if (Distances[path.Cost] != 0)
+                        if (path.Cost != 0)
                         {
                             deque.PushBack(path.To);
                         }
@@ -1146,6 +1157,8 @@ namespace AtCoder
                     }
                 }
             }
+
+            return -1;
         }
 
         public long Kruskal()
