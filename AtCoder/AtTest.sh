@@ -1,5 +1,10 @@
 #!/bin/sh
 
+buildConfig=$3
+if [ "$buildConfig" = "" ]; then
+    buildConfig=Debug
+fi 
+
 contestName=$(echo "$1" | sed 's/.\+/\L\0/')
 contestPath=~/atcoder-workspace/$contestName
 questionPath=~/atcoder-workspace/$contestName/$2
@@ -9,10 +14,10 @@ if [ ! -d $questionPath ]; then
 fi
 
 cd ..
-dotnet publish -c release -r osx.11.0-x64
+dotnet publish -c $buildConfig -r osx.11.0-x64
 cd AtCoder
 
-cp -r bin/Release/netcoreapp3.1/osx.11.0-x64/* $questionPath
+cp -r bin/$buildConfig/netcoreapp3.1/osx.11.0-x64/* $questionPath
 cp -f Program.cs $questionPath/main.cs 
 cd $questionPath
 atcoder-tools test -t1800

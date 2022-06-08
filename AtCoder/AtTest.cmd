@@ -3,6 +3,11 @@ setlocal EnableDelayedExpansion
 
 set contest=%1
 set question=%2
+set buildConfig=%3
+
+if "%buildConfig%"=="" (
+    set buildConfig=Debug
+)
 
 for %%i in (a b c d e f g h i j k l m n o p q r s t u v w x y z) do call set contest=%%contest:%%i=%%i%%
 
@@ -14,8 +19,8 @@ if not exist %questionPath%\ (
     atcoder-tools gen %contest%
 )
 
-dotnet publish -c release
-xcopy /e bin\Release\netcoreapp3.1 %questionPath% /Y
+dotnet publish -c %buildConfig%
+xcopy /e bin\%buildConfig%\netcoreapp3.1 %questionPath% /Y
 copy Program.cs %questionPath%\main.cs /Y
 cd %questionPath%
 atcoder-tools test -t1800
