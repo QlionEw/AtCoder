@@ -70,6 +70,20 @@ namespace AtCoder
             return digit;
         }
 
+        public static int GetNumberCount(long value, int digit, int ary, int searched)
+        {
+            int count = 0;
+            for (int i = 0; i < digit; i++)
+            {
+                if (value % ary == searched)
+                {
+                    count++;
+                }
+                value /= 2;
+            }
+            return count;
+        }
+
         public static long Gcd(long a, long b)
         {
             return a > b ? GcdRecursive(a, b) : GcdRecursive(b, a);
