@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Numerics;
-using Others;
 using static System.Math;
 
 namespace AtCoder
