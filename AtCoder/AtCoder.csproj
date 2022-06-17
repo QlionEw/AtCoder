@@ -6,4 +6,12 @@
         <RuntimeIdentifiers>osx.11.0-x64</RuntimeIdentifiers>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="SourceExpander" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Qlibrary\Qlibrary.csproj" />
+    </ItemGroup>
+
 </Project>

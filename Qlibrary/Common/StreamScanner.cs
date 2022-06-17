@@ -1,62 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Numerics;
-using static System.Math;
 
-namespace Others
+namespace Qlibrary
 {
-    internal static class OtherJudge
-    {
-        // public static void Main(string[] args)
-        // {
-        //     Solve();
-        // }
-        
-        public static void Solve()
-        {
-            checked
-            {
-            }
-        }
-
-        #region Utility
-
-        private const int InfinityInt = Common.InfinityInt;
-        private const long Infinity = Common.Infinity;
-        private static readonly StreamScanner Scanner = new StreamScanner(Console.OpenStandardInput());
-        private static int Si() => Scanner.Integer();
-        private static long Sl() => Scanner.Long();
-        private static string Ss() => Scanner.Scan();
-        private static int[] Sai(int count) => Scanner.ArrayInt(count);
-        private static long[] Sal(int count) => Scanner.ArrayLong(count);
-        private static int[][] Sqi(int yCount, int xCount) => Scanner.SquareInt(yCount, xCount);
-        private static long[][] Sql(int yCount, int xCount) => Scanner.SquareLong(yCount, xCount);
-        private static string[] Sss(int count) => Enumerable.Repeat(0, count).Select(_ => Ss()).ToArray();
-        private static T[] Make<T>(int n, Func<T> creator) => Enumerable.Repeat(0, n).Select(_ => creator()).ToArray();
-
-        private static void Loop(long n, Action action)
-        {
-            for (int i = 0; i < n; i++)
-            {
-                action();
-            }
-        }
-
-        #endregion
-    }
-
-    public static class Common
-    {
-        public const int InfinityInt = 1 << 29;
-        public const long Infinity = (long) 1 << 60;
-    }
-    
-    
     public class StreamScanner
     {
         private const int Size = 1024 * 16;
