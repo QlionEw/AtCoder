@@ -28,10 +28,11 @@ if %ERRORLEVEL% == 0 (
     set submit=n
     set /P submit="Submit?(y/n) "
     if !submit! == y (
-        dotnet-source-expand %current%\Program.cs > %questionPath%\main.cs
+        copy %current%\Combined.csx %questionPath%\main.cs /Y
         atcoder-tools submit -u -t1800
         start chrome https://atcoder.jp/contests/%contest%/submissions/me
     ) 
 )
 
 cd %current%
+del Combined.csx
