@@ -176,5 +176,17 @@ namespace Qlibrary
                 p = (p * p) % mod;
             }
         }
+
+        /// <summary> 傾き </summary>
+        public static decimal Slope((decimal x, decimal y) a, (decimal x, decimal y) b)
+        {
+            return a.x - b.x == 0 ? decimal.MaxValue : (b.y - a.y) / (b.x - a.x);
+        }
+
+        /// <summary> 切片 </summary>
+        public static decimal Intercept((decimal x, decimal y) a, (decimal x, decimal y) b)
+        {
+            return a.x - b.x == 0 ? decimal.MaxValue : (a.x * b.y - a.y * b.x) / (a.x - b.x);
+        }
     }
 }
