@@ -1,34 +1,37 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
     public class TopologicalSorter
     {
-        private List<DagPath> list;
+        private readonly (int Index, List<int> To)[] list;
+        private readonly int[] inDegree;
 
         public TopologicalSorter(int size)
         {
-            list = Enumerable.Range(0, size).Select(i => new DagPath() {Index = i}).ToList();
+            list = Enumerable.Range(0, size).Select(i => (i, new List<int>())).ToArray();
+            inDegree = new int[size];
         }
 
+        [MethodImpl(256)]
         public void Connect(int from, int to, params long[] additionalInfo)
         {
             list[from].To.Add(to);
-            list[to].From.Add(from);
+            inDegree[to]++;
         }
 
-        public IEnumerable<DagPath> Get()
+        [MethodImpl(256)]
+        public IEnumerable<(int Index,List<int> To)> Get()
         {
-            var dagPaths = new List<DagPath>();
-            var queue = new Queue<DagPath>();
+            var queue = new Queue<(int Index,List<int> To)>();
 
-            foreach (DagPath dagPath in list)
+            foreach ((int index, List<int> to) in list)
             {
-                dagPath.InDegree = dagPath.From.Count;
-                if (dagPath.InDegree == 0)
+                if (inDegree[index] == 0)
                 {
-                    queue.Enqueue(dagPath);
+                    queue.Enqueue((index, to));
                 }
             }
 
@@ -38,17 +41,15 @@ namespace Qlibrary
 
                 foreach (int index in top.To)
                 {
-                    list[index].InDegree--;
-                    if (list[index].InDegree == 0)
+                    inDegree[index]--;
+                    if (inDegree[index] == 0)
                     {
                         queue.Enqueue(list[index]);
                     }
                 }
 
-                dagPaths.Add(top);
+                yield return top;
             }
-
-            return dagPaths;
         }
     }
 
