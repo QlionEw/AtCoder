@@ -35,4 +35,3 @@ if %ERRORLEVEL% == 0 (
 )
 
 cd %current%
-del Combined.csx
