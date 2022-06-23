@@ -32,9 +32,9 @@ namespace Qlibrary
         /// <summary> 差 </summary>
         public static Point2D operator- (Point2D a, Point2D b) => new Point2D(a.X - b.X, a.Y - b.Y);
         /// <summary> 等号 </summary>
-        public static bool operator ==(Point2D a, Point2D b) => a != null && a.Equals(b);
+        public static bool operator ==(Point2D a, Point2D b) => ReferenceEquals(a, b) || ((object)a != null && a.Equals(b));
         /// <summary> 不等号 </summary>
-        public static bool operator!= (Point2D a, Point2D b) => !(a != null) || a.Equals(b);
+        public static bool operator!= (Point2D a, Point2D b) => !(a == b);
         /// <summary> 内積 </summary>
         public decimal Dot(Point2D other) => X * other.X - Y * other.Y;
         /// <summary> 外積 </summary>
