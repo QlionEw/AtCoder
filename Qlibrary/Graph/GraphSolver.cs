@@ -123,7 +123,7 @@ namespace Qlibrary
             var uft = new UnionFindTree(nodeCount + 1);
             foreach (PathInfo edge in edges.Where(edge => !uft.Same(edge.From, edge.To)))
             {
-                uft.Union(edge.From, edge.To);
+                uft.Unite(edge.From, edge.To);
                 totalCost += edge.Cost;
             }
             return totalCost;

@@ -1,32 +1,44 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using static Qlibrary.Common;
 
 namespace Qlibrary
 {
     public class UnionFindTree
     {
-        public long[] Parents { get; }
+        public bool IsHistoryEnable { get; set; }
+        private readonly int[] data;
+        private readonly Stack<(int, int)> history = new Stack<(int, int)>();
+        private int innerSnap;
 
         public UnionFindTree(int n)
         {
-            Parents = Enumerable.Repeat((long) -1, n).ToArray();
+            data = Enumerable.Repeat(-1, n).ToArray();
         }
 
-        public long Find(long x)
+        public int Find(int x)
         {
-            if (Parents[x] < 0) return x;
-            Parents[x] = Find(Parents[x]);
-            return Parents[x];
+            if (data[x] < 0) return x;
+            data[x] = Find(data[x]);
+            return data[x];
         }
 
-        public long Size(long x) => -Parents[Find(x)];
-        public bool Same(long x, long y) => Find(x) == Find(y);
+        public int Size(int x) => -data[Find(x)];
+        public bool Same(int x, int y) => Find(x) == Find(y);
 
-        public bool Union(long x, long y)
+        public bool Unite(int x, int y)
         {
             x = Find(x);
             y = Find(y);
 
+            if (IsHistoryEnable)
+            {
+                history.Push((x, data[x]));
+                history.Push((y, data[y]));
+            }
+            
             if (x == y) return false;
 
             if (Size(x) < Size(y))
@@ -34,10 +46,40 @@ namespace Qlibrary
                 (x, y) = (y, x);
             }
 
-            Parents[x] += Parents[y];
-            Parents[y] = x;
+            data[x] += data[y];
+            data[y] = x;
 
             return true;
+        }
+
+        public void Undo()
+        {
+            if (!IsHistoryEnable) { ThrowSnapshotException(); }
+            Loop(2, () =>
+            {
+                var lastItem = history.Pop();
+                data[lastItem.Item1] = lastItem.Item2;
+            });
+        }
+
+        public void TakeSnapShot()
+        {
+            if (!IsHistoryEnable) { ThrowSnapshotException(); }
+            innerSnap = (history.Count >> 1);
+        }
+        public int HistoryCount => history.Count >> 1;
+
+        void Rollback(int state = -1) 
+        {
+            if (!IsHistoryEnable) { ThrowSnapshotException(); }
+            if (state == -1) { state = innerSnap; }
+            state <<= 1;
+            while (state < history.Count) { Undo(); }
+        }
+
+        private static void ThrowSnapshotException()
+        {
+            throw new Exception("IsHistoryEnable is false.");
         }
 
         public IEnumerable<List<int>> GetUnions(int count, int indexStart = 0)
