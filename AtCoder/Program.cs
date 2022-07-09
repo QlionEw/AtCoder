@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using static System.Math;
 using Qlibrary;
 using static Qlibrary.Common;
+using static Qlibrary.MathPlus;
 
 namespace AtCoder
 {
@@ -20,6 +18,7 @@ namespace AtCoder
             SourceExpander.Expander.Expand();
             checked
             {
+                
             }
         }
     }
