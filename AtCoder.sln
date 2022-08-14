@@ -2,7 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtCoder", "AtCoder\AtCoder.csproj", "{02E4A035-421B-4761-9EDC-84908FA9E084}"
 	ProjectSection(ProjectDependencies) = postProject
-		{9055131A-21AB-4CD8-9792-89658A88BB4F} = {9055131A-21AB-4CD8-9792-89658A88BB4F}
 		{34E52CD1-6EFD-4C92-81ED-9840545690ED} = {34E52CD1-6EFD-4C92-81ED-9840545690ED}
 	EndProjectSection
 EndProject
