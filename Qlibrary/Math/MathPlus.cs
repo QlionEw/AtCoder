@@ -139,6 +139,11 @@ namespace Qlibrary
 
         public static IEnumerable<T[]> GetCombinations<T>(IEnumerable<T> items, int k, bool withRepetition = false)
         {
+            if (k == 0)
+            {
+                yield return new T[] { };
+                yield break;
+            }
             if (k == 1)
             {
                 foreach (var item in items)
