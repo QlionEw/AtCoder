@@ -10,6 +10,16 @@ namespace Qlibrary
         private Dictionary<T, int> dict;
         private Dictionary<int, T> reversed;
 
+        public Compressed(){ }
+
+        public Compressed(IEnumerable<T> array)
+        {
+            foreach (var item in array)
+            {
+                Add(item);
+            }
+        }
+        
         public void Add(T value)
         {
             if (list == null)

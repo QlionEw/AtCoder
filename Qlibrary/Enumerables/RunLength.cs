@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Qlibrary
 {
-    public static class EnumerableExtensions
+    public static class RunLengthExtensions
     {
         public static IEnumerable<(T Value, int Length)> RunLength<T>(this IEnumerable<T> self)
         {
