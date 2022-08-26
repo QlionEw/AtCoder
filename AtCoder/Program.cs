@@ -19,7 +19,29 @@ namespace AtCoder
             SourceExpander.Expander.Expand();
             checked
             {
-                
+                string s = Ss();
+                string t = Ss();
+ 
+                for (int i = 0; i < s.Length; i++)
+                {
+                    if (s[i] == t[i])
+                    {
+                        continue;
+                    }
+                    if (s[i] == '@' && "atcoder".Contains(t[i]))
+                    {
+                        continue;
+                    }
+                    if (t[i] == '@' && "atcoder".Contains(s[i]))
+                    {
+                        continue;
+                    }
+                    
+                    Console.WriteLine("You will lose");
+                    return;
+                }
+ 
+                Console.WriteLine("You can win");
             }
         }
     }

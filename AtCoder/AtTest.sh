@@ -26,7 +26,7 @@ if [ $? -eq 0 ]; then
     echo "Submit?(y/n) "
     read submit
     if [ "$submit" = "y" ]; then
-        atcoder-tools submit -u -t1.8
+        atcoder-tools submit -u -t10
         open -a "Google Chrome" https://atcoder.jp/contests/$contestName/submissions/me
     fi
 fi
