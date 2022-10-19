@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
@@ -74,11 +75,12 @@ namespace Qlibrary
                 time++;
             }
         }
-        
-        private void CheckCost(long current, long cost, long from)
+
+        [MethodImpl(256)]
+        private void CheckCost(int current, long cost, long from)
         {
             costArray[current] = cost;
-            foreach ((long way, long l) in Vertexes[current].GetWayData())
+            foreach ((int way, long l) in Vertexes[current].GetWayData())
             {
                 if (way == from)
                 {
@@ -87,6 +89,39 @@ namespace Qlibrary
 
                 CheckCost(way, cost + l, current);
             }
+        }
+
+        [MethodImpl(256)]
+        public void SolveWayToDp(int current, Action<int, int> action) => SolveWayToDp(current, -1, action);
+        [MethodImpl(256)]
+        private void SolveWayToDp(int current, int from, Action<int,int> action)
+        {
+            action(from, current);
+            
+            foreach ((int way, long l) in Vertexes[current].GetWayData())
+            {
+                if (way == from)
+                {
+                    continue;
+                }
+                SolveWayToDp(way, current, action);
+            }
+        }
+        
+        [MethodImpl(256)]
+        public void SolveWayBackDp(int current, Action<int, int> action) => SolveWayBackDp(current, -1, action);
+        [MethodImpl(256)]
+        public void SolveWayBackDp(int current, int from, Action<int,int> action)
+        {
+            foreach ((int way, long l) in Vertexes[current].GetWayData())
+            {
+                if (way == from)
+                {
+                    continue;
+                }
+                SolveWayBackDp(way, current, action);
+            }
+            action(current, from);
         }
 
         private SegmentTreeExtend<(int,int)> seg;

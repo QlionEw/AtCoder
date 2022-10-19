@@ -14,11 +14,11 @@ namespace AtCoder
 {
     internal static class Program
     {
-        private static void Main(string[] args)
-        {
+        private static void Main(string[] args) {
             SourceExpander.Expander.Expand();
             checked
             {
+                
             }
         }
     }
