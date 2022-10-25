@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using static System.Math;
 
 namespace Qlibrary
 {
     public class Point2D : IComparable<Point2D>, IEquatable<Point2D>
     {
-        public decimal X { get; set; }
-        public decimal Y { get; set; }
+        public decimal X { get; }
+        public decimal Y { get; }
 
         public Point2D(decimal x, decimal y)
         {
@@ -43,6 +44,8 @@ namespace Qlibrary
         public decimal Slope(Point2D other) => X - other.X == 0 ? decimal.MaxValue : (other.Y - Y) / (other.X - X);
         /// <summary> 切片 </summary>
         public decimal Intercept(Point2D other) => X - other.X == 0 ? decimal.MaxValue : Cross(other) / (X - other.X);
+        /// <summary> 距離 </summary>
+        public double Distance(Point2D other) => Sqrt(Pow((double)(X - other.X), 2) + Pow((double)(Y - other.Y), 2));
 
         [MethodImpl(256)]
         public int CompareTo(Point2D other)
@@ -67,7 +70,7 @@ namespace Qlibrary
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((Point2D)obj);
         }
 
