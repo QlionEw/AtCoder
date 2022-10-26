@@ -10,7 +10,7 @@ namespace Qlibrary
         public const int _998244353 = 998244353;
         public static int ModValue { get; set; } = _998244353;
         static List<ModInt> fact = new List<ModInt> {1};
-        public ModInt(long value) => this.value = value;
+        private ModInt(long value) => this.value = value;
         public static implicit operator ModInt(long a) => new ModInt(a % ModValue + (a < 0 ? ModValue : 0));
         public static explicit operator int(ModInt a) => (int) a.value;
         public override string ToString() => value.ToString();
