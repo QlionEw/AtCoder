@@ -80,24 +80,29 @@ namespace Qlibrary
             action(self[key]);
         }
 
-        public static void Init<T>(this T[,] array, int x, int y, T value)
+        public static void Init<T>(this T[,] array, T value)
         {
-            for (int i = 0; i < x; i++)
+            var l1 = array.GetLength(0);
+            var l2 = array.GetLength(1);
+            for (int i = 0; i < l1; i++)
             {
-                for (int j = 0; j < y; j++)
+                for (int j = 0; j < l2; j++)
                 {
                     array[i, j] = value;
                 }
             }
         }
         
-        public static void Init<T>(this T[,,] array, int x, int y, int z, T value)
+        public static void Init<T>(this T[,,] array, T value)
         {
-            for (int i = 0; i < x; i++)
+            var l1 = array.GetLength(0);
+            var l2 = array.GetLength(1);
+            var l3 = array.GetLength(2);
+            for (int i = 0; i < l1; i++)
             {
-                for (int j = 0; j < y; j++)
+                for (int j = 0; j < l2; j++)
                 {
-                    for (int k = 0; k < z; k++)
+                    for (int k = 0; k < l3; k++)
                     {
                         array[i, j, k] = value;
                     }

@@ -128,5 +128,20 @@ namespace Qlibrary
 
             return (ret);
         }
+        
+        protected bool Equals(Matrix other) => this == other;
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Matrix)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (box != null ? box.GetHashCode() : 0);
+        }
     }
 }

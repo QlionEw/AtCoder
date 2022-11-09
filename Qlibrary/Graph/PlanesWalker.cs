@@ -39,7 +39,7 @@ namespace Qlibrary
             Deque<(int Y, int X)> deque = new Deque<(int, int)>();
             isVisited = new bool[h, w];
             distances = new int[h, w];
-            distances.Init(h, w, Common.InfinityInt);
+            distances.Init(Common.InfinityInt);
             distances[start.Y, start.X] = 0;
             deque.PushBack((start.Y, start.X));
 
@@ -86,7 +86,7 @@ namespace Qlibrary
             PriorityQueue<(int totalCost, int Y, int X)> pq = new PriorityQueue<(int, int, int)>(h * w);
             isVisited = new bool[h, w];
             distances = new int[h, w];
-            distances.Init(h, w, Common.InfinityInt);
+            distances.Init(Common.InfinityInt);
             distances[start.Y, start.X] = 0;
             pq.Enqueue((0, start.Y, start.X));
 
@@ -130,7 +130,7 @@ namespace Qlibrary
             Deque<(int Y, int X, int Dir)> deque = new Deque<(int, int, int)>();
             isDirVisited = new bool[h, w, d];
             dirDistances = new int[h, w, d];
-            dirDistances.Init(h, w, d, Common.InfinityInt);
+            dirDistances.Init(Common.InfinityInt);
             for (int i = 0; i < d; i++)
             {
                 dirDistances[start.Y, start.X, i] = 0;
