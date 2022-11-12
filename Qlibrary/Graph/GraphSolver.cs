@@ -76,10 +76,10 @@ namespace Qlibrary
         }
 
         private bool[] isVisited; 
-        public long _01Bfs(int start, int end)
+        public long _01Bfs(int start, int end = -1)
         {
             Deque<int> deque = new Deque<int>();
-            isVisited = new bool[nodeCount];
+            isVisited = new bool[nodeCount + 1];
             Distances[start] = 0;
             deque.PushBack(start);
 

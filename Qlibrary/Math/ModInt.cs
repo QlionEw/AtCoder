@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
@@ -11,35 +12,33 @@ namespace Qlibrary
         public static int ModValue { get; set; } = _998244353;
         static List<ModInt> fact = new List<ModInt> {1};
         private ModInt(long value) => this.value = value;
+        [MethodImpl(256)]
         public static implicit operator ModInt(long a) => new ModInt(a % ModValue + (a < 0 ? ModValue : 0));
+        [MethodImpl(256)]
         public static explicit operator int(ModInt a) => (int) a.value;
+        [MethodImpl(256)]
         public override string ToString() => value.ToString();
+        [MethodImpl(256)]
         public static ModInt operator +(ModInt a, ModInt b) => a.value + b.value;
+        [MethodImpl(256)]
         public static ModInt operator -(ModInt a, ModInt b) => a.value - b.value;
+        [MethodImpl(256)]
         public static ModInt operator *(ModInt a, ModInt b) => a.value * b.value;
+        [MethodImpl(256)]
         public static ModInt operator /(ModInt a, ModInt b) => a * Inv(b);
-
-        public static ModInt Fraction(long top, long bottom)
-        {
-            return new ModInt(top) / bottom;
-        }
-        
-        public static ModInt Pow(ModInt a, long n)
-        {
-            if (n == 0) return 1;
-            if (n == 1) return a;
-            ModInt p = Pow(a, n / 2);
-            return p * p * Pow(a, n % 2);
-        }
-
-        public static ModInt Inv(ModInt a) => Pow(a, ModValue - 2);
-
+        [MethodImpl(256)]
+        public static ModInt Fraction(long top, long bottom) => new ModInt(top) / bottom;
+        [MethodImpl(256)]
+        public static ModInt Pow(ModInt a, long n) => MathPlus.BigPow((long)a, n, ModValue);
+        [MethodImpl(256)]
+        public static ModInt Inv(ModInt a) => MathPlus.BigPow((long)a, ModValue - 2, ModValue);
+        [MethodImpl(256)]
         public static ModInt Fact(int n)
         {
             for (int i = fact.Count; i <= n; i++) fact.Add(fact[^1] * i);
             return fact[n];
         }
-
+        [MethodImpl(256)]
         public static ModInt Perm(int n, int r)
         {
             if (r < 0 || n < 0) return 0;
@@ -49,7 +48,7 @@ namespace Qlibrary
             
             return Fact(n) / Fact(n - r);
         }
-
+        [MethodImpl(256)]
         public static ModInt Comb(int n, int r)
         {
             if (r < 0 || n < 0) return 0;
