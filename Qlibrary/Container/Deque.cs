@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
@@ -29,6 +30,7 @@ namespace Qlibrary
             firstIndex = 0;
         }
 
+        [MethodImpl(256)]
         public void PushBack(T data)
         {
             if (Length == capacity) Resize();
@@ -36,6 +38,7 @@ namespace Qlibrary
             Length++;
         }
 
+        [MethodImpl(256)]
         public void PushFront(T data)
         {
             if (Length == capacity) Resize();
@@ -46,24 +49,39 @@ namespace Qlibrary
             firstIndex = index;
         }
 
+        [MethodImpl(256)]
         public T PopBack()
         {
-            if (Length == 0) throw new InvalidOperationException("データが空です。");
-            var data = this[Length - 1];
+            var data = PeekBack();
             Length--;
             return data;
         }
 
+        [MethodImpl(256)]
         public T PopFront()
         {
-            if (Length == 0) throw new InvalidOperationException("データが空です。");
-            var data = this[0];
+            var data = PeekFront();
             firstIndex++;
             firstIndex %= capacity;
             Length--;
             return data;
         }
 
+        [MethodImpl(256)]
+        public T PeekBack()
+        {
+            if (Length == 0) throw new InvalidOperationException("データが空です。");
+            return this[Length - 1];
+        }
+        
+        [MethodImpl(256)]
+        public T PeekFront()
+        {
+            if (Length == 0) throw new InvalidOperationException("データが空です。");
+            return this[0];
+        }
+
+        [MethodImpl(256)]
         private void Resize()
         {
             var newArray = new T[capacity * 2];
