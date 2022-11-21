@@ -8,7 +8,7 @@ namespace Qlibrary
     public class CumulativeSum2D : IEnumerable<IEnumerable<long>>
     {
         private bool isCalculated;
-        private long[][] box;
+        private readonly long[][] box;
         
         public CumulativeSum2D(int height, int width)
         {
@@ -57,6 +57,18 @@ namespace Qlibrary
                 }
             }
             isCalculated = true;
+        }
+
+        public long this[int h, int w]
+        {
+            get
+            {
+                if (!isCalculated)
+                {
+                    Calculate();
+                }
+                return box[h][w];
+            }
         }
 
         public IEnumerator<IEnumerable<long>> GetEnumerator()
