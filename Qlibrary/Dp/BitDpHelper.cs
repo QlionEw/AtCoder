@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
@@ -31,6 +32,15 @@ namespace Qlibrary
                 flag /= 2;
             }
             return (from, to);
+        }
+
+        public IEnumerable<int> GetIncludeStates(int value)
+        {
+            for (int i = value; i >= 0; i--)
+            {
+                i &= value;
+                yield return i;
+            }
         }
     }
 }
