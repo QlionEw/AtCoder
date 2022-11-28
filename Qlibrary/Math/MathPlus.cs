@@ -53,7 +53,7 @@ namespace Qlibrary
         }
         
         /// <summary> a*x + b*y = 1 となるx,yを求める(1をnにする場合返り値をn倍) </summary>
-        public static (long, long, long) ExtGcd(long a, long b, long x = 0, long y = 0)
+        public static (long y, long x, long a) ExtGcd(long a, long b, long x = 0, long y = 0)
         {
             if (b == 0) {
                 return (1, 0, a);
