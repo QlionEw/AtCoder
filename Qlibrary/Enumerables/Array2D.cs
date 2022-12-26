@@ -4,10 +4,11 @@ namespace Qlibrary
 {
     public static class Array2D 
     {
-        public static IEnumerable<IEnumerable<T>> ToJaggedArray<T>(this T[,] self)
+        public static T[][] ToJaggedArray<T>(this T[,] self)
         {
             var l1 = self.GetLength(0);
             var l2 = self.GetLength(1);
+            var boxes = new T[l1][];
             for (int i = 0; i < l1; i++)
             {
                 var box = new T[l2];
@@ -15,8 +16,9 @@ namespace Qlibrary
                 {
                     box[j] = self[i, j];
                 }
-                yield return box;
+                boxes[i] = box;
             }
+            return boxes;
         }
 
         public static T[,] ToDimensionalArray<T>(this T[][] self)
