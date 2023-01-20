@@ -26,6 +26,14 @@ namespace Qlibrary
         {
         }
         
+        public Set(IEnumerable<T>items , bool isMultiSet) : this(Comparer<T>.Default, isMultiSet)
+        {
+            foreach (var item in items)
+            {
+                Add(item);
+            }
+        }
+        
         public Set() : this(false)
         {
         }
