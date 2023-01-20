@@ -6,7 +6,7 @@ namespace Qlibrary
 {
     public class Compressed<T> where T : IComparable<T>, IEquatable<T>
     {
-        private List<T> list;
+        private HashSet<T> list;
         private Dictionary<T, int> dict;
         private Dictionary<int, T> reversed;
 
@@ -24,7 +24,7 @@ namespace Qlibrary
         {
             if (list == null)
             {
-                list = new List<T>();
+                list = new HashSet<T>();
             }
 
             list.Add(value);
@@ -58,7 +58,7 @@ namespace Qlibrary
 
         private void Generate(IEnumerable<T> array)
         {
-            var converted = array.Distinct().OrderBy(x => x).Select((x, i) => (x, i)).ToArray();
+            var converted = array.OrderBy(x => x).Select((x, i) => (x, i)).ToArray();
             dict = converted.ToDictionary(x => x.x, x => x.i);
             reversed = converted.ToDictionary(x => x.i, x => x.x);
         }
