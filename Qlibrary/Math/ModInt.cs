@@ -11,6 +11,7 @@ namespace Qlibrary
         public const int _998244353 = 998244353;
         public static int ModValue { get; set; } = _998244353;
         static List<ModInt> fact = new List<ModInt> {1};
+        static List<ModInt> inv = new List<ModInt> {1};
         private ModInt(long value) => this.value = value;
         [MethodImpl(256)]
         public static implicit operator ModInt(long a) => new ModInt(a % ModValue + (a < 0 ? ModValue : 0));
@@ -25,13 +26,17 @@ namespace Qlibrary
         [MethodImpl(256)]
         public static ModInt operator *(ModInt a, ModInt b) => a.value * b.value;
         [MethodImpl(256)]
-        public static ModInt operator /(ModInt a, ModInt b) => a * Inv(b);
+        public static ModInt operator /(ModInt a, ModInt b) => a * MathPlus.BigPow((long)b, ModValue - 2, ModValue);
         [MethodImpl(256)]
         public static ModInt Fraction(long top, long bottom) => new ModInt(top) / bottom;
         [MethodImpl(256)]
         public static ModInt Pow(ModInt a, long n) => MathPlus.BigPow((long)a, n, ModValue);
         [MethodImpl(256)]
-        public static ModInt Inv(ModInt a) => MathPlus.BigPow((long)a, ModValue - 2, ModValue);
+        public static ModInt Inv(int n)
+        {
+            for (int i = inv.Count; i <= n; i++) inv.Add(inv[^1] / i);
+            return inv[n];
+        }
         [MethodImpl(256)]
         public static ModInt Fact(int n)
         {
@@ -46,7 +51,7 @@ namespace Qlibrary
             if (n <= 0) return 0;
             if (n < r) return 0;
             
-            return Fact(n) / Fact(n - r);
+            return Fact(n) * Inv(n - r);
         }
         [MethodImpl(256)]
         public static ModInt Comb(int n, int r)
@@ -56,7 +61,7 @@ namespace Qlibrary
             if (n <= 0) return 0;
             if (n < r) return 0;
 
-            return Fact(n) / Fact(n - r) / Fact(r);
+            return Fact(n) * Inv(n - r) * Inv(r);
         }
     }
 }
