@@ -11,6 +11,8 @@ namespace Qlibrary
         /// <summary> 構築 </summary>
         public static void Build<T>(T item) => BuildByLine(item);
         /// <summary> 構築 </summary>
+        public static void BuildYesNo(bool condition) => BuildByLine(condition ? "Yes" : "No");
+        /// <summary> 構築 </summary>
         public static void BuildByLine<T>(T item) => Build(item, '\n');
         /// <summary> 構築 </summary>
         public static void BuildBySpace<T>(T item) => Build(item, ' ');
