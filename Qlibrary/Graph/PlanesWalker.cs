@@ -1,18 +1,31 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Qlibrary
 {
-    public class PlanesWalker
+    public struct Spark<T>
     {
-        public char Way { get; set; } = '.';
-        public char Wall { get; set; } = '#';
-        private readonly string[] plane;
-        private readonly List<(int X, int Y)> moveDirectionList = new List<(int,int)>();
+        public int H { get; set; }
+        public int W { get; set; }
+        public T Own { get; set; }
+        public T Up { get; set; }
+        public T Down { get; set; }
+        public T Left { get; set; }
+        public T Right { get; set; }
+        public List<T> Nears { get; set; }
+    }
+    
+    public class PlanesWalker<T>
+    {
+        public T Way { get; set; }
+        public T Wall { get; set; }
+        private readonly T[][] plane;
+        private readonly List<(int Y, int X)> moveDirectionList = new List<(int,int)>();
         private readonly int h;
         private readonly int w;
         
-        public PlanesWalker(string[] plane, int h, int w)
+        public PlanesWalker(T[][] plane, int h, int w)
         {
             this.plane = plane;
             this.h = h;
@@ -29,6 +42,31 @@ namespace Qlibrary
             foreach (var direction in moveDirection)
             {
                 moveDirectionList.Add(direction);
+            }
+        }
+
+        public void Walk(Action<Spark<T>> action, Action onRowStart = null, Action onRowProcessed = null)
+        {
+            for (int i = 0; i < h; i++)
+            {
+                onRowStart?.Invoke();
+                for (int j = 0; j < w; j++)
+                {
+                    var spark = new Spark<T> { Nears = new List<T>(), H = i, W = j, Own = plane[i][j] };
+                    foreach (var move in moveDirectionList)
+                    {
+                        if (move.X + j < 0 || w <= move.X + j) continue;
+                        if (move.Y + i < 0 || h <= move.Y + i) continue;
+                        T target = plane[move.Y + i][move.X + j];
+                        if (move == (0, -1)) spark.Left = target;
+                        if (move == (0, 1)) spark.Right = target;
+                        if (move == (-1, 0)) spark.Up = target;
+                        if (move == (1, 0)) spark.Down = target;
+                        spark.Nears.Add(target);
+                    }
+                    action(spark);
+                }
+                onRowProcessed?.Invoke();
             }
         }
 
@@ -58,7 +96,7 @@ namespace Qlibrary
                     int nextY = current.Y + y;
                     if ( nextX < 0 || w <= nextX ) { continue; }
                     if ( nextY < 0 || h <= nextY ) { continue; }
-                    if ( plane[nextY][nextX] == Wall ) { continue; }
+                    if ( plane[nextY][nextX].Equals(Wall) ) { continue; }
 
                     var next = (nextY, nextX);
                     int _01 = func(current, next);
@@ -105,7 +143,7 @@ namespace Qlibrary
                     int nextY = current.Y + y;
                     if ( nextX < 0 || w <= nextX ) { continue; }
                     if ( nextY < 0 || h <= nextY ) { continue; }
-                    if ( plane[nextY][nextX] == Wall ) { continue; }
+                    if ( plane[nextY][nextX].Equals(Wall) ) { continue; }
 
                     var next = (nextY, nextX);
                     int cost = func((current.Y, current.X), next);
@@ -153,7 +191,7 @@ namespace Qlibrary
                     int nextY = current.Y + y;
                     if ( nextX < 0 || w <= nextX ) { continue; }
                     if ( nextY < 0 || h <= nextY ) { continue; }
-                    if ( plane[nextY][nextX] == Wall ) { continue; }
+                    if ( plane[nextY][nextX].Equals(Wall) ) { continue; }
 
                     var next = (nextY, nextX, i);
                     int _01 = func(current, next);
