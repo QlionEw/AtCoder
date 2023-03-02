@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>QlibraryTester</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="BenchmarkDotNet" Version="0.13.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Qlibrary\Qlibrary.csproj" />
+    </ItemGroup>
+
+</Project>
