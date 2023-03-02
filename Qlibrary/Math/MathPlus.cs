@@ -102,41 +102,36 @@ namespace Qlibrary
             return value;
         }
 
+
         public static IEnumerable<IEnumerable<T>> GetPermutations<T>(params T[] array) where T : IComparable
+            => GetPermutations(array, 0, array.Length - 1);
+        
+        public static IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> items) where T : IComparable
         {
-            var a = new List<T>(array);
-            int n = a.Count;
-
-            yield return array;
-
-            bool next = true;
-            while (next)
+            var array = items.ToArray();
+            return GetPermutations(array, 0, array.Length - 1);
+        }
+        
+        private static IEnumerable<IEnumerable<T>> GetPermutations<T>(IList<T> list, int k, int m) where T : IComparable
+        {
+            if (k == m)
             {
-                next = false;
-                int i;
-                for (i = n - 2; i >= 0; i--)
+                yield return list;
+            }
+            else
+            {
+                for (int i = k; i <= m; i++)
                 {
-                    if (a[i].CompareTo(a[i + 1]) < 0) break;
-                }
-
-                if (i < 0) break;
-
-                int j = n;
-                do
-                {
-                    j--;
-                } while (a[i].CompareTo(a[j]) > 0);
-
-                if (a[i].CompareTo(a[j]) < 0)
-                {
-                    (a[i], a[j]) = (a[j], a[i]);
-                    a.Reverse(i + 1, n - i - 1);
-                    yield return a;
-                    next = true;
+                    (list[k], list[i]) = (list[i], list[k]);
+                    foreach (var perm in GetPermutations(list, k + 1, m))
+                    {
+                        yield return perm;
+                    }
+                    (list[k], list[i]) = (list[i], list[k]);
                 }
             }
         }
-
+        
         public static IEnumerable<T[]> GetCombinations<T>(IEnumerable<T> items, int k, bool withRepetition = false)
         {
             if (k == 0)
