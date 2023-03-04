@@ -75,59 +75,5 @@ namespace Qlibrary
 
             return ok;
         }
-        
-        public double SolveDoubleMax(Func<double, bool> judge, int loops = 100)
-        {
-            double ok = min;
-            double ng = max;
-            double i = (ok + ng) / 2.0;
-            for (int j = 0; j < loops; j++)
-            {
-                if (i == min || i == max)
-                {
-                    break;
-                }
-
-                if (judge(i))
-                {
-                    ok = i;
-                }
-                else
-                {
-                    ng = i;
-                }
-
-                i = (ok + ng) / 2.0;
-            }
-
-            return ok;
-        }
-
-        public double SolveDoubleMin(Func<double, bool> judge, int loops = 100)
-        {
-            double ok = max;
-            double ng = min;
-            double i = (ok + ng) / 2.0;
-            for (int j = 0; j < 100; j++)
-            {
-                if (i == min || i == max)
-                {
-                    break;
-                }
-
-                if (judge(i))
-                {
-                    ok = i;
-                }
-                else
-                {
-                    ng = i;
-                }
-
-                i = (ok + ng) / 2.0;
-            }
-
-            return ok;
-        }
     }
 }
