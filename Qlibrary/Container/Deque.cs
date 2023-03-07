@@ -29,6 +29,14 @@ namespace Qlibrary
             buffer = new T[this.capacity];
             firstIndex = 0;
         }
+        
+        public Deque(IEnumerable<T> initials, int capacity = 16) : this(capacity)
+        {
+            foreach (var initial in initials)
+            {
+                PushBack(initial);
+            }
+        }
 
         [MethodImpl(256)]
         public void PushBack(T data)
