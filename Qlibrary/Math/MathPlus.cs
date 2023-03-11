@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Qlibrary
 {
@@ -160,11 +161,28 @@ namespace Qlibrary
             }
         }
         
-        public static long BigPow(long baseValue, long pow, long mod = long.MaxValue)
+        public static long Pow(long baseValue, long pow, long mod = long.MaxValue)
         {
             long p = baseValue % mod;
             long x = 1;
             long ret = 1;
+
+            while (true) {
+                if ((pow & x) > 0) {
+                    ret = (ret * p) % mod;
+                }
+
+                x *= 2;
+                if (x > pow) return ret;
+                p = (p * p) % mod;
+            }
+        }
+        
+        public static BigInteger BigPow(BigInteger baseValue, BigInteger pow, BigInteger mod)
+        {
+            BigInteger p = baseValue % mod;
+            BigInteger x = 1;
+            BigInteger ret = 1;
 
             while (true) {
                 if ((pow & x) > 0) {

@@ -26,11 +26,11 @@ namespace Qlibrary
         [MethodImpl(256)]
         public static ModInt operator *(ModInt a, ModInt b) => a.value * b.value;
         [MethodImpl(256)]
-        public static ModInt operator /(ModInt a, ModInt b) => a * MathPlus.BigPow((long)b, ModValue - 2, ModValue);
+        public static ModInt operator /(ModInt a, ModInt b) => a * MathPlus.Pow((long)b, ModValue - 2, ModValue);
         [MethodImpl(256)]
         public static ModInt Fraction(long top, long bottom) => new ModInt(top) / bottom;
         [MethodImpl(256)]
-        public static ModInt Pow(ModInt a, long n) => MathPlus.BigPow((long)a, n, ModValue);
+        public static ModInt Pow(ModInt a, long n) => MathPlus.Pow((long)a, n, ModValue);
         [MethodImpl(256)]
         public static ModInt Inv(int n)
         {
