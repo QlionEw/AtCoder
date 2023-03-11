@@ -17,10 +17,7 @@ namespace Qlibrary
         public Plane(int h, int w, T def = default)
         {
             Init(h, w, def, () => Make(h, () => new T[w]));
-            if (def.Equals(default(T)))
-            {
-                return;
-            }
+            if (def.Equals(default(T))) {return;}
             foreach (var array in plane)
             {
                 Array.Fill(array, def);
@@ -42,16 +39,9 @@ namespace Qlibrary
 
         public T this[int h, int w]
         {
-            get => 0 <= h && h < row && 0 <= w && w < column ? plane[h][w] : defValue;
-            set
-            {
-                if (IsInRange(h, w))
-                {
-                    plane[h][w] = value;
-                }
-            }
+            [MethodImpl(256)] get => 0 <= h && h < row && 0 <= w && w < column ? plane[h][w] : defValue;
+            [MethodImpl(256)] set { if(IsInRange(h, w)) plane[h][w] = value; }
         }
-        
 
         [MethodImpl(256)] public T Left(int h, int w) => IsInRange(h, w-1) ? plane[h][w - 1] : defValue;
         [MethodImpl(256)] public T Right(int h, int w) => IsInRange(h, w+1) ? plane[h][w + 1] : defValue;
