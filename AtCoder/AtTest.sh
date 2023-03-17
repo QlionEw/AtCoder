@@ -17,7 +17,7 @@ cd ..
 dotnet publish -c $buildConfig -r osx.11.0-x64
 cd AtCoder
 
-cp -r bin/$buildConfig/netcoreapp3.1/osx.11.0-x64/* $questionPath
+cp -r bin/$buildConfig/netcoreapp3.1/osx.11.0-x64/publish/* $questionPath
 cp -f Combined.csx $questionPath/main.cs 
 cd $questionPath
 atcoder-tools test -t2

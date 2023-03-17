@@ -20,7 +20,7 @@ if not exist %questionPath%\ (
 )
 
 dotnet publish -c %buildConfig%
-xcopy /e bin\%buildConfig%\netcoreapp3.1 %questionPath% /Y
+xcopy /e bin\%buildConfig%\netcoreapp3.1\publish %questionPath% /Y
 cd %questionPath%
 atcoder-tools test -t2
 
