@@ -5,6 +5,7 @@ if [ "$buildConfig" = "" ]; then
     buildConfig=Debug
 fi 
 
+current=$(cd $(dirname $0); pwd)
 contestName=$(echo "$1" | sed 's/.\+/\L\0/')
 contestPath=~/atcoder-workspace/$contestName
 questionPath=~/atcoder-workspace/$contestName/$2
@@ -14,21 +15,21 @@ if [ ! -d $questionPath ]; then
 fi
 
 cd ..
-dotnet publish -c $buildConfig -r osx.11.0-x64
+dotnet publish -c $buildConfig
 cd AtCoder
 
-cp -r bin/$buildConfig/netcoreapp3.1/osx.11.0-x64/publish/* $questionPath
-cp -f Combined.csx $questionPath/main.cs 
+cp -v -r bin/$buildConfig/netcoreapp3.1/publish/* $questionPath
 cd $questionPath
-atcoder-tools test -t2
+atcoder-tools test -t2 -e ./AtCoder
 
 if [ $? -eq 0 ]; then
     echo "Submit?(y/n) "
     read submit
     if [ "$submit" = "y" ]; then
-        atcoder-tools submit -u -t2
+        cp -v -f $current/Combined.csx $questionPath/main.cs
+        atcoder-tools submit -u -t2 -e ./AtCoder
         open -a "Google Chrome" https://atcoder.jp/contests/$contestName/submissions/me
     fi
 fi
 
-cd `dirname $0`
+cd $current
