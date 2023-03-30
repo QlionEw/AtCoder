@@ -51,12 +51,12 @@ namespace Qlibrary
             return ok;
         }
 
-        public double SolveMin(Func<double, bool> judge, int loops = 100)
+        public double SolveMin(Func<double, bool> judge)
         {
             double ok = max;
             double ng = min;
             double i = (ok + ng) / 2.0;
-            for (int j = 0; j < 100; j++)
+            for (int j = 0; j < loops; j++)
             {
                 if (i == min || i == max)
                 {
