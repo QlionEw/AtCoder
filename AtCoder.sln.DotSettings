@@ -268,6 +268,33 @@ $SELECTION$$END$</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=C251FED96B291546B8D61F6204BC2A1B/Text/@EntryValue">int $INDEX$ = Si();
 long[][] $ARRAY$ = Sql($INDEX$,3);
 $SELECTION$$END$</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=CDA7108C3522C64FB449C4CF9511BAFE/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=CDA7108C3522C64FB449C4CF9511BAFE/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=CDA7108C3522C64FB449C4CF9511BAFE/Field/=INDEX/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=CDA7108C3522C64FB449C4CF9511BAFE/Field/=INDEX/Expression/@EntryValue">constant("q")</s:String>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=CDA7108C3522C64FB449C4CF9511BAFE/Field/=INDEX/Order/@EntryValue">0</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=CDA7108C3522C64FB449C4CF9511BAFE/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=CDA7108C3522C64FB449C4CF9511BAFE/Scope/=C3001E7C0DA78E4487072B7E050D86C5/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=CDA7108C3522C64FB449C4CF9511BAFE/Scope/=C3001E7C0DA78E4487072B7E050D86C5/CustomProperties/=minimumLanguageVersion/@EntryIndexedValue">2.0</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=CDA7108C3522C64FB449C4CF9511BAFE/Scope/=C3001E7C0DA78E4487072B7E050D86C5/Type/@EntryValue">InCSharpFile</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=CDA7108C3522C64FB449C4CF9511BAFE/Shortcut/@EntryValue">qry</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=CDA7108C3522C64FB449C4CF9511BAFE/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=CDA7108C3522C64FB449C4CF9511BAFE/Text/@EntryValue">Loop($INDEX$, () =&gt;
+{
+    int num = Si();
+    if (num == 1)
+    {
+        $SELECTION$$END$
+    }
+    else if (num == 2)
+    {
+        
+    }
+    else
+    {
+        
+    }
+});</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=D5AE995F5E19EE47AFB58CE235F268EA/Field/=VALUE/@KeyIndexDefined">True</s:Boolean>
