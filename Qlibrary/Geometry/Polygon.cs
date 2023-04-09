@@ -7,10 +7,15 @@ namespace Qlibrary
     {
         private const decimal Epsilon = (decimal)1e-8;
         private Point2D[] edges;
-        
-        public IEnumerable<Point2D> ConvexHull(Point2D[] ps)
+
+        public Polygon(Point2D[] edges)
         {
-            ps = ps.OrderBy(x => x).ToArray();
+            this.edges = edges;
+        }
+        
+        public IEnumerable<Point2D> ConvexHull()
+        {
+            var ps = edges.OrderBy(x => x).ToArray();
             int n = ps.Length;
             int k = 0;
             var ch = new Point2D[2 * n];

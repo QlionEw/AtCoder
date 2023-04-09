@@ -31,6 +31,9 @@ namespace Qlibrary
             }
         }
 
+        [MethodImpl(256)]
+        public long Sum(int l, int r) => box[r] - (l == 0 ? 0 : box[l - 1]);
+
         public void Calculate()
         {
             for (int i = 0; i < box.Length - 1; i++)
