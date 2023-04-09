@@ -26,7 +26,7 @@ namespace Qlibrary
         {
         }
         
-        public Set(IEnumerable<T>items , bool isMultiSet) : this(Comparer<T>.Default, isMultiSet)
+        public Set(IEnumerable<T>items , bool isMultiSet = false) : this(Comparer<T>.Default, isMultiSet)
         {
             foreach (var item in items)
             {
@@ -48,7 +48,7 @@ namespace Qlibrary
             return Remove(ref root, v);
         }
 
-        public T this[int index] => Find(root, index);
+        public T this[int index] => InnerFind(root, index);
         public int Count => root.Count;
 
         public void RemoveAt(int k)
@@ -128,7 +128,7 @@ namespace Qlibrary
                 }
 
 
-                t.Key = Find(t.Lst, k - 1);
+                t.Key = InnerFind(t.Lst, k - 1);
                 RemoveAt(ref t.Lst, k - 1);
             }
 
@@ -155,7 +155,7 @@ namespace Qlibrary
                     return;
                 }
 
-                t.Key = Find(t.Lst, k - 1);
+                t.Key = InnerFind(t.Lst, k - 1);
                 RemoveAt(ref t.Lst, k - 1);
             }
 
@@ -179,7 +179,7 @@ namespace Qlibrary
             else t.Update();
         }
 
-        private T Find(Node t, int k)
+        private T InnerFind(Node t, int k)
         {
             if (k < 0 || k > root.Count) throw new ArgumentOutOfRangeException();
             for (;;)
@@ -192,6 +192,13 @@ namespace Qlibrary
                     t = t.Rst;
                 }
             }
+        }
+
+        public (bool IsFound, int Prev, int Next) Find(T v)
+        {
+            var upper = UpperBound(v);
+            var lower = LowerBound(v);
+            return (upper - lower >= 2, lower, upper);
         }
 
         public int LowerBound(T v)
