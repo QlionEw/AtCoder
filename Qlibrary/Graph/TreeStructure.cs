@@ -22,6 +22,15 @@ namespace Qlibrary
             Vertexes = Enumerable.Range(0, size + 1).Select(_ => new TreeVertex()).ToArray();
         }
 
+        public TreeStructure(int[][] tree)
+        {
+            Vertexes = Enumerable.Range(0, tree.Length + 2).Select(_ => new TreeVertex()).ToArray();
+            foreach (var path in tree)
+            {
+                ConnectEach(path[0], path[1]);
+            }
+        }
+
         public void Connect(int index, int index2, long cost = 1)
         {
             Vertexes[index].Ways.Add(index2);
