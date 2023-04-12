@@ -79,6 +79,8 @@ namespace Qlibrary
             }
             action(self[key]);
         }
+        
+        public static void Init<T>(this T[] array, T value) => Array.Fill(array, value);
 
         public static void Init<T>(this T[,] array, T value)
         {
