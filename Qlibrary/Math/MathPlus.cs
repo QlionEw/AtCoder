@@ -194,5 +194,7 @@ namespace Qlibrary
                 p = (p * p) % mod;
             }
         }
+        
+        public static double ToDegree(double radian) => radian * (180.0 / Math.PI);
     }
 }

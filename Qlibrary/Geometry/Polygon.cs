@@ -5,18 +5,19 @@ namespace Qlibrary
 {
     public class Polygon
     {
-        private const decimal Epsilon = (decimal)1e-8;
+        private readonly int n;
+        private const double Epsilon = 1e-8;
         private Point2D[] edges;
 
         public Polygon(Point2D[] edges)
         {
             this.edges = edges;
+            n = edges.Length;
         }
         
         public IEnumerable<Point2D> ConvexHull()
         {
             var ps = edges.OrderBy(x => x).ToArray();
-            int n = ps.Length;
             int k = 0;
             var ch = new Point2D[2 * n];
             for (int i = 0; i < n; ch[k++] = ps[i++])
@@ -34,6 +35,14 @@ namespace Qlibrary
             return edges;
         }
 
-        public decimal Area => edges.Select((t, i) => t.Cross(edges[(i + 1) % edges.Length])).Sum() * (decimal)0.5;
+        public double Area => edges.Select((t, i) => t.Cross(edges[(i + 1) % edges.Length])).Sum() * 0.5;
+
+        public IEnumerable<double> GetAngles()
+        {
+            for (int i = 0; i < edges.Length; i++)
+            {
+                yield return edges[i].Angle(edges[(i + 1) % n], edges[(i - 1 + n) % n]);
+            }
+        }
     }
 }

@@ -5,18 +5,18 @@ using static System.Math;
 
 namespace Qlibrary
 {
-    public class Point2D : IComparable<Point2D>, IEquatable<Point2D>
+    public struct Point2D : IComparable<Point2D>, IEquatable<Point2D>
     {
-        public decimal X { get; }
-        public decimal Y { get; }
+        public double X { get; }
+        public double Y { get; }
 
-        public Point2D(decimal x, decimal y)
+        public Point2D(double x, double y)
         {
             X = x;
             Y = y;
         }
 
-        public Point2D((decimal, decimal) tuple)
+        public Point2D((double, double) tuple)
         {
             X = tuple.Item1;
             Y = tuple.Item2;
@@ -37,16 +37,31 @@ namespace Qlibrary
         /// <summary> 不等号 </summary>
         public static bool operator!= (Point2D a, Point2D b) => !(a == b);
         /// <summary> 内積 </summary>
-        public decimal Dot(Point2D other) => X * other.X - Y * other.Y;
+        public double Dot(Point2D other) => X * other.X - Y * other.Y;
         /// <summary> 外積 </summary>
-        public decimal Cross(Point2D other) => X * other.Y - Y * other.X;
+        public double Cross(Point2D other) => X * other.Y - Y * other.X;
         /// <summary> 傾き </summary>
-        public decimal Slope(Point2D other) => X - other.X == 0 ? decimal.MaxValue : (other.Y - Y) / (other.X - X);
+        public double Slope(Point2D other) => X - other.X == 0 ? double.MaxValue : (other.Y - Y) / (other.X - X);
         /// <summary> 切片 </summary>
-        public decimal Intercept(Point2D other) => X - other.X == 0 ? decimal.MaxValue : Cross(other) / (X - other.X);
+        public double Intercept(Point2D other) => X - other.X == 0 ? double.MaxValue : Cross(other) / (X - other.X);
         /// <summary> 距離 </summary>
         public double Distance(Point2D other) => Sqrt(Pow((double)(X - other.X), 2) + Pow((double)(Y - other.Y), 2));
+        /// <summary> 偏角 </summary>
+        public double Angle(Point2D other) => Atan2(other.X - X, other.Y - Y);
+        /// <summary> 3点間のなす角 </summary>
+        public double Angle(Point2D other1, Point2D other2)
+        {
+            double baX = X - other1.X;
+            double baY = Y - other1.Y;
+            double bcX = other2.X - other1.X;
+            double bcY = other2.Y - other1.Y;
 
+            double dotProduct = baX * bcX + baY * bcY;
+            double crossProduct = baX * bcY - baY * bcX;
+
+            return Atan2(crossProduct, dotProduct);
+        }
+        
         [MethodImpl(256)]
         public int CompareTo(Point2D other)
         {
