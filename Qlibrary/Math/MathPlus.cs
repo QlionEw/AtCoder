@@ -161,7 +161,7 @@ namespace Qlibrary
             }
         }
         
-        public static long Pow(long baseValue, long pow, long mod = long.MaxValue)
+        public static long BigPow(long baseValue, long pow, long mod = long.MaxValue)
         {
             long p = baseValue % mod;
             long x = 1;
@@ -178,7 +178,7 @@ namespace Qlibrary
             }
         }
         
-        public static BigInteger BigPow(BigInteger baseValue, BigInteger pow, BigInteger mod)
+        public static BigInteger MoreBigPow(BigInteger baseValue, BigInteger pow, BigInteger mod)
         {
             BigInteger p = baseValue % mod;
             BigInteger x = 1;
