@@ -6,28 +6,16 @@ namespace Qlibrary
 {
     public class GraphSolver
     {
-        public struct PathInfo : IComparable<PathInfo>
-        {
-            public int From { get; set; }
-            public int To { get; set; }
-            public long Cost { get; set; }
-
-            public int CompareTo(PathInfo other)
-            {
-                return (int) (Cost - other.Cost);
-            }
-        }
-
-        private readonly List<PathInfo>[] pathInfos;
+        private readonly Graph graph;
         public long[] Distances { get; private set; }
         private int pathCount = 0;
         private readonly int nodeCount;
 
-        public GraphSolver(int nodeCount)
+        public GraphSolver(Graph g)
         {
-            this.nodeCount = nodeCount;
+            graph = g;
+            nodeCount = g.Count;
             Distances = Enumerable.Repeat(Common.Infinity, nodeCount + 1).ToArray();
-            pathInfos = Enumerable.Repeat(0, nodeCount + 1).Select(_ => new List<PathInfo>()).ToArray();
         }
 
         public void Init()
@@ -49,27 +37,27 @@ namespace Qlibrary
         private void AddPath(int from, int to, long cost, params long[] additionalInfo)
         {
             pathCount++;
-            pathInfos[from].Add(new PathInfo {From = from, To = to, Cost = cost});
+            graph[from].Add(new Edge {From = from, To = to, Cost = cost});
         }
 
         public void Dijkstra(int point)
         {
-            PriorityQueue<PathInfo> queue = new PriorityQueue<PathInfo>(pathCount + 1);
+            PriorityQueue<Edge> queue = new PriorityQueue<Edge>(pathCount + 1);
             Distances[point] = 0;
-            queue.Enqueue(new PathInfo {To = point, Cost = 0});
+            queue.Enqueue(new Edge {To = point, Cost = 0});
 
             while (queue.Count != 0)
             {
-                PathInfo pop = queue.Dequeue();
+                Edge pop = queue.Dequeue();
                 if (Distances[pop.To] < pop.Cost) { continue; }
 
-                foreach (PathInfo path in pathInfos[pop.To])
+                foreach (Edge path in graph[pop.To])
                 {
                     long nextValue = Distances[pop.To] + path.Cost;
                     if (Distances[path.To] > nextValue)
                     {
                         Distances[path.To] = nextValue;
-                        queue.Enqueue(new PathInfo {From = path.From, To = path.To, Cost = Distances[path.To]});
+                        queue.Enqueue(new Edge {From = path.From, To = path.To, Cost = Distances[path.To]});
                     }
                 }
             }
@@ -95,7 +83,7 @@ namespace Qlibrary
                     continue;
                 }
                 isVisited[index] = true;
-                foreach (PathInfo path in pathInfos[index])
+                foreach (Edge path in graph[index])
                 {
                     long d = Distances[index] + path.Cost;
                     if (d < Distances[path.To])
@@ -118,10 +106,10 @@ namespace Qlibrary
 
         public long Kruskal()
         {
-            var edges = pathInfos.SelectMany(pathInfo => pathInfo).OrderBy(x => x.Cost).ToList();
+            var edges = graph.SelectMany(pathInfo => pathInfo).OrderBy(x => x.Cost).ToList();
             long totalCost = 0;
             var uft = new UnionFindTree(nodeCount + 1);
-            foreach (PathInfo edge in edges.Where(edge => !uft.Same(edge.From, edge.To)))
+            foreach (Edge edge in edges.Where(edge => !uft.Same(edge.From, edge.To)))
             {
                 uft.Unite(edge.From, edge.To);
                 totalCost += edge.Cost;
@@ -129,19 +117,19 @@ namespace Qlibrary
             return totalCost;
         }
 
-        private PathInfo[] bellmanFordList;
+        private Edge[] bellmanFordList;
         public bool[] IsLoop { get; private set; }
 
         public void BellmanFord(int point, bool isDetectLoop = false)
         {
-            bellmanFordList = pathInfos.SelectMany(x => x).ToArray();
+            bellmanFordList = graph.SelectMany(x => x).ToArray();
             IsLoop = Enumerable.Repeat(false, nodeCount + 1).ToArray();
             Distances[point] = 0;
             int count;
             for (count = 0; count < Distances.Length; count++)
             {
                 bool isUpdated = false;
-                foreach (PathInfo path in bellmanFordList)
+                foreach (Edge path in bellmanFordList)
                 {
                     if (Distances[path.From] == Common.Infinity) { continue; }
 
@@ -164,7 +152,7 @@ namespace Qlibrary
         {
             for (int i = 0; i <= Distances.Length; i++)
             {
-                foreach (PathInfo path in bellmanFordList)
+                foreach (Edge path in bellmanFordList)
                 {
                     if (Distances[path.From] == Common.Infinity) { continue; }
 
@@ -184,17 +172,17 @@ namespace Qlibrary
 
         private bool[] sccUsed;
         private List<int> sccOrder;
-        private List<PathInfo>[] reversePathInfos;
+        private List<Edge>[] reversePathInfos;
         private int[] sccGroups;
 
         public IEnumerable<int> StronglyConnectedComponent()
         {
             sccUsed = new bool[nodeCount + 1];
             sccOrder = new List<int>();
-            reversePathInfos = Enumerable.Repeat(0, nodeCount + 1).Select(_ => new List<PathInfo>()).ToArray();
-            foreach (var path in pathInfos.SelectMany(x => x))
+            reversePathInfos = Enumerable.Repeat(0, nodeCount + 1).Select(_ => new List<Edge>()).ToArray();
+            foreach (var path in graph.SelectMany(x => x))
             {
-                reversePathInfos[path.To].Add(new PathInfo {From = path.To, To = path.From, Cost = path.Cost});
+                reversePathInfos[path.To].Add(new Edge {From = path.To, To = path.From, Cost = path.Cost});
             }
 
             for (int i = 1; i <= nodeCount; i++)
@@ -222,7 +210,7 @@ namespace Qlibrary
         private void SccDfs(int index)
         {
             sccUsed[index] = true;
-            foreach (var to in pathInfos[index].Select(x => x.To))
+            foreach (var to in graph[index].Select(x => x.To))
             {
                 if (!sccUsed[to])
                 {
@@ -268,7 +256,7 @@ namespace Qlibrary
                 }
             }
 
-            foreach (var path in pathInfos.SelectMany(x => x))
+            foreach (var path in graph.SelectMany(x => x))
             {
                 warshallFloydDp[path.From][path.To] = path.Cost;
             }
