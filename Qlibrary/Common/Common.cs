@@ -6,8 +6,8 @@ namespace Qlibrary
 {
     public static class Common
     {
-        public const int InfinityInt = 1 << 29;
-        public const long Infinity = (long) 1 << 60;
+        public const int InfinityInt = 1 << 30;
+        public const long Infinity = 1L << 62;
         public static readonly StreamScanner Scanner = new StreamScanner(Console.OpenStandardInput());
         public static int Si() => Scanner.Integer();
         public static long Sl() => Scanner.Long();
