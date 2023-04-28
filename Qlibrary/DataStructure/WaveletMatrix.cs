@@ -78,7 +78,8 @@ namespace Qlibrary
             return ((uint)l + zeros - l0, (uint)r + zeros - r0);
         }
 
-        // return a[k]
+        /// k番目の要素の値を得る。
+        [MethodImpl(256)]
         public long Access(int k)
         {
             long ret = 0;
@@ -97,8 +98,21 @@ namespace Qlibrary
             return ret;
         }
 
-        // k-th (0-indexed) smallest number in a[l, r)
-        public long KthSmallest(int l, int r, int k)
+        /// [l, r]の範囲でk(1-indexed)番目に小さい値を返す。
+        [MethodImpl(256)] public long GetKthSmallest(int l, int r, int k) => KthSmallest(l, r + 1, k - 1);
+        /// [l, r]の範囲でk(1-indexed)番目に大きい値を返す。
+        [MethodImpl(256)] public long GetKthLargest(int l, int r, int k) => KthLargest(l, r + 1, k - 1);
+        /// [l, r]の範囲でupper以下の要素の個数を返す。
+        [MethodImpl(256)] public int GetRangeCount(int l, int r, long upper) => RangeFreq(l, r + 1, upper + 1);
+        /// [l, r]の範囲でlower以上upper以下の要素の個数を返す。
+        [MethodImpl(256)] public int GetRangeCount(int l, int r, long lower, long upper) => RangeFreq(l, r + 1, lower, upper + 1);
+        /// [l, r]の範囲でupper以下の最後の値を返す。
+        [MethodImpl(256)] public long GetPreviousValue(int l, int r, long upper) => PrevValue(l, r + 1, upper + 1);
+        /// [l, r]の範囲でlower以上の最後の値を返す。
+        [MethodImpl(256)] public long GetNextValue(int l, int r, long lower) => NextValue(l, r + 1, lower);
+
+        [MethodImpl(256)]
+        private long KthSmallest(int l, int r, int k)
         {
             long res = 0;
             uint ll = (uint)l, rr = (uint)r, kk = (uint)k;
@@ -123,14 +137,13 @@ namespace Qlibrary
             return res;
         }
 
-        // k-th (0-indexed) largest number in a[l, r)
-        public long KthLargest(int l, int r, int k)
-        {
-            return KthSmallest(l, r, r - l - k - 1);
-        }
 
-        // count i s.t. (l <= i < r) && (v[i] < upper)
-        public int RangeFreq(int l, int r, long upper)
+        [MethodImpl(256)]
+        private long KthLargest(int l, int r, int k) => KthSmallest(l, r, r - l - k - 1);
+
+
+        [MethodImpl(256)]
+        private int RangeFreq(int l, int r, long upper)
         {
             if (upper >= (1L << lg)) return r - l;
             int ret = 0;
@@ -155,27 +168,27 @@ namespace Qlibrary
             return ret;
         }
 
+        [MethodImpl(256)]
         public int RangeFreq(int l, int r, long lower, long upper)
         {
             return RangeFreq(l, r, upper) - RangeFreq(l, r, lower);
         }
 
-        // max v[i] s.t. (l <= i < r) && (v[i] < upper)
-        public long PrevValue(int l, int r, long upper)
+        [MethodImpl(256)]
+        private long PrevValue(int l, int r, long upper)
         {
             int cnt = RangeFreq(l, r, upper);
             return cnt == 0 ? 0 : KthSmallest(l, r, cnt - 1);
         }
 
-        // min v[i] s.t. (l <= i < r) && (lower <= v[i])
+        [MethodImpl(256)]
         public long NextValue(int l, int r, long lower)
         {
             int cnt = RangeFreq(l, r, lower);
             return cnt == r - l ? 0 : KthSmallest(l, r, cnt);
         }
-        
 
-        class BitVector
+        private class BitVector
         {
             private const uint W = 64;
             private List<ulong> block;
@@ -218,7 +231,7 @@ namespace Qlibrary
             public uint Rank1(uint i)
             {
                 ulong val = block[(int)(i / W)];
-                if (i%W == 0)
+                if (i % W == 0)
                 {
                     val = 0;
                 }

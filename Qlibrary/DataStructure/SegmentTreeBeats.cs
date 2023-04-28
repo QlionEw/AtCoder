@@ -50,13 +50,13 @@ namespace Qlibrary
             for (int i = n - 1; i > 0; --i) Update(i);
         }
 
-        [MethodImpl(256)] public void UpdateMin(int l, int r, long x) => InnerApply(l, r, x, 1);
-        [MethodImpl(256)] public void UpdateMax(int l, int r, long x) => InnerApply(l, r, x, 2);
-        [MethodImpl(256)] public void Add(int l, int r, long x) => InnerApply(l, r, x, 3);
-        [MethodImpl(256)] public void SetValue(int l, int r, long x) => InnerApply(l, r, x, 4);
-        [MethodImpl(256)] public long GetRangeMin(int l, int r) => InnerFold(l, r, 1);
-        [MethodImpl(256)] public long GetRangeMax(int l, int r) => InnerFold(l, r, 2);
-        [MethodImpl(256)] public long GetRangeSum(int l, int r) => InnerFold(l, r, 3);
+        [MethodImpl(256)] public void UpdateMin(int l, int r, long x) => InnerApply(l, r + 1, x, 1);
+        [MethodImpl(256)] public void UpdateMax(int l, int r, long x) => InnerApply(l, r + 1, x, 2);
+        [MethodImpl(256)] public void Add(int l, int r, long x) => InnerApply(l, r + 1, x, 3);
+        [MethodImpl(256)] public void SetValue(int l, int r, long x) => InnerApply(l, r + 1, x, 4);
+        [MethodImpl(256)] public long GetRangeMin(int l, int r) => InnerFold(l, r + 1, 1);
+        [MethodImpl(256)] public long GetRangeMax(int l, int r) => InnerFold(l, r + 1, 2);
+        [MethodImpl(256)] public long GetRangeSum(int l, int r) => InnerFold(l, r + 1, 3);
 
         [MethodImpl(256)]
         private void Update(int k)
