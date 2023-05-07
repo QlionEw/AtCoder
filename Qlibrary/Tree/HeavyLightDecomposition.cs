@@ -24,7 +24,6 @@ namespace Qlibrary
                     }
                 }
                 Depth[dst.To] = Depth[cur] + 1;
-                Cost[dst.To] = Cost[cur] + dst.Cost;
                 parent[dst.To] = cur;
                 DfsForSize(dst.To);
                 Size[cur] += Size[dst.To];
@@ -71,7 +70,6 @@ namespace Qlibrary
 
         private readonly Graph g;
         private int id;
-        public long[] Cost { get; }
         public int[] Depth { get; }
         public int[] Size { get; }
         private readonly int[] down;
@@ -85,7 +83,6 @@ namespace Qlibrary
             id = 0;
             Size = new int[g.Count];
             Depth = new int[g.Count];
-            Cost = new long[g.Count];
             down = new int[g.Count];
             up = new int[g.Count];
             nxt = new int[g.Count];
@@ -169,11 +166,6 @@ namespace Qlibrary
         public int Distance(int a, int b)
         {
             return Depth[a] + Depth[b] - Depth[GetLca(a, b)] * 2;
-        }
-        
-        public long GetCost(int a, int b)
-        {
-            return Cost[a] + Cost[b] - Cost[GetLca(a, b)] * 2;
         }
     };
 }

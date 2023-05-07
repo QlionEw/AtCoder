@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cost = System.Int64;
 
 namespace Qlibrary
 {
     public class GraphSolver
     {
+        private readonly Cost Invalid = Common.Infinity;
         private readonly Graph graph;
-        public long[] Distances { get; private set; }
+        public Cost[] Distances { get; private set; }
         private int pathCount = 0;
         private readonly int nodeCount;
 
@@ -15,12 +17,12 @@ namespace Qlibrary
         {
             graph = g;
             nodeCount = g.Count;
-            Distances = Enumerable.Repeat(Common.Infinity, nodeCount + 1).ToArray();
+            Distances = Enumerable.Repeat(Invalid, nodeCount + 1).ToArray();
         }
 
         public void Init()
         {
-            Distances = Enumerable.Repeat(Common.Infinity, Distances.Length).ToArray();
+            Distances = Enumerable.Repeat(Invalid, Distances.Length).ToArray();
         }
 
         public void AddDirectedPath(int from, int to, long cost, params long[] additionalInfo)
@@ -53,7 +55,7 @@ namespace Qlibrary
 
                 foreach (Edge path in graph[pop.To])
                 {
-                    long nextValue = Distances[pop.To] + path.Cost;
+                    Cost nextValue = Distances[pop.To] + path.Cost;
                     if (Distances[path.To] > nextValue)
                     {
                         Distances[path.To] = nextValue;
@@ -64,7 +66,7 @@ namespace Qlibrary
         }
 
         private bool[] isVisited; 
-        public long _01Bfs(int start, int end = -1)
+        public Cost _01Bfs(int start, int end = -1)
         {
             Deque<int> deque = new Deque<int>();
             isVisited = new bool[nodeCount + 1];
@@ -85,7 +87,7 @@ namespace Qlibrary
                 isVisited[index] = true;
                 foreach (Edge path in graph[index])
                 {
-                    long d = Distances[index] + path.Cost;
+                    Cost d = Distances[index] + path.Cost;
                     if (d < Distances[path.To])
                     {
                         Distances[path.To] = d;
@@ -104,10 +106,10 @@ namespace Qlibrary
             return -1;
         }
 
-        public long Kruskal()
+        public Cost Kruskal()
         {
             var edges = graph.SelectMany(pathInfo => pathInfo).OrderBy(x => x.Cost).ToList();
-            long totalCost = 0;
+            Cost totalCost = 0;
             var uft = new UnionFindTree(nodeCount + 1);
             foreach (Edge edge in edges.Where(edge => !uft.Same(edge.From, edge.To)))
             {
@@ -131,7 +133,7 @@ namespace Qlibrary
                 bool isUpdated = false;
                 foreach (Edge path in bellmanFordList)
                 {
-                    if (Distances[path.From] == Common.Infinity) { continue; }
+                    if (Distances[path.From] == Invalid) { continue; }
 
                     if (Distances[path.To] <= Distances[path.From] + path.Cost) { continue; }
 
@@ -234,14 +236,14 @@ namespace Qlibrary
             }
         }
 
-        private long[][] warshallFloydDp;
+        private Cost[][] warshallFloydDp;
         private int[][] warshallFloydPathPrev;
 
-        public long[][] WarshallFloyd(int nIndexed)
+        public Cost[][] WarshallFloyd(int nIndexed)
         {
             var loopCount = nodeCount + nIndexed;
             warshallFloydDp = Enumerable.Repeat(0, loopCount)
-                .Select(_ => Enumerable.Repeat(Common.Infinity, loopCount).ToArray()).ToArray();
+                .Select(_ => Enumerable.Repeat(Invalid, loopCount).ToArray()).ToArray();
             for (int i = 0; i < loopCount; i++)
             {
                 warshallFloydDp[i][i] = 0;

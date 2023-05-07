@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using static Qlibrary.Common;
+using Cost = System.Int64;
 
 namespace Qlibrary
 {
@@ -10,12 +11,12 @@ namespace Qlibrary
     {
         public int From { get; set; }
         public int To { get; set; }
-        public long Cost { get; set; }
+        public Cost Cost { get; set; }
         public int Index { get; set; }
 
         public static bool operator ==(Edge a, Edge b) => a.Equals(b);
         public static bool operator !=(Edge a, Edge b) => !(a == b);
-        public int CompareTo(Edge other) => (int) (Cost - other.Cost);
+        public int CompareTo(Edge other) => Cost - other.Cost > 0 ? 1 : (Cost - other.Cost) < 0 ? -1 : 0;
         public bool Equals(Edge other) => From == other.From && To == other.To;
         public override bool Equals(object obj) => obj is Edge other && Equals(other);
         public override int GetHashCode() => HashCode.Combine(From, To);
@@ -27,6 +28,7 @@ namespace Qlibrary
         private readonly List<Edge>[] graph;
         private Dictionary<long, long>[] additionalInfo;
         public int Count { get; }
+        public int PathCount { get; private set; }
         public bool IsDirected { get;}
 
         public Graph(int n, bool isDirected)
@@ -41,14 +43,13 @@ namespace Qlibrary
             SetPath(paths);
         }
         
-        public void SetPath(int[][] paths)
+        private void SetPath(int[][] paths)
         {
             for (int i = 0; i < paths.Length; i++)
             {
                 var path = paths[i];
                 int cost = path.Length == 2 ? 1 : path[2];
-                graph[path[0]].Add(new Edge{ From = path[0], To = path[1], Cost = cost, Index = i });
-                if (!IsDirected) graph[path[1]].Add(new Edge{ From = path[1], To = path[0], Cost = cost, Index = i });
+                AddPath(path[0], path[1], cost);
             }
         }
 
@@ -76,5 +77,11 @@ namespace Qlibrary
         public List<Edge> this[int edge] => graph[edge];
         public IEnumerator<List<Edge>> GetEnumerator() => graph.AsEnumerable().GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public void AddPath(int p, int q, Cost cost)
+        {
+            PathCount++;
+            graph[p].Add(new Edge{ From = p, To = q, Cost = cost, Index = PathCount });
+            if (!IsDirected) graph[q].Add(new Edge{ From = q, To = p, Cost = cost, Index = PathCount });
+        } 
     }
 }
