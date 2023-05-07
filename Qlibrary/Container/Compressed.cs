@@ -38,8 +38,12 @@ namespace Qlibrary
             {
                 Generate(list);
             }
-
-            return dict[index];
+            if (dict.TryGetValue(index, out var v))
+            {
+                return v;
+            }
+            
+            return -1;
         }
 
         public int Count()
