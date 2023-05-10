@@ -97,7 +97,7 @@ $SELECTION$$END$</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=38C4E9BA896E0A45A174B95BAFA6C06B/Scope/=C3001E7C0DA78E4487072B7E050D86C5/Type/@EntryValue">InCSharpFile</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=38C4E9BA896E0A45A174B95BAFA6C06B/Shortcut/@EntryValue">n</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=38C4E9BA896E0A45A174B95BAFA6C06B/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
-	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=38C4E9BA896E0A45A174B95BAFA6C06B/Text/@EntryValue">int $VALUE$ = Scanner.Integer();
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=38C4E9BA896E0A45A174B95BAFA6C06B/Text/@EntryValue">int $VALUE$ = Si();
 $END$</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=473A913CF3AC9948B7AF4BF4F9D7F3CC/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=473A913CF3AC9948B7AF4BF4F9D7F3CC/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
