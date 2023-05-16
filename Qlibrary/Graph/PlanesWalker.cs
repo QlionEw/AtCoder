@@ -32,15 +32,15 @@ namespace Qlibrary
             }
         }
 
-        private int[,] distances; 
+        public int[,] Distances { get; set; }
         private bool[,] isVisited; 
         public int _01Bfs((int Y, int X) start, (int Y, int X) end, Func<(int Y, int X), (int Y, int X), int> func)
         {
             Deque<(int Y, int X)> deque = new Deque<(int, int)>();
             isVisited = new bool[h, w];
-            distances = new int[h, w];
-            distances.Init(Common.InfinityInt);
-            distances[start.Y, start.X] = 0;
+            Distances = new int[h, w];
+            Distances.Init(Common.InfinityInt);
+            Distances[start.Y, start.X] = 0;
             deque.PushBack((start.Y, start.X));
 
             while (deque.Length != 0)
@@ -48,7 +48,7 @@ namespace Qlibrary
                 var current = deque.PopFront();
                 if (current.X == end.X && current.Y == end.Y)
                 {
-                    return distances[current.Y, current.X];
+                    return Distances[current.Y, current.X];
                 }
                 if (isVisited[current.Y, current.X]) { continue; }
                 isVisited[current.Y, current.X] = true;
@@ -62,10 +62,10 @@ namespace Qlibrary
 
                     var next = (nextY, nextX);
                     int _01 = func(current, next);
-                    int dd = distances[current.Y, current.X] + _01; 
-                    if (dd < distances[nextY, nextX])
+                    int dd = Distances[current.Y, current.X] + _01; 
+                    if (dd < Distances[nextY, nextX])
                     {
-                        distances[nextY, nextX] = dd;
+                        Distances[nextY, nextX] = dd;
                         if (_01 == 0)
                         {
                             deque.PushFront(next);
@@ -85,9 +85,9 @@ namespace Qlibrary
         {
             PriorityQueue<(int totalCost, int Y, int X)> pq = new PriorityQueue<(int, int, int)>(h * w);
             isVisited = new bool[h, w];
-            distances = new int[h, w];
-            distances.Init(Common.InfinityInt);
-            distances[start.Y, start.X] = 0;
+            Distances = new int[h, w];
+            Distances.Init(Common.InfinityInt);
+            Distances[start.Y, start.X] = 0;
             pq.Enqueue((0, start.Y, start.X));
 
             while (pq.Count != 0)
@@ -95,7 +95,7 @@ namespace Qlibrary
                 var current = pq.Dequeue();
                 if (current.X == end.X && current.Y == end.Y)
                 {
-                    return distances[current.Y, current.X];
+                    return Distances[current.Y, current.X];
                 }
                 if (isVisited[current.Y, current.X]) { continue; }
                 isVisited[current.Y, current.X] = true;
@@ -109,10 +109,10 @@ namespace Qlibrary
 
                     var next = (nextY, nextX);
                     int cost = func((current.Y, current.X), next);
-                    int dd = distances[current.Y, current.X] + cost; 
-                    if (dd < distances[nextY, nextX])
+                    int dd = Distances[current.Y, current.X] + cost; 
+                    if (dd < Distances[nextY, nextX])
                     {
-                        distances[nextY, nextX] = dd;
+                        Distances[nextY, nextX] = dd;
                         pq.Enqueue((dd, nextY, nextX));
                     }
                 }
