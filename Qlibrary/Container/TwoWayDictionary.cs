@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Qlibrary
 {
@@ -6,6 +7,7 @@ namespace Qlibrary
     {
         public Dictionary<T1, T2> Fore { get; } = new Dictionary<T1, T2>();
         public Dictionary<T2, T1> Back { get; } = new Dictionary<T2, T1>();
+        public int Count => Fore.Count;
 
         public void Add(T1 key, T2 value)
         {
