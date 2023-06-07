@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
     public class Flow
     {
-        private class FlowEdge
+        private struct FlowEdge
         {
             public int To { get; set; }
             public long Capacity { get; set; }
@@ -25,6 +26,7 @@ namespace Qlibrary
             graphs = Enumerable.Range(0, size+1).Select(_ => new List<FlowEdge>()).ToArray();
         }
 
+        [MethodImpl(256)]
         public void AddEdge(int from, int to, long capacity, long cost = 0)
         {
             graphs[from].Add(new FlowEdge{ To = to, Capacity = capacity, Cost = cost, Reverse = graphs[to].Count});
@@ -121,14 +123,18 @@ namespace Qlibrary
                 for (long i = t; i != s; i = prevv[i])
                 {
                     var e = graphs[prevv[i]][(int)preve[i]];
-                    e.Capacity -= d;
-                    graphs[i][e.Reverse].Capacity += d;
+                    graphs[prevv[i]][(int)preve[i]] = new FlowEdge
+                        { To = e.To, Cost = e.Cost, Reverse = e.Reverse, Capacity = e.Capacity - d };
+                    var r = graphs[i][e.Reverse];
+                    graphs[i][e.Reverse] = new FlowEdge
+                        { To = r.To, Cost = r.Cost, Reverse = r.Reverse, Capacity = r.Capacity + d };
                 }
             }
 
             return res;
         }
 
+        [MethodImpl(256)]
         private long FlowDfs(int from, int to, long flow)
         {
             if (from == to)
@@ -142,13 +148,17 @@ namespace Qlibrary
                 if (e.Capacity <= 0 || level[from] >= level[e.To]) {continue;}
                 long d = FlowDfs(e.To, to, Math.Min(flow, e.Capacity));
                 if (d <= 0) {continue;}
-                e.Capacity -= d;
-                graphs[e.To][e.Reverse].Capacity += d;
+                graphs[from][i] = new FlowEdge
+                    { To = e.To, Cost = e.Cost, Reverse = e.Reverse, Capacity = e.Capacity - d };
+                var r = graphs[e.To][e.Reverse];
+                graphs[e.To][e.Reverse] = new FlowEdge
+                    { To = r.To, Cost = r.Cost, Reverse = r.Reverse, Capacity = r.Capacity + d };
                 return d;
             }
             return 0;
         }
 
+        [MethodImpl(256)]
         private void FlowBfs(int from)
         {
             level = Enumerable.Repeat(-1, size + 1).ToArray();
@@ -166,22 +176,6 @@ namespace Qlibrary
                     q.Enqueue(e.To);
                 }
             }
-        }
-
-        public long BipartiteMatching(int indexStart, int part1Size, int part2Size)
-        {
-            int start = size - 2;
-            int end = size - 1;
-            for (int i = indexStart; i < indexStart + part1Size; i++)
-            {
-                AddEdge(start, i, 1);
-            }
-            for (int i = indexStart + part1Size; i < indexStart + part1Size + part2Size; i++)
-            {
-                AddEdge(i, end, 1);
-            }
-
-            return GetMaxFlow(start, end);
         }
     }
 }
