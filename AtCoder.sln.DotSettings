@@ -341,6 +341,16 @@ $SELECTION$$END$</s:String>
 {
     $SELECTION$$END$
 });</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F1E8C849FCCE8940BB8F761082F47705/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F1E8C849FCCE8940BB8F761082F47705/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F1E8C849FCCE8940BB8F761082F47705/Description/@EntryValue">Summary</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F1E8C849FCCE8940BB8F761082F47705/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F1E8C849FCCE8940BB8F761082F47705/Scope/=C3001E7C0DA78E4487072B7E050D86C5/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F1E8C849FCCE8940BB8F761082F47705/Scope/=C3001E7C0DA78E4487072B7E050D86C5/CustomProperties/=minimumLanguageVersion/@EntryIndexedValue">2.0</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F1E8C849FCCE8940BB8F761082F47705/Scope/=C3001E7C0DA78E4487072B7E050D86C5/Type/@EntryValue">InCSharpFile</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F1E8C849FCCE8940BB8F761082F47705/Shortcut/@EntryValue">sm</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F1E8C849FCCE8940BB8F761082F47705/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F1E8C849FCCE8940BB8F761082F47705/Text/@EntryValue">/// &lt;summary&gt; $SELECTION$$END$ &lt;/summary&gt;;</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F6C7EDB7A1E14C40AD2DBCA298F99DAF/@KeyIndexDefined">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F6C7EDB7A1E14C40AD2DBCA298F99DAF/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F6C7EDB7A1E14C40AD2DBCA298F99DAF/Description/@EntryValue">WriteLine</s:String>
