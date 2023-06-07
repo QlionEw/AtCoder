@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace Qlibrary
 {
-    public class BitArrayMaker
+    public static class BitArrayMaker
     {
-        public List<int> Integer(long bitValue, long length)
+        public static List<int> Integer(long bitValue, long length)
         {
             List<int> list = new List<int>();
             for (int i = 0; i < length; i++)
@@ -20,7 +20,7 @@ namespace Qlibrary
             return list;
         }
 
-        public bool[] Boolean(long bitValue, long length)
+        public static bool[] Boolean(long bitValue, long length)
         {
             bool[] list = new bool[length];
             for (int i = 0; i < length; i++)
