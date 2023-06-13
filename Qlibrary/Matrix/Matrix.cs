@@ -48,7 +48,7 @@ namespace Qlibrary
             for (int i = 0; i < a.Height; i++)
             for (int k = 0; k < a.Height; k++)
             for (int j = 0; j < a.Height; j++)
-                c[i][j] = a[i][k] * b[k][j];
+                c[i][j] += a[i][k] * b[k][j];
             return c;
         }
 
