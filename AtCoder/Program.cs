@@ -18,10 +18,11 @@ namespace AtCoder
         {
             SourceExpander.Expander.Expand();
             checked
-            {
+            {  
                 
             }
         }
     }
 }
 
+// SourceExpander: https://github.com/kzrnm/SourceExpander/blob/master/LICENSE
