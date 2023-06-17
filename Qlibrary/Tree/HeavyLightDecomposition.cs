@@ -9,11 +9,11 @@ namespace Qlibrary
         private void DfsForSize(int cur)
         {
             Size[cur] = 1;
-            for (int i = 0; i < g[cur].Count; i++)
+            for (int i = 0; i < g[cur].Length; i++)
             {
                 var dst = g[cur][i];
                 if (dst.To == parent[cur]) {
-                    if (g[cur].Count >= 2 && dst.To == g[cur][0].To)
+                    if (g[cur].Length >= 2 && dst.To == g[cur][0].To)
                     {
                         (g[cur][0], g[cur][1]) = (g[cur][1], g[cur][0]);
                         dst = g[cur][0];

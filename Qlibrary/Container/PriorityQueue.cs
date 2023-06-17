@@ -71,5 +71,8 @@ namespace Qlibrary
             capacity *= 2;
             heap = newArray;
         }
+
+        [MethodImpl(256)]
+        public void Clear() => Count = 0;
     }
 }

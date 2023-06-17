@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using static Qlibrary.Common;
 using Cost = System.Int64;
@@ -12,7 +13,6 @@ namespace Qlibrary
         public int From { get; set; }
         public int To { get; set; }
         public Cost Cost { get; set; }
-        public int Index { get; set; }
 
         public static bool operator ==(Edge a, Edge b) => a.Equals(b);
         public static bool operator !=(Edge a, Edge b) => !(a == b);
@@ -21,11 +21,12 @@ namespace Qlibrary
         public override bool Equals(object obj) => obj is Edge other && Equals(other);
         public override int GetHashCode() => HashCode.Combine(From, To);
     }
-    
-    public class Graph : IEnumerable<List<Edge>>
+
+    public class Graph : IEnumerable<Edge[]>
     {
         private readonly long fromIndex = MathPlus.BigPow(10, 9);
-        private readonly List<Edge>[] graph;
+        private Edge[][] graph;
+        private readonly List<Edge>[] tempGraph;
         private Dictionary<long, long>[] additionalInfo;
         public int Count { get; }
         public int PathCount { get; private set; }
@@ -34,7 +35,7 @@ namespace Qlibrary
         public Graph(int n, bool isDirected)
         {
             Count = n + 1;
-            graph = Make(Count, () => new List<Edge>());
+            tempGraph = Make(Count, () => new List<Edge>());
             IsDirected = isDirected;
         }
 
@@ -52,9 +53,17 @@ namespace Qlibrary
                 AddPath(path[0], path[1], cost);
             }
         }
+        
+        public void AddPath(int p, int q, Cost cost)
+        {
+            PathCount++;
+            tempGraph[p].Add(new Edge{ From = p, To = q, Cost = cost });
+            if (!IsDirected) tempGraph[q].Add(new Edge{ From = q, To = p, Cost = cost });
+        } 
 
         private void SetAdditionalInfo(params int[] v)
         {
+            additionalInfo = Make(v.Length + 1, () => new Dictionary<long, long>());
             for (int i = 0; i < v.Length - 2; i++)
             {
                 additionalInfo[i].Add(fromIndex * v[0] + v[1], v[i + 2]);
@@ -69,19 +78,19 @@ namespace Qlibrary
                 for (int j = 0; j < Count; j++)
                 {
                     if (paths[i][j] == 0) continue;
-                    graph[i + indexed].Add(new Edge{ From = i + indexed, To = j + indexed, Cost = paths[i][j] });
+                    tempGraph[i + indexed].Add(new Edge{ From = i + indexed, To = j + indexed, Cost = paths[i][j] });
                 }
             }
         }
         
-        public List<Edge> this[int edge] => graph[edge];
-        public IEnumerator<List<Edge>> GetEnumerator() => graph.AsEnumerable().GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        public void AddPath(int p, int q, Cost cost)
+        public Edge[][] GetGraph()
         {
-            PathCount++;
-            graph[p].Add(new Edge{ From = p, To = q, Cost = cost, Index = PathCount });
-            if (!IsDirected) graph[q].Add(new Edge{ From = q, To = p, Cost = cost, Index = PathCount });
-        } 
+            if(graph == null) graph = Array.ConvertAll(tempGraph, x => x.ToArray());
+            return graph;
+        }
+        
+        public Edge[] this[int edge] => GetGraph()[edge];
+        public IEnumerator<Edge[]> GetEnumerator() => GetGraph().AsEnumerable().GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

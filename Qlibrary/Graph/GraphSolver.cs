@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Cost = System.Int64;
 
 namespace Qlibrary
@@ -12,54 +13,41 @@ namespace Qlibrary
         public Cost[] Distances { get; private set; }
         private int pathCount = 0;
         private readonly int nodeCount;
+        private PriorityQueue<(Cost Cost, int To)> queue;
 
         public GraphSolver(Graph g)
         {
             graph = g;
             nodeCount = g.Count;
-            Distances = Enumerable.Repeat(Invalid, nodeCount + 1).ToArray();
+            pathCount = g.PathCount;
+            Distances = Common.Make(nodeCount + 1, () => Invalid);
+            queue = new PriorityQueue<(Cost Cost,int To)>(pathCount + 1);
         }
 
+        [MethodImpl(256)]
         public void Init()
         {
-            Distances = Enumerable.Repeat(Invalid, Distances.Length).ToArray();
-        }
-
-        public void AddDirectedPath(int from, int to, long cost, params long[] additionalInfo)
-        {
-            AddPath(from, to, cost, additionalInfo);
-        }
-        
-        public void AddUndirectedPath(int from, int to, long cost, params long[] additionalInfo)
-        {
-            AddPath(from, to, cost, additionalInfo);
-            AddPath(to, from, cost, additionalInfo);
-        }
-
-        private void AddPath(int from, int to, long cost, params long[] additionalInfo)
-        {
-            pathCount++;
-            graph[from].Add(new Edge {From = from, To = to, Cost = cost});
+            Array.Fill(Distances, Invalid);
+            queue.Clear();
         }
 
         public void Dijkstra(int point)
         {
-            PriorityQueue<Edge> queue = new PriorityQueue<Edge>(pathCount + 1);
             Distances[point] = 0;
-            queue.Enqueue(new Edge {To = point, Cost = 0});
+            queue.Enqueue((0, point));
 
             while (queue.Count != 0)
             {
-                Edge pop = queue.Dequeue();
+                var pop = queue.Dequeue();
                 if (Distances[pop.To] < pop.Cost) { continue; }
 
                 foreach (Edge path in graph[pop.To])
                 {
-                    Cost nextValue = Distances[pop.To] + path.Cost;
+                    var nextValue = Distances[pop.To] + path.Cost;
                     if (Distances[path.To] > nextValue)
                     {
                         Distances[path.To] = nextValue;
-                        queue.Enqueue(new Edge {From = path.From, To = path.To, Cost = Distances[path.To]});
+                        queue.Enqueue((Distances[path.To], path.To));
                     }
                 }
             }
