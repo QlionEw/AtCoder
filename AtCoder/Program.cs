@@ -18,11 +18,12 @@ namespace AtCoder
         {
             SourceExpander.Expander.Expand();
             checked
-            {  
+            {
                 
             }
         }
     }
 }
 
-// SourceExpander | MIT License |  https://github.com/kzrnm/SourceExpander/blob/master/LICENSE
+
+// SourceExpander | MIT License | https://github.com/kzrnm/SourceExpander/blob/master/LICENSE
