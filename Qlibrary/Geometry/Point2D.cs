@@ -5,7 +5,7 @@ using static System.Math;
 
 namespace Qlibrary
 {
-    public struct Point2D : IComparable<Point2D>, IEquatable<Point2D>
+    public readonly struct Point2D : IComparable<Point2D>, IEquatable<Point2D>
     {
         public double X { get; }
         public double Y { get; }

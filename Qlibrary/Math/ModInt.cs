@@ -3,9 +3,9 @@ using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
-    public struct ModInt
+    public readonly struct ModInt
     {
-        long value;
+        private readonly long value;
         public const int _1000000007 = 1000000007;
         public const int _1000000009 = 1000000009;
         public const int _998244353 = 998244353;

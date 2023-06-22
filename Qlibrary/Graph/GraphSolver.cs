@@ -172,7 +172,7 @@ namespace Qlibrary
             reversePathInfos = Enumerable.Repeat(0, nodeCount + 1).Select(_ => new List<Edge>()).ToArray();
             foreach (var path in graph.SelectMany(x => x))
             {
-                reversePathInfos[path.To].Add(new Edge {From = path.To, To = path.From, Cost = path.Cost});
+                reversePathInfos[path.To].Add(new Edge(path.To, path.From, path.Cost));
             }
 
             for (int i = 1; i <= nodeCount; i++)

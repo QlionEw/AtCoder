@@ -8,11 +8,22 @@ using Cost = System.Int64;
 
 namespace Qlibrary
 {
-    public struct Edge : IComparable<Edge>, IEquatable<Edge>
+    public readonly struct Edge : IComparable<Edge>, IEquatable<Edge>
     {
-        public int From { get; set; }
-        public int To { get; set; }
-        public Cost Cost { get; set; }
+        public int From { get; }
+        public int To { get; }
+        public Cost Cost { get; }
+
+        public Edge(int to, Cost cost) : this(-1, to, cost)
+        {
+        }
+        
+        public Edge(int from, int to, Cost cost)
+        {
+            From = from;
+            To = to;
+            Cost = cost;
+        }
 
         public static bool operator ==(Edge a, Edge b) => a.Equals(b);
         public static bool operator !=(Edge a, Edge b) => !(a == b);
@@ -57,8 +68,8 @@ namespace Qlibrary
         public void AddPath(int p, int q, Cost cost)
         {
             PathCount++;
-            tempGraph[p].Add(new Edge{ From = p, To = q, Cost = cost });
-            if (!IsDirected) tempGraph[q].Add(new Edge{ From = q, To = p, Cost = cost });
+            tempGraph[p].Add(new Edge(p, q, cost));
+            if (!IsDirected) tempGraph[q].Add(new Edge(q, p, cost));
         } 
 
         private void SetAdditionalInfo(params int[] v)
@@ -78,7 +89,7 @@ namespace Qlibrary
                 for (int j = 0; j < Count; j++)
                 {
                     if (paths[i][j] == 0) continue;
-                    tempGraph[i + indexed].Add(new Edge{ From = i + indexed, To = j + indexed, Cost = paths[i][j] });
+                    tempGraph[i + indexed].Add(new Edge(i + indexed, j + indexed, paths[i][j]));
                 }
             }
         }
