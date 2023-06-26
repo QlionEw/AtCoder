@@ -7,14 +7,14 @@ using static Qlibrary.Common;
 
 namespace Qlibrary
 {
-    public class Plane<T> : IEnumerable<T[]>
+    public class Box<T> : IEnumerable<T[]>
     {
         private T[][] plane;
         private int row;
         private int column;
         private T defValue;
 
-        public Plane(int h, int w, T def = default)
+        public Box(int h, int w, T def = default)
         {
             Init(h, w, def, () => Make(h, () => new T[w]));
             if (def.Equals(default(T))) {return;}
@@ -32,10 +32,10 @@ namespace Qlibrary
             plane = setPlane();
         }
 
-        public Plane(T[][] value, T def = default) => Init(value.Length, value[0].Length, def, () => value);
-        public Plane(IEnumerable<IEnumerable<T>> value, T def = default)
+        public Box(T[][] value, T def = default) => Init(value.Length, value[0].Length, def, () => value);
+        public Box(IEnumerable<IEnumerable<T>> value, T def = default)
             : this(value.Select(x => x.ToArray()).ToArray(), def){ }
-        public Plane(T[,] value, T def = default) : this(value.ToJaggedArray(), def) { }
+        public Box(T[,] value, T def = default) : this(value.ToJaggedArray(), def) { }
 
         public T this[int h, int w]
         {
@@ -48,6 +48,7 @@ namespace Qlibrary
         [MethodImpl(256)] public T Up(int h, int w) => IsInRange(h-1, w) ? plane[h - 1][w] : defValue;
         [MethodImpl(256)] public T Down(int h, int w) => IsInRange(h+1, w) ? plane[h + 1][w] : defValue;
         [MethodImpl(256)] public bool IsInRange(int h, int w) => 0 <= h && h < row && 0 <= w && w < column;
+        [MethodImpl(256)] public int Index1D(int h, int w) => h * column + w;
 
         public override string ToString()
             => Answerer.HoldAllLine(Enumerable.Range(0, row).Select(x => Answerer.HoldEachSpace(plane[x])));
