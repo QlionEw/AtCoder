@@ -103,6 +103,12 @@ namespace Qlibrary
             buffer = newArray;
         }
 
+        public void Clear()
+        {
+            firstIndex = 0;
+            Length = 0;
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             for (int i = 0; i < Length; i++)
