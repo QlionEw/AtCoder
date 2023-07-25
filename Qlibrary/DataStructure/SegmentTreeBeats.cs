@@ -25,10 +25,6 @@ namespace Qlibrary
         private readonly int n;
         private readonly int log;
 
-        public SegmentTreeBeats()
-        {
-        }
-
         public SegmentTreeBeats(int n) : this(new long[n])
         {
         }
