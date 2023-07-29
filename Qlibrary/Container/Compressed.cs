@@ -8,7 +8,7 @@ namespace Qlibrary
     {
         private HashSet<T> list;
         private Dictionary<T, int> dict;
-        private Dictionary<int, T> reversed;
+        private T[] reversed;
 
         public Compressed(){ }
 
@@ -57,14 +57,14 @@ namespace Qlibrary
 
         public T Restore(int index)
         {
-            return reversed.Count > index ? reversed[index] : default;
+            return reversed.Length > index ? reversed[index] : default;
         }
 
         private void Generate(IEnumerable<T> array)
         {
             var converted = array.OrderBy(x => x).Select((x, i) => (x, i)).ToArray();
             dict = converted.ToDictionary(x => x.x, x => x.i);
-            reversed = converted.ToDictionary(x => x.i, x => x.x);
+            reversed = converted.Select(x => x.x).ToArray();
         }
 
         public static Compressed<T> Create(IEnumerable<T> array)
