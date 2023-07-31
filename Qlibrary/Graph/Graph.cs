@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using static Qlibrary.Common;
+// ReSharper disable BuiltInTypeReferenceStyle
 using Cost = System.Int64;
 
 namespace Qlibrary

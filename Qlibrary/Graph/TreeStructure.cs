@@ -2,56 +2,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+// ReSharper disable BuiltInTypeReferenceStyle
+using Cost = System.Int64;
 
 namespace Qlibrary
 {
     public class TreeStructure
     {
-        public class TreeVertex
+        private readonly Graph g;
+        public TreeStructure(Graph g)
         {
-            public List<int> Ways { get; } = new List<int>();
-            public List<long> Costs { get; } = new List<long>();
-            public Set<int> VisitTime { get; } = new Set<int>();
-
-            public IEnumerable<(int Way, long Cost)> GetWayData() => Ways.Select((t, i) => (t, Costs[i]));
+            this.g = g;
         }
-
-        public TreeVertex[] Vertexes { get; }
-        public TreeStructure(int size)
-        {
-            Vertexes = Enumerable.Range(0, size + 1).Select(_ => new TreeVertex()).ToArray();
-        }
-
         public TreeStructure(int[][] tree)
         {
-            Vertexes = Enumerable.Range(0, tree.Length + 2).Select(_ => new TreeVertex()).ToArray();
-            foreach (var path in tree)
-            {
-                ConnectEach(path[0], path[1]);
-            }
+            g = new Graph(tree.Length + 1, tree, false);
         }
-
-        public void Connect(int index, int index2, long cost = 1)
+        
+        private Cost[] costArray;
+        public IEnumerable<Cost> CheckCost(int origin, bool isTouring = true)
         {
-            Vertexes[index].Ways.Add(index2);
-            Vertexes[index].Costs.Add(cost);
-        }
-
-        public void ConnectEach(int index, int index2, long cost = 1)
-        {
-            Connect(index, index2, cost);
-            Connect(index2, index, cost);
-        }
-
-        private long[] costArray;
-        public IEnumerable<long> CheckCost(int origin, bool isTouring = true)
-        {
-            costArray = new long[Vertexes.Length];
+            costArray = new Cost[g.Count];
             if (isTouring)
             {
                 int time = 0;
                 TourTime = new List<(int, int)>();
-                FirstTime = new int[Vertexes.Length];
+                FirstTime = new int[g.Count];
                 CheckCostAndTour(origin, 0, 0, ref time);
             }
             else
@@ -63,7 +39,7 @@ namespace Qlibrary
 
         public List<(int, int)> TourTime { get; set; }
         public int[] FirstTime { get; set; }
-        private void CheckCostAndTour(int current, long cost, int from, ref int time, int depth = 0)
+        private void CheckCostAndTour(int current, Cost cost, int from, ref int time, int depth = 0)
         {
             costArray[current] = cost;
             if (FirstTime[current] == 0)
@@ -71,32 +47,29 @@ namespace Qlibrary
                 FirstTime[current] = time++;
             }
             TourTime.Add((current, depth));
-            Vertexes[current].VisitTime.Add(FirstTime[current]);
-            foreach ((int way, long l) in Vertexes[current].GetWayData())
+            foreach (var way in g[current])
             {
-                if (way == from)
+                if (way.To == from)
                 {
                     continue;
                 }
-                CheckCostAndTour(way, cost + l, current, ref time, depth + 1);
+                CheckCostAndTour(way.To, cost + way.Cost, current, ref time, depth + 1);
                 TourTime.Add((current, depth));
-                Vertexes[current].VisitTime.Add(time);
                 time++;
             }
         }
 
         [MethodImpl(256)]
-        private void CheckCost(int current, long cost, long from)
+        private void CheckCost(int current, Cost cost, long from)
         {
             costArray[current] = cost;
-            foreach ((int way, long l) in Vertexes[current].GetWayData())
+            foreach (var way in g[current])
             {
-                if (way == from)
+                if (way.To == from)
                 {
                     continue;
                 }
-
-                CheckCost(way, cost + l, current);
+                CheckCost(way.To, cost + way.Cost, current);
             }
         }
 
@@ -105,15 +78,17 @@ namespace Qlibrary
         [MethodImpl(256)]
         private void SolveWayToDp(int current, int from, Action<int,int> action)
         {
-            action(from, current);
-            
-            foreach ((int way, long l) in Vertexes[current].GetWayData())
+            if (from != -1)
             {
-                if (way == from)
+                action(from, current);
+            }
+            foreach (var way in g[current])
+            {
+                if (way.To == from)
                 {
                     continue;
                 }
-                SolveWayToDp(way, current, action);
+                SolveWayToDp(way.To, current, action);
             }
         }
         
@@ -122,15 +97,18 @@ namespace Qlibrary
         [MethodImpl(256)]
         public void SolveWayBackDp(int current, int from, Action<int,int> action)
         {
-            foreach ((int way, long l) in Vertexes[current].GetWayData())
+            foreach (var way in g[current])
             {
-                if (way == from)
+                if (way.To == from)
                 {
                     continue;
                 }
-                SolveWayBackDp(way, current, action);
+                SolveWayBackDp(way.To, current, action);
             }
-            action(current, from);
+            if (from != -1)
+            {
+                action(current, from);
+            }
         }
 
         private SegmentTreeExtend<(int,int)> seg;
@@ -164,7 +142,7 @@ namespace Qlibrary
                    2 * TourTime[FirstTime[target]].Item2;
         }
 
-        public long GetCost(int index1, int index2)
+        public Cost GetCost(int index1, int index2)
         {
             if (seg == null)
             {
