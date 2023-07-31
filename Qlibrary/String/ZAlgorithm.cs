@@ -20,7 +20,7 @@ namespace Qlibrary
         }
 
         [MethodImpl(256)]
-        public IEnumerable<int> Solve(int index = 0)
+        public int[] Solve(int index = 0)
         {
             var n = array.Length - index;
             var a = new int[n];
