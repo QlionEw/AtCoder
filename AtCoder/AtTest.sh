@@ -18,7 +18,7 @@ cd ..
 dotnet publish -c $buildConfig
 cd AtCoder
 
-cp -v -r bin/$buildConfig/netcoreapp3.1/publish/* $questionPath
+cp -v -r bin/$buildConfig/net7.0/publish/* $questionPath
 cd $questionPath
 atcoder-tools test -t2 -e ./AtCoder
 
