@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Qlibrary
 {
@@ -8,8 +9,8 @@ namespace Qlibrary
     {
         public const int Power9 = 1000000000;
         public const long Power18 = 1000000000000000000L;
-        public const int InfinityInt = 2 * Power9;
-        public const long Infinity = 9 * Power18;
+        public const int InfinityInt = 1 * Power9;
+        public const long Infinity = 4 * Power18;
         public static readonly StreamScanner Scanner = new StreamScanner(Console.OpenStandardInput());
         public static int Si() => Scanner.Integer();
         public static long Sl() => Scanner.Long();
@@ -28,7 +29,18 @@ namespace Qlibrary
                 action();
             }
         }
-        
+
+        public static T GetInfinity<T>() where T : INumberBase<T>
+        {
+            return T.Zero switch
+            {
+                int => T.CreateSaturating(InfinityInt),
+                long => T.CreateSaturating(Infinity),
+                double => T.CreateSaturating(double.MaxValue / 2.1),
+                _ => T.CreateSaturating(long.MaxValue) / T.CreateSaturating(2.1)
+            };
+        }
+
         private static T[,] Rotate90<T>(this T[,] self)
         {
             int rows = self.GetLength(0);

@@ -3,42 +3,41 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using static Qlibrary.Common;
-// ReSharper disable BuiltInTypeReferenceStyle
-using Cost = System.Int64;
 
 namespace Qlibrary
 {
-    public readonly struct Edge : IComparable<Edge>, IEquatable<Edge>
+    public readonly struct Edge<T> : IComparable<Edge<T>>, IEquatable<Edge<T>> where T : INumber<T>
     {
         public int From { get; }
         public int To { get; }
-        public Cost Cost { get; }
+        public T Cost { get; }
 
-        public Edge(int to, Cost cost) : this(-1, to, cost)
+        public Edge(int to, T cost) : this(-1, to, cost)
         {
         }
         
-        public Edge(int from, int to, Cost cost)
+        public Edge(int from, int to, T cost)
         {
             From = from;
             To = to;
             Cost = cost;
         }
 
-        public static bool operator ==(Edge a, Edge b) => a.Equals(b);
-        public static bool operator !=(Edge a, Edge b) => !(a == b);
-        public int CompareTo(Edge other) => Cost - other.Cost > 0 ? 1 : (Cost - other.Cost) < 0 ? -1 : 0;
-        public bool Equals(Edge other) => From == other.From && To == other.To;
-        public override bool Equals(object obj) => obj is Edge other && Equals(other);
+        public static bool operator ==(Edge<T> a, Edge<T> b) => a.Equals(b);
+        public static bool operator !=(Edge<T> a, Edge<T> b) => !(a == b);
+        public int CompareTo(Edge<T> other) => Cost - other.Cost > T.Zero ? 1 : (Cost - other.Cost) < T.Zero ? -1 : 0;
+        public bool Equals(Edge<T> other) => From == other.From && To == other.To;
+        public override bool Equals(object obj) => obj is Edge<T> other && Equals(other);
         public override int GetHashCode() => HashCode.Combine(From, To);
     }
 
-    public class Graph : IEnumerable<Edge[]>
+    public class Graph<T> : IEnumerable<Edge<T>[]> where T : INumber<T>
     {
         private readonly long fromIndex = MathPlus.BigPow(10, 9);
-        private Edge[][] graph;
-        private readonly List<Edge>[] tempGraph;
+        private Edge<T>[][] graph;
+        private readonly List<Edge<T>>[] tempGraph;
         private Dictionary<long, long>[] additionalInfo;
         public int Count { get; }
         public int PathCount { get; private set; }
@@ -47,7 +46,7 @@ namespace Qlibrary
         public Graph(int n, bool isDirected)
         {
             Count = n + 1;
-            tempGraph = Make(Count, () => new List<Edge>());
+            tempGraph = Make(Count, () => new List<Edge<T>>());
             IsDirected = isDirected;
         }
 
@@ -62,15 +61,15 @@ namespace Qlibrary
             {
                 var path = paths[i];
                 int cost = path.Length == 2 ? 1 : path[2];
-                AddPath(path[0], path[1], cost);
+                AddPath(path[0], path[1], T.CreateChecked(cost));
             }
         }
         
-        public void AddPath(int p, int q, Cost cost)
+        public void AddPath(int p, int q, T cost)
         {
             PathCount++;
-            tempGraph[p].Add(new Edge(p, q, cost));
-            if (!IsDirected) tempGraph[q].Add(new Edge(q, p, cost));
+            tempGraph[p].Add(new Edge<T>(p, q, cost));
+            if (!IsDirected) tempGraph[q].Add(new Edge<T>(q, p, cost));
         } 
 
         private void SetAdditionalInfo(params int[] v)
@@ -90,19 +89,19 @@ namespace Qlibrary
                 for (int j = 0; j < Count; j++)
                 {
                     if (paths[i][j] == 0) continue;
-                    tempGraph[i + indexed].Add(new Edge(i + indexed, j + indexed, paths[i][j]));
+                    tempGraph[i + indexed].Add(new Edge<T>(i + indexed, j + indexed, T.CreateChecked(paths[i][j])));
                 }
             }
         }
         
-        public Edge[][] GetGraph()
+        public Edge<T>[][] GetGraph()
         {
             if(graph == null) graph = Array.ConvertAll(tempGraph, x => x.ToArray());
             return graph;
         }
         
-        public Edge[] this[int edge] => GetGraph()[edge];
-        public IEnumerator<Edge[]> GetEnumerator() => GetGraph().AsEnumerable().GetEnumerator();
+        public Edge<T>[] this[int edge] => GetGraph()[edge];
+        public IEnumerator<Edge<T>[]> GetEnumerator() => GetGraph().AsEnumerable().GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

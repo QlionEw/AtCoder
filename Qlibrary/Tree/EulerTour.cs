@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Qlibrary
 {
-    public class EulerTour
+    public class EulerTour<T> where T : INumber<T>
     {
-        private readonly Graph g;
-        public EulerTour(Graph g)
+        private readonly Graph<T> g;
+        public EulerTour(Graph<T> g)
         {
             this.g = g;
         }
@@ -20,7 +21,7 @@ namespace Qlibrary
             return tourVertex;
         }
 
-        public List<Edge> SolvePath(int origin, bool isRequireBack)
+        public List<Edge<T>> SolvePath(int origin, bool isRequireBack)
         {
             if (tourPath.Count == 0)
             {
@@ -30,7 +31,7 @@ namespace Qlibrary
         }
 
         private readonly List<int> tourVertex = new List<int>();
-        private readonly List<Edge> tourPath = new List<Edge>();
+        private readonly List<Edge<T>> tourPath = new List<Edge<T>>();
         private void ProcessTour(int current, int from, bool isRequireBack)
         {
             tourVertex.Add(current);

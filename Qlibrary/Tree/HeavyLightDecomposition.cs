@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace Qlibrary
 {
-    public class HeavyLightDecomposition
+    public class HeavyLightDecomposition<T> where T : INumber<T>
     {
         private void DfsForSize(int cur)
         {
@@ -68,7 +69,7 @@ namespace Qlibrary
             return res;
         }
 
-        private readonly Graph g;
+        private readonly Graph<T> g;
         private int id;
         public int[] Depth { get; }
         public int[] Size { get; }
@@ -77,7 +78,7 @@ namespace Qlibrary
         private readonly int[] nxt;
         private readonly int[] parent;
 
-        public HeavyLightDecomposition(Graph g, int root = 1)
+        public HeavyLightDecomposition(Graph<T> g, int root = 1)
         {
             this.g = g;
             id = 0;

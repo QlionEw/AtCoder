@@ -1,47 +1,45 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
-using Cost = System.Int64;
 
 namespace Qlibrary
 {
-    public class GraphSolver
+    public class GraphSolver<T> where T : INumber<T>
     {
-        private readonly Cost Invalid = Common.Infinity;
-        private readonly Graph graph;
-        public Cost[] Distances { get; private set; }
+        public readonly T Invalid = Common.GetInfinity<T>();
+        private readonly Graph<T> graph;
+        public T[] Distances { get; private set; }
         private int pathCount = 0;
         private readonly int nodeCount;
-        private PriorityQueue<(Cost Cost, int To)> queue;
 
-        public GraphSolver(Graph g)
+        public GraphSolver(Graph<T> g)
         {
             graph = g;
             nodeCount = g.Count;
             pathCount = g.PathCount;
             Distances = Common.Make(nodeCount + 1, () => Invalid);
-            queue = new PriorityQueue<(Cost Cost,int To)>(pathCount + 1);
         }
 
         [MethodImpl(256)]
         public void Init()
         {
             Array.Fill(Distances, Invalid);
-            queue.Clear();
         }
 
         public void Dijkstra(int point)
         {
-            Distances[point] = 0;
-            queue.Enqueue((0, point));
+            Distances[point] = T.Zero;
+            var queue = new PriorityQueue<(T Cost,int To)>(pathCount + 1);
+            queue.Enqueue((T.Zero, point));
 
             while (queue.Count != 0)
             {
                 var pop = queue.Dequeue();
                 if (Distances[pop.To] < pop.Cost) { continue; }
 
-                foreach (Edge path in graph[pop.To])
+                foreach (Edge<T> path in graph[pop.To])
                 {
                     var nextValue = Distances[pop.To] + path.Cost;
                     if (Distances[path.To] > nextValue)
@@ -54,11 +52,11 @@ namespace Qlibrary
         }
 
         private bool[] isVisited; 
-        public Cost _01Bfs(int start, int end = -1)
+        public T _01Bfs(int start, int end = -1)
         {
             Deque<int> deque = new Deque<int>();
             isVisited = new bool[nodeCount + 1];
-            Distances[start] = 0;
+            Distances[start] = T.Zero;
             deque.PushBack(start);
 
             while (deque.Length != 0)
@@ -73,13 +71,13 @@ namespace Qlibrary
                     continue;
                 }
                 isVisited[index] = true;
-                foreach (Edge path in graph[index])
+                foreach (Edge<T> path in graph[index])
                 {
-                    Cost d = Distances[index] + path.Cost;
+                    T d = Distances[index] + path.Cost;
                     if (d < Distances[path.To])
                     {
                         Distances[path.To] = d;
-                        if (path.Cost != 0)
+                        if (path.Cost != T.Zero)
                         {
                             deque.PushBack(path.To);
                         }
@@ -91,15 +89,15 @@ namespace Qlibrary
                 }
             }
 
-            return -1;
+            return T.CreateChecked(-1);
         }
 
-        public Cost Kruskal()
+        public T Kruskal()
         {
             var edges = graph.SelectMany(pathInfo => pathInfo).OrderBy(x => x.Cost).ToList();
-            Cost totalCost = 0;
+            T totalCost = T.Zero;
             var uft = new UnionFindTree(nodeCount + 1);
-            foreach (Edge edge in edges.Where(edge => !uft.Same(edge.From, edge.To)))
+            foreach (Edge<T> edge in edges.Where(edge => !uft.Same(edge.From, edge.To)))
             {
                 uft.Unite(edge.From, edge.To);
                 totalCost += edge.Cost;
@@ -107,19 +105,19 @@ namespace Qlibrary
             return totalCost;
         }
 
-        private Edge[] bellmanFordList;
+        private Edge<T>[] bellmanFordList;
         public bool[] IsLoop { get; private set; }
 
         public void BellmanFord(int point, bool isDetectLoop = false)
         {
             bellmanFordList = graph.SelectMany(x => x).ToArray();
             IsLoop = Enumerable.Repeat(false, nodeCount + 1).ToArray();
-            Distances[point] = 0;
+            Distances[point] = T.Zero;
             int count;
             for (count = 0; count < Distances.Length; count++)
             {
                 bool isUpdated = false;
-                foreach (Edge path in bellmanFordList)
+                foreach (Edge<T> path in bellmanFordList)
                 {
                     if (Distances[path.From] == Invalid) { continue; }
 
@@ -142,9 +140,9 @@ namespace Qlibrary
         {
             for (int i = 0; i <= Distances.Length; i++)
             {
-                foreach (Edge path in bellmanFordList)
+                foreach (Edge<T> path in bellmanFordList)
                 {
-                    if (Distances[path.From] == Common.Infinity) { continue; }
+                    if (Distances[path.From] == Invalid) { continue; }
 
                     if (Distances[path.To] > Distances[path.From] + path.Cost)
                     {
@@ -162,17 +160,17 @@ namespace Qlibrary
 
         private bool[] sccUsed;
         private List<int> sccOrder;
-        private List<Edge>[] reversePathInfos;
+        private List<Edge<T>>[] reversePathInfos;
         private int[] sccGroups;
 
         public IEnumerable<int> StronglyConnectedComponent()
         {
             sccUsed = new bool[nodeCount + 1];
             sccOrder = new List<int>();
-            reversePathInfos = Enumerable.Repeat(0, nodeCount + 1).Select(_ => new List<Edge>()).ToArray();
+            reversePathInfos = Enumerable.Repeat(0, nodeCount + 1).Select(_ => new List<Edge<T>>()).ToArray();
             foreach (var path in graph.SelectMany(x => x))
             {
-                reversePathInfos[path.To].Add(new Edge(path.To, path.From, path.Cost));
+                reversePathInfos[path.To].Add(new Edge<T>(path.To, path.From, path.Cost));
             }
 
             for (int i = 1; i <= nodeCount; i++)
@@ -224,17 +222,17 @@ namespace Qlibrary
             }
         }
 
-        private Cost[][] warshallFloydDp;
+        private T[][] warshallFloydDp;
         private int[][] warshallFloydPathPrev;
 
-        public Cost[][] WarshallFloyd(int nIndexed)
+        public T[][] WarshallFloyd(int nIndexed)
         {
             var loopCount = nodeCount + nIndexed;
             warshallFloydDp = Enumerable.Repeat(0, loopCount)
                 .Select(_ => Enumerable.Repeat(Invalid, loopCount).ToArray()).ToArray();
             for (int i = 0; i < loopCount; i++)
             {
-                warshallFloydDp[i][i] = 0;
+                warshallFloydDp[i][i] = T.Zero;
             }
             warshallFloydPathPrev = Enumerable.Repeat(0, loopCount)
                 .Select(_ => Enumerable.Repeat(0, loopCount).ToArray()).ToArray();
@@ -260,8 +258,7 @@ namespace Qlibrary
                         if (warshallFloydDp[i][k] + warshallFloydDp[k][j] < warshallFloydDp[i][j])
                         {
                             warshallFloydPathPrev[i][j] = warshallFloydPathPrev[k][j];
-                            warshallFloydDp[i][j] = Math.Min(warshallFloydDp[i][j],
-                                warshallFloydDp[i][k] + warshallFloydDp[k][j]);
+                            warshallFloydDp[i][j] = warshallFloydDp[i][k] + warshallFloydDp[k][j];
                         }
                     }
                 }

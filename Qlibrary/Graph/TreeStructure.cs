@@ -1,45 +1,44 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
-// ReSharper disable BuiltInTypeReferenceStyle
-using Cost = System.Int64;
 
 namespace Qlibrary
 {
-    public class TreeStructure
+    public class TreeStructure<T> where T : INumber<T>
     {
-        private readonly Graph g;
-        public TreeStructure(Graph g)
+        private readonly Graph<T> g;
+        public TreeStructure(Graph<T> g)
         {
             this.g = g;
         }
         public TreeStructure(int[][] tree)
         {
-            g = new Graph(tree.Length + 1, tree, false);
+            g = new Graph<T>(tree.Length + 1, tree, false);
         }
         
-        private Cost[] costArray;
-        public IEnumerable<Cost> CheckCost(int origin, bool isTouring = true)
+        private T[] costArray;
+        public IEnumerable<T> CheckCost(int origin, bool isTouring = true)
         {
-            costArray = new Cost[g.Count];
+            costArray = new T[g.Count];
             if (isTouring)
             {
                 int time = 0;
                 TourTime = new List<(int, int)>();
                 FirstTime = new int[g.Count];
-                CheckCostAndTour(origin, 0, 0, ref time);
+                CheckCostAndTour(origin, T.Zero, 0, ref time);
             }
             else
             {
-                CheckCost(origin, 0, 0);
+                CheckCost(origin, T.Zero, 0);
             }
             return costArray;
         }
 
         public List<(int, int)> TourTime { get; set; }
         public int[] FirstTime { get; set; }
-        private void CheckCostAndTour(int current, Cost cost, int from, ref int time, int depth = 0)
+        private void CheckCostAndTour(int current, T cost, int from, ref int time, int depth = 0)
         {
             costArray[current] = cost;
             if (FirstTime[current] == 0)
@@ -60,7 +59,7 @@ namespace Qlibrary
         }
 
         [MethodImpl(256)]
-        private void CheckCost(int current, Cost cost, long from)
+        private void CheckCost(int current, T cost, long from)
         {
             costArray[current] = cost;
             foreach (var way in g[current])
@@ -142,14 +141,14 @@ namespace Qlibrary
                    2 * TourTime[FirstTime[target]].Item2;
         }
 
-        public Cost GetCost(int index1, int index2)
+        public T GetCost(int index1, int index2)
         {
             if (seg == null)
             {
                 InitLca();
             }
             var target = GetLowestCommonAncestor(index1, index2);
-            return costArray[index1] + costArray[index2] - 2 * costArray[target];
+            return costArray[index1] + costArray[index2] - T.CreateChecked(2) * costArray[target];
         }
     }
 }
