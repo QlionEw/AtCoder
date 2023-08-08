@@ -3,6 +3,9 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net7.0</TargetFramework>
+        <RootNamespace>Qompetitive</RootNamespace>
+        <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+        <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
 
     <ItemGroup>
