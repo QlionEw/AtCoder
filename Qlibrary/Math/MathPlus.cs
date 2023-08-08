@@ -196,5 +196,27 @@ namespace Qlibrary
         }
         
         public static double ToDegree(double radian) => radian * (180.0 / Math.PI);
+
+        // sum_{0 <= i < N} (ai + b) // m
+        public static long FloorSum(long n, long m, long a, long b)
+        {
+            long ret = default;
+            if (a >= m)
+            {
+                ret += (n - 1) * n * (a / m) / 2;
+                a %= m;
+            }
+            if (b >= m)
+            {
+                ret += n * (b / m);
+                b %= m;
+            }
+            var y = (a * n + b) / m;
+            if (y == 0) return ret;
+            var x = y * m - b;
+            ret += (n - (x + a - 1) / a) * y;
+            ret += FloorSum(y, a, m, (a - x % a) % a);
+            return ret;
+        }
     }
 }
