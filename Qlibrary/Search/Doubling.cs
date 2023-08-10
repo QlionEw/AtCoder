@@ -1,36 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using static System.Math;
 
 namespace Qlibrary
 {
-    public class Doubling : Doubling<long>
-    {
-        public Doubling(int size, long limit, long initValue = 0) : base(size, limit, initValue)
-        {
-        }
-
-        protected override long Addition(long a, long b) => a + b;
-    }
-
-    public class ModDoubling : Doubling<ModInt>
-    {
-        public ModDoubling(int size, long limit, long initValue = 0) : base(size, limit, initValue)
-        {
-        }
-
-        protected override ModInt Addition(ModInt a, ModInt b) => a + b;
-    }
-
-    public abstract class Doubling<T>
+    public class Doubling<T> where T : INumber<T>
     {
         private readonly int size;
         private readonly int logSize;
         private readonly (int first, T second)[][] table;
         private readonly T initValue;
 
-        protected Doubling(int size, long limit, T initValue)
+        public Doubling(int size, long limit, T initValue)
         {
             this.size = size;
             logSize = (int)Log(limit + 2);
@@ -39,7 +22,6 @@ namespace Qlibrary
                 .ToArray();
         }
 
-        protected abstract T Addition(T a, T b);
         public void SetNext(int from, int to, T value) => table[from][0] = (to, value);
 
         public void Build()
@@ -55,7 +37,7 @@ namespace Qlibrary
                     }
                     else
                     {
-                        table[i][k + 1] = (table[pre][k].first, Addition(table[i][k].second, table[pre][k].second));
+                        table[i][k + 1] = (table[pre][k].first, table[i][k].second + table[pre][k].second);
                     }
                 }
             }
@@ -69,7 +51,7 @@ namespace Qlibrary
             {
                 if (((count >> k) & 1) == 1)
                 {
-                    d = Addition(d, table[from][k].second);
+                    d += table[from][k].second;
                     from = table[from][k].first;
                 }
 
@@ -93,7 +75,7 @@ namespace Qlibrary
             {
                 int nxt = table[threshold][k].first;
                 if (nxt == -1 || nxt > t) continue;
-                d = Addition(d, table[threshold][k].second);
+                d += table[threshold][k].second;
                 threshold = nxt;
                 times += 1L << k;
             }
@@ -112,7 +94,7 @@ namespace Qlibrary
             {
                 int nxt = table[threshold][k].first;
                 if (nxt == -1 || nxt < t) continue;
-                d = Addition(d, table[threshold][k].second);
+                d += table[threshold][k].second;
                 threshold = nxt;
                 times += 1L << k;
             }

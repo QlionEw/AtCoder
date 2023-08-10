@@ -8,11 +8,11 @@ namespace Qlibrary
         public static IEnumerable<long> InversionNumbers(this IEnumerable<int> a)
         {
             var ar = a.ToArray();
-            var ft = new FenwickTree(ar.Length);
+            var ft = new FenwickTree<int>(ar.Length);
             for (int i = 0; i < ar.Length; i++)
             {
                 ft.Add(ar[i], 1);
-                yield return i + 1 - (int)ft.Sum(0, ar[i]);
+                yield return i + 1 - ft.Sum(0, ar[i]);
             }
         }
         

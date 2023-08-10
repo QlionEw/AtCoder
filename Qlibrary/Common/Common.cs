@@ -41,6 +41,9 @@ namespace Qlibrary
             };
         }
 
+        public static T GMin<T>(T v1, T v2) where T : INumber<T> => v1 <= v2 ? v1 : v2;
+        public static T GMax<T>(T v1, T v2) where T : INumber<T> => v1 >= v2 ? v1 : v2;
+
         private static T[,] Rotate90<T>(this T[,] self)
         {
             int rows = self.GetLength(0);
