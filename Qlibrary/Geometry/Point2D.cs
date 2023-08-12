@@ -7,6 +7,7 @@ namespace Qlibrary
 {
     public readonly struct Point2D : IComparable<Point2D>, IEquatable<Point2D>
     {
+        private const double Tol = 0.000001;
         public double X { get; }
         public double Y { get; }
 
@@ -33,7 +34,7 @@ namespace Qlibrary
         /// <summary> 差 </summary>
         public static Point2D operator- (Point2D a, Point2D b) => new Point2D(a.X - b.X, a.Y - b.Y);
         /// <summary> 等号 </summary>
-        public static bool operator ==(Point2D a, Point2D b) => ReferenceEquals(a, b) || ((object)a != null && a.Equals(b));
+        public static bool operator ==(Point2D a, Point2D b) => (a.Equals(b));
         /// <summary> 不等号 </summary>
         public static bool operator!= (Point2D a, Point2D b) => !(a == b);
         /// <summary> 内積 </summary>
@@ -45,7 +46,7 @@ namespace Qlibrary
         /// <summary> 切片 </summary>
         public double Intercept(Point2D other) => X - other.X == 0 ? double.MaxValue : Cross(other) / (X - other.X);
         /// <summary> 距離 </summary>
-        public double Distance(Point2D other) => Sqrt(Pow((double)(X - other.X), 2) + Pow((double)(Y - other.Y), 2));
+        public double Distance(Point2D other) => Sqrt(Pow(X - other.X, 2) + Pow(Y - other.Y, 2));
         /// <summary> 偏角 </summary>
         public double Angle(Point2D other) => Atan2(other.X - X, other.Y - Y);
         /// <summary> 3点間のなす角 </summary>
@@ -61,32 +62,25 @@ namespace Qlibrary
 
             return Atan2(crossProduct, dotProduct);
         }
-        
+
         [MethodImpl(256)]
         public int CompareTo(Point2D other)
         {
-            if (ReferenceEquals(this, other)) return 0;
-            if (ReferenceEquals(null, other)) return 1;
             var xComparison = X.CompareTo(other.X);
-            if (xComparison != 0) return xComparison;
-            return Y.CompareTo(other.Y);
+            return xComparison != 0 ? xComparison : Y.CompareTo(other.Y);
         }
 
         [MethodImpl(256)]
         public bool Equals(Point2D other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return X == other.X && Y == other.Y;
+            return Abs(X - other.X) < Tol && Abs(Y - other.Y) < Tol;
         }
 
         [MethodImpl(256)]
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Point2D)obj);
+            return obj.GetType() == GetType() && Equals((Point2D)obj);
         }
 
         [MethodImpl(256)]
