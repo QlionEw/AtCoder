@@ -9,7 +9,7 @@ setlocal enabledelayedexpansion
 
 for /f "delims=" %%a in (%input%) do (
     set line=%%a
-    echo !line:".*C# \\(Mono.*"=".*C# 11.0 \\(.NET*"!>>%output%
+    echo !line:".*C# \\(Mono.*"=".*C# 11.0 AOT \\(.NET*"!>>%output%
 )
 
 copy %output% %input%
