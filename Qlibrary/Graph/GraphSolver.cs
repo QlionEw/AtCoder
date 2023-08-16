@@ -165,15 +165,15 @@ namespace Qlibrary
 
         public IEnumerable<int> StronglyConnectedComponent()
         {
-            sccUsed = new bool[nodeCount + 1];
+            sccUsed = new bool[nodeCount];
             sccOrder = new List<int>();
-            reversePathInfos = Enumerable.Repeat(0, nodeCount + 1).Select(_ => new List<Edge<T>>()).ToArray();
+            reversePathInfos = Enumerable.Repeat(0, nodeCount).Select(_ => new List<Edge<T>>()).ToArray();
             foreach (var path in graph.SelectMany(x => x))
             {
                 reversePathInfos[path.To].Add(new Edge<T>(path.To, path.From, path.Cost));
             }
 
-            for (int i = 1; i <= nodeCount; i++)
+            for (int i = 1; i < nodeCount; i++)
             {
                 if (!sccUsed[i])
                 {
@@ -181,8 +181,8 @@ namespace Qlibrary
                 }
             }
 
-            sccUsed = new bool[nodeCount + 1];
-            sccGroups = new int[nodeCount];
+            sccUsed = new bool[nodeCount];
+            sccGroups = new int[nodeCount - 1];
             int groupNumber = 0;
             for (int i = sccOrder.Count - 1; i >= 0; i--)
             {
