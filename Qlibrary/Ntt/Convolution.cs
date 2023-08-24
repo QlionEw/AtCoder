@@ -10,60 +10,55 @@ namespace Qlibrary
     {
         private static uint GetPr()
         {
-            uint _mod = mod;
             ulong[] ds = new ulong[32];
             int idx = 0;
-            ulong m = _mod - 1;
+            ulong m = Mod - 1;
             for (ulong i = 2; i * i <= m; ++i)
             {
-                if (m % i == 0)
-                {
-                    ds[idx++] = i;
-                    while (m % i == 0) m /= i;
-                }
+                if (m % i != 0) continue;
+                ds[idx++] = i;
+                while (m % i == 0) m /= i;
             }
 
             if (m != 1) ds[idx++] = m;
 
-            uint _pr = 2;
+            uint pr = 2;
             while (true)
             {
                 int flg = 1;
                 for (int i = 0; i < idx; ++i)
                 {
-                    ulong a = _pr, b = (_mod - 1) / ds[i], r = 1;
+                    ulong a = pr, b = (Mod - 1) / ds[i], r = 1;
                     while (b != 0)
                     {
-                        if ((b & 1) == 1) r = r * a % _mod;
-                        a = a * a % _mod;
+                        if ((b & 1) == 1) r = r * a % Mod;
+                        a = a * a % Mod;
                         b >>= 1;
                     }
 
-                    if (r == 1)
-                    {
-                        flg = 0;
-                        break;
-                    }
+                    if (r != 1) continue;
+                    flg = 0;
+                    break;
                 }
 
                 if (flg == 1) break;
-                ++_pr;
+                ++pr;
             }
 
-            return _pr;
+            return pr;
         }
 
-        private static uint mod =>(uint)ModInt.ModValue;
-        private static uint pr = GetPr();
-        private static int level => BitOperations.LeadingZeroCount((ulong)(mod - 1));
-        private ModInt[] dw = new ModInt[level];
-        private ModInt[] dy = new ModInt[level];
+        private static uint Mod =>(uint)ModInt.ModValue;
+        private static readonly uint Pr = GetPr();
+        private static int Level => BitOperations.LeadingZeroCount((ulong)(Mod - 1));
+        private readonly ModInt[] dw = new ModInt[Level];
+        private readonly ModInt[] dy = new ModInt[Level];
 
-        void setwy(int k)
+        private void SetWy(int k)
         {
-            ModInt[] w = new ModInt[level];
-            ModInt[] y = new ModInt[level];
-            w[k - 1] = ModInt.Pow(pr, (mod - 1) / (1 << k));
+            ModInt[] w = new ModInt[Level];
+            ModInt[] y = new ModInt[Level];
+            w[k - 1] = ModInt.Pow(Pr, (Mod - 1) / (1 << k));
             y[k - 1] = 1 / w[k - 1];
             for (int i = k - 2; i > 0; --i)
             {
@@ -84,10 +79,10 @@ namespace Qlibrary
 
         public Convolution()
         {
-            setwy(level);
+            SetWy(Level);
         }
 
-        void fft4(ModInt[] a, int k)
+        private void Fft4(ModInt[] a, int k)
         {
             if (a.Length <= 1) return;
             if (k == 1)
@@ -160,7 +155,7 @@ namespace Qlibrary
             }
         }
 
-        void ifft4(ModInt[] a, int k)
+        private void InvertFft4(ModInt[] a, int k)
         {
             if ((int)a.Length <= 1) return;
             if (k == 1)
@@ -234,16 +229,16 @@ namespace Qlibrary
             }
         }
 
-        void ntt(ModInt[] a)
+        private void Ntt(ModInt[] a)
         {
-            if ((int)a.Length <= 1) return;
-            fft4(a, BitOperations.TrailingZeroCount(a.Length));
+            if (a.Length <= 1) return;
+            Fft4(a, BitOperations.TrailingZeroCount(a.Length));
         }
 
-        void intt(ModInt[] a)
+        private void InvertNtt(ModInt[] a)
         {
-            if ((int)a.Length <= 1) return;
-            ifft4(a, BitOperations.TrailingZeroCount(a.Length));
+            if (a.Length <= 1) return;
+            InvertFft4(a, BitOperations.TrailingZeroCount(a.Length));
             ModInt iv = (ModInt)1 / a.Length;
             for (int i = 0; i < a.Length; i++)
             {
@@ -251,60 +246,59 @@ namespace Qlibrary
             }
         }
 
-        public ModInt[] Solve(IEnumerable<int> aa, IEnumerable<int> bb)
-            => Solve(aa.Select(x => (ModInt)x), bb.Select(x => (ModInt)x));
-        public ModInt[] Solve(IEnumerable<long> aa, IEnumerable<long> bb)
-            => Solve(aa.Select(x => (ModInt)x), bb.Select(x => (ModInt)x));
+        public ModInt[] Solve(int[] aa, int[] bb)
+            => Solve(Array.ConvertAll(aa, x => (ModInt)x), Array.ConvertAll(bb, x => (ModInt)x));
+        public ModInt[] Solve(long[] aa, long[] bb)
+            => Solve(Array.ConvertAll(aa, x => (ModInt)x), Array.ConvertAll(bb, x => (ModInt)x));
         
-        public ModInt[] Solve(IEnumerable<ModInt> aa, IEnumerable<ModInt> bb)
+        public ModInt[] Solve(ModInt[] a, ModInt[] b)
         {
-            var a = aa.Select(x => (ModInt)x).ToArray();
-            var b = bb.Select(x => (ModInt)x).ToArray();
             int l = a.Length + b.Length - 1;
             if (Min(a.Length, b.Length) <= 40)
             {
                 ModInt[] ss = new ModInt[l];
-                for (int i = 0; i < (int)a.Length; ++i)
-                for (int j = 0; j < (int)b.Length; ++j)
+                for (int i = 0; i < a.Length; ++i)
+                for (int j = 0; j < b.Length; ++j)
                     ss[i + j] += a[i] * b[j];
                 return ss;
             }
 
-            int k = 2, M = 4;
-            while (M < l)
+            int k = 2, m = 4;
+            while (m < l)
             {
-                M <<= 1;
+                m <<= 1;
                 ++k;
             }
 
-            setwy(k);
-            ModInt[] s = new ModInt[M];
-            ModInt[] t = new ModInt[M];
-            for (int i = 0; i < (int)a.Length; ++i) s[i] = a[i];
-            for (int i = 0; i < (int)b.Length; ++i) t[i] = b[i];
-            fft4(s, k);
-            fft4(t, k);
-            for (int i = 0; i < M; ++i) s[i] *= t[i];
-            ifft4(s, k);
+            SetWy(k);
+            ModInt[] s = new ModInt[m];
+            ModInt[] t = new ModInt[m];
+            for (int i = 0; i < a.Length; ++i) s[i] = a[i];
+            for (int i = 0; i < b.Length; ++i) t[i] = b[i];
+            Fft4(s, k);
+            Fft4(t, k);
+            for (int i = 0; i < m; ++i) s[i] *= t[i];
+            InvertFft4(s, k);
             Array.Resize(ref s, l);
-            ModInt invm = (ModInt)1 / M;
+            ModInt invm = (ModInt)1 / m;
             for (int i = 0; i < l; ++i) s[i] *= invm;
             return s;
         }
 
-        void ntt_doubling(ModInt[] a)
+        private void NttDoubling(ModInt[] a)
         {
-            int M = (int)a.Length;
-            var b = a;
-            intt(b);
-            ModInt r = 1, zeta = ModInt.Pow(pr, ModInt.ModValue - 1 / (M << 1));
-            for (int i = 0; i < M; i++)
+            int m = a.Length;
+            var b = new ModInt[a.Length];
+            Array.Copy(a, b, a.Length);
+            InvertNtt(b);
+            ModInt r = 1, zeta = ModInt.Pow(Pr, ModInt.ModValue - 1 / (m << 1));
+            for (int i = 0; i < m; i++)
             {
                 b[i] *= r;
                 r *= zeta;
             }
-            ntt(b);
-            Array.Copy(a, b, 0);
+            Ntt(b);
+            Array.Copy(b, a, a.Length);
         }
     }
 }
