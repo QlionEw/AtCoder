@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Qlibrary
 {
@@ -36,6 +37,7 @@ namespace Qlibrary
         private bool[,] isVisited; 
         public int _01Bfs((int Y, int X) start, (int Y, int X) end, Func<(int Y, int X), (int Y, int X), int> func)
         {
+            Debug.Assert(moveDirectionList.Count != 0, "<<PlanesWalker>> - no direction setting");
             Deque<(int Y, int X)> deque = new Deque<(int, int)>();
             isVisited = new bool[h, w];
             Distances = new int[h, w];
@@ -83,6 +85,7 @@ namespace Qlibrary
         
         public int Dijkstra((int Y, int X) start, (int Y, int X) end, Func<(int Y, int X), (int Y, int X), int> func)
         {
+            Debug.Assert(moveDirectionList.Count != 0, "<<PlanesWalker>> - no direction setting");
             PriorityQueue<(int totalCost, int Y, int X)> pq = new PriorityQueue<(int, int, int)>(h * w);
             isVisited = new bool[h, w];
             Distances = new int[h, w];
@@ -126,6 +129,7 @@ namespace Qlibrary
         public int Direction01Bfs((int Y, int X) start, (int Y, int X) end, 
             Func<(int Y, int X, int Dir), (int Y, int X, int Dir), int> func)
         {
+            Debug.Assert(moveDirectionList.Count != 0, "<<PlanesWalker>> - no direction setting");
             var d = moveDirectionList.Count;
             Deque<(int Y, int X, int Dir)> deque = new Deque<(int, int, int)>();
             isDirVisited = new bool[h, w, d];
