@@ -21,6 +21,8 @@ namespace Qlibrary
         public static long[][] Sql(int yCount, int xCount) => Scanner.SquareLong(yCount, xCount);
         public static string[] Sss(int count) => Enumerable.Repeat(0, count).Select(_ => Ss()).ToArray();
         public static T[] Make<T>(int n, Func<T> creator) => Enumerable.Repeat(0, n).Select(_ => creator()).ToArray();
+        public static (T, T) SorTuple<T>(T a, T b) where T : IComparable<T> 
+            => (a.CompareTo(b) < 0 ? a : b, a.CompareTo(b) > 0 ? a : b);
 
         public static void Loop(long n, Action action)
         {
