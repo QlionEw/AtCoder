@@ -2,16 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
     public static class MathPlus
     {
+        [MethodImpl(256)]
         public static long CeilingLong(long value, long div)
         {
             return value % div == 0 ? value / div : value / div + 1;
         }
 
+        [MethodImpl(256)]
         public static int Digit(long num, int b)
         {
             int digit = 0;
@@ -23,6 +26,7 @@ namespace Qlibrary
             return digit;
         }
 
+        [MethodImpl(256)]
         public static int GetNumberCount(long value, int digit, int ary, int searched)
         {
             int count = 0;
@@ -37,11 +41,13 @@ namespace Qlibrary
             return count;
         }
 
+        [MethodImpl(256)]
         public static long Gcd(long a, long b)
         {
             return a > b ? GcdRecursive(a, b) : GcdRecursive(b, a);
         }
 
+        [MethodImpl(256)]
         private static long GcdRecursive(long a, long b)
         {
             while (true)
@@ -54,6 +60,7 @@ namespace Qlibrary
         }
         
         /// <summary> a*x + b*y = 1 となるx,yを求める(1をnにする場合返り値をn倍) </summary>
+        [MethodImpl(256)]
         public static (long y, long x, long a) ExtGcd(long a, long b, long x = 0, long y = 0)
         {
             if (b == 0) {
@@ -65,6 +72,7 @@ namespace Qlibrary
         }
 
         /// <summary> Ax ≡ B mod Mとなるxを求める </summary>
+        [MethodImpl(256)]
         public static long Inv(long a, long b, long mod)
         {
             var dd = ExtGcd(a, mod);
@@ -75,6 +83,7 @@ namespace Qlibrary
             return (dd.Item1 * b) % mod;
         }
 
+        [MethodImpl(256)]
         public static long Lcm(long a, long b)
         {
             checked
@@ -83,6 +92,7 @@ namespace Qlibrary
             }
         }
 
+        [MethodImpl(256)]
         public static long Combination(long n, long m)
         {
             if (m == 0) return 1;
@@ -90,6 +100,7 @@ namespace Qlibrary
             return n * Combination(n - 1, m - 1) / m;
         }
 
+        [MethodImpl(256)]
         public static long Permutation(long n, long m)
         {
             if (m == 0) return 1;
@@ -104,15 +115,18 @@ namespace Qlibrary
         }
 
 
+        [MethodImpl(256)]
         public static IEnumerable<IEnumerable<T>> GetPermutations<T>(params T[] array) where T : IComparable
             => GetPermutations(array, 0, array.Length - 1);
         
+        [MethodImpl(256)]
         public static IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> items) where T : IComparable
         {
             var array = items.ToArray();
             return GetPermutations(array, 0, array.Length - 1);
         }
         
+        [MethodImpl(256)]
         private static IEnumerable<IEnumerable<T>> GetPermutations<T>(IList<T> list, int k, int m) where T : IComparable
         {
             if (k == m)
@@ -133,6 +147,7 @@ namespace Qlibrary
             }
         }
         
+        [MethodImpl(256)]
         public static IEnumerable<T[]> GetCombinations<T>(IEnumerable<T> items, int k, bool withRepetition = false)
         {
             if (k == 0)
@@ -161,6 +176,7 @@ namespace Qlibrary
             }
         }
         
+        [MethodImpl(256)]
         public static long BigPow(long baseValue, long pow, long mod = long.MaxValue)
         {
             long p = baseValue % mod;
@@ -178,6 +194,7 @@ namespace Qlibrary
             }
         }
         
+        [MethodImpl(256)]
         public static BigInteger MoreBigPow(BigInteger baseValue, BigInteger pow, BigInteger mod)
         {
             BigInteger p = baseValue % mod;
@@ -195,9 +212,18 @@ namespace Qlibrary
             }
         }
         
+        [MethodImpl(256)]
         public static double ToDegree(double radian) => radian * (180.0 / Math.PI);
 
+        [MethodImpl(256)]
+        public static long ArithmeticSum(long end) => ArithmeticSum(1, end);
+        
+        // 等差数列の和
+        [MethodImpl(256)]
+        public static long ArithmeticSum(long start, long end) => (start + end) * (end - start + 1) / 2;
+        
         // sum_{0 <= i < N} (ai + b) // m
+        [MethodImpl(256)]
         public static long FloorSum(long n, long m, long a, long b)
         {
             long ret = default;
