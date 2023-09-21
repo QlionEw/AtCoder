@@ -59,6 +59,7 @@ namespace Qlibrary
             return graph;
         }
 
+        public bool HasPath(int from, int to) => tempGraph[from].Contains(to);
         public int[] this[int edge] => GetGraph()[edge];
         public IEnumerator<int[]> GetEnumerator() => GetGraph().AsEnumerable().GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
