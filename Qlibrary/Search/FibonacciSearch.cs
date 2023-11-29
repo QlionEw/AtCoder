@@ -1,11 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace Qlibrary
 {
-    public class FibonacciSearch
+    public class FibonacciSearch : FibonacciSearch<long>
     {
-        private static readonly List<long> Fib = new List<long> { 1, 2 };
+        public FibonacciSearch(long min, long max) : base(min, max)
+        {
+        }
+    }
+    
+    public class FibonacciSearch<T> where T : INumber<T>
+    {
+        private static readonly List<long> Fib = new() { 1, 2 };
         private long max;
         private long min;
         private long range;
@@ -32,15 +40,15 @@ namespace Qlibrary
             n = Fib.Count;
         }
 
-        public (long Index, long Value) SolveMax(Func<long, long> func)
+        public (long Index, T Value) SolveMax(Func<long, T> func)
         {
             long index = -1;
-            long val = -Common.Infinity;
+            T val = -Common.GetInfinity<T>();
             if (range <= 5)
             {
                 for (long i = 1; i <= range; i++)
                 {
-                    long c = CheckMax(i + min, func);
+                    T c = CheckMax(i + min, func);
                     if (c <= val) continue;
                     val = c;
                     index = i + min;
@@ -48,15 +56,15 @@ namespace Qlibrary
                 return (index, val);
             }
             long cl = 0, cr = Fib[^1], dl = Fib[^3], dr = Fib[^2];
-            long el = CheckMax(dl + min, func);
-            long er = CheckMax(dr + min, func);
+            T el = CheckMax(dl + min, func);
+            T er = CheckMax(dr + min, func);
             if (el < er)
             {
                 cl = dl;
                 dl = dr;
                 dr = -1;
                 el = er;
-                er = -1;
+                er = T.CreateChecked(-1);
             }
             else
             {
@@ -64,7 +72,7 @@ namespace Qlibrary
                 dr = dl;
                 dl = -1;
                 er = el;
-                el = -1;
+                el = T.CreateChecked(-1);
             }
 
             for (int i = n - 4; i >= 0; i--)
@@ -85,7 +93,7 @@ namespace Qlibrary
                     dl = dr;
                     dr = -1;
                     el = er;
-                    er = -1;
+                    er = T.CreateChecked(-1);
                 }
                 else
                 {
@@ -93,7 +101,7 @@ namespace Qlibrary
                     dr = dl;
                     dl = -1;
                     er = el;
-                    el = -1;
+                    el = T.CreateChecked(-1);
                 }
             }
 
@@ -109,21 +117,21 @@ namespace Qlibrary
             return (index, val);
         }
 
-        private long CheckMax(long value, Func<long, long> func)
+        private T CheckMax(long value, Func<long, T> func)
         {
-            if (value > max || value <= min) return -Common.Infinity;
+            if (value > max || value <= min) return -Common.GetInfinity<T>();
             return func(value);
         }
         
-        public (long Index, long Value) SolveMin(Func<long, long> func)
+        public (long Index, T Value) SolveMin(Func<long, T> func)
         {
             long index = -1;
-            long val = Common.Infinity;
+            T val = Common.GetInfinity<T>();
             if (range <= 5)
             {
                 for (long i = 1; i <= range; i++)
                 {
-                    var c = CheckMin(i + min, func);
+                    T c = CheckMin(i + min, func);
                     if (c >= val) continue;
                     val = c;
                     index = i + min;
@@ -131,15 +139,15 @@ namespace Qlibrary
                 return (index, val);
             }
             long cl = 0, cr = Fib[^1], dl = Fib[^3], dr = Fib[^2];
-            long el = CheckMin(dl + min, func);
-            long er = CheckMin(dr + min, func);
+            T el = CheckMin(dl + min, func);
+            T er = CheckMin(dr + min, func);
             if (el > er)
             {
                 cl = dl;
                 dl = dr;
                 dr = -1;
                 el = er;
-                er = -1;
+                er = T.CreateChecked(-1);
             }
             else
             {
@@ -147,7 +155,7 @@ namespace Qlibrary
                 dr = dl;
                 dl = -1;
                 er = el;
-                el = -1;
+                el = T.CreateChecked(-1);
             }
 
             for (int i = n - 4; i >= 0; i--)
@@ -168,7 +176,7 @@ namespace Qlibrary
                     dl = dr;
                     dr = -1;
                     el = er;
-                    er = -1;
+                    er = T.CreateChecked(-1);
                 }
                 else
                 {
@@ -176,7 +184,7 @@ namespace Qlibrary
                     dr = dl;
                     dl = -1;
                     er = el;
-                    el = -1;
+                    el = T.CreateChecked(-1);
                 }
             }
 
@@ -192,9 +200,9 @@ namespace Qlibrary
             return (index, val);
         }
 
-        private long CheckMin(long value, Func<long, long> func)
+        private T CheckMin(long value, Func<long, T> func)
         {
-            if (value > max || value <= min) return Common.Infinity;
+            if (value > max || value <= min) return Common.GetInfinity<T>();
             return func(value);
         }
         

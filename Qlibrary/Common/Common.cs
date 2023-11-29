@@ -39,6 +39,7 @@ namespace Qlibrary
                 int => T.CreateSaturating(InfinityInt),
                 long => T.CreateSaturating(Infinity),
                 double => T.CreateSaturating(double.MaxValue / 2.1),
+                decimal => T.CreateSaturating(decimal.MaxValue / 2.1m),
                 _ => T.CreateSaturating(long.MaxValue) / T.CreateSaturating(2.1)
             };
         }
