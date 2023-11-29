@@ -1,18 +1,25 @@
 using System;
 using System.Linq;
+using System.Numerics;
 
 namespace Qlibrary
 {
     public class SegmentTree : SegmentTreeExtend<long>
     {
+        public void Add(int index, long value) => SetValue(index, value + Data[index + N - 1]);
+    }
+    
+    public class ModSegmentTree : SegmentTreeExtend<ModInt>
+    {
+        public void Add(int index, ModInt value) => SetValue(index, value + Data[index + N - 1]);
     }
 
     public class SegmentTreeExtend<T>
     {
-        private T[] data;
+        protected T[] Data;
         private Func<T, T, T> updateMethod;
         private T firstValue;
-        private int n;
+        protected int N;
         private int count;
 
         public void Init(int count, T firstValue, Func<T, T, T> updateMethod)
@@ -21,35 +28,35 @@ namespace Qlibrary
             this.firstValue = firstValue;
             this.count = count;
 
-            n = 1;
-            while (n < count)
+            N = 1;
+            while (N < count)
             {
-                n *= 2;
+                N *= 2;
             }
 
-            data = Enumerable.Repeat(firstValue, 2 * n - 1).ToArray();
+            Data = Enumerable.Repeat(firstValue, 2 * N - 1).ToArray();
         }
         
         public void Build(Func<int, T> update)
         {
             for (int i = 0; i < count; i++)
             {
-                data[n + i - 1] = update(i);
+                Data[N + i - 1] = update(i);
             }
-            for (int i = n - 2; i >= 0; i--)
+            for (int i = N - 2; i >= 0; i--)
             {
-                data[i] = updateMethod(data[2 * i + 1], data[2 * i + 2]);
+                Data[i] = updateMethod(Data[2 * i + 1], Data[2 * i + 2]);
             }
         }
 
-        public void Update(int index, T value)
+        public void SetValue(int index, T value)
         {
-            index += n - 1;
-            data[index] = value;
+            index += N - 1;
+            Data[index] = value;
             while (index > 0)
             {
                 index = (index - 1) / 2;
-                data[index] = updateMethod(data[index * 2 + 1], data[index * 2 + 2]);
+                Data[index] = updateMethod(Data[index * 2 + 1], Data[index * 2 + 2]);
             }
         }
 
@@ -60,14 +67,14 @@ namespace Qlibrary
 
         public T Query(int indexStart, int indexEnd)
         {
-            return Query(indexStart, indexEnd + 1, 0, 0, n);
+            return Query(indexStart, indexEnd + 1, 0, 0, N);
         }
 
         private T Query(int indexStart, int indexEnd, int current, int left, int right)
         {
             if (right <= indexStart || indexEnd <= left) { return firstValue; }
 
-            if (indexStart <= left && right <= indexEnd) { return data[current]; }
+            if (indexStart <= left && right <= indexEnd) { return Data[current]; }
 
             T leftValue = Query(indexStart, indexEnd, current * 2 + 1, left, (left + right) / 2);
             T rightValue = Query(indexStart, indexEnd, current * 2 + 2, (left + right) / 2, right);
