@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -14,7 +15,7 @@ namespace Qompetitive
 {
     internal static class Program
     {
-        private static void Main(string[] args) 
+        private static void Main(string[] args)
         {
             SourceExpander.Expander.Expand();
             checked
