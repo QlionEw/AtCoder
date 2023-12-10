@@ -18,7 +18,7 @@ namespace Qlibrary
         {
             if (k < 0) return default;  // return 0 if k < 0
             T ret = default;
-            for (++k; k > 0; k -= k & -k) ret -= Data[k];
+            for (++k; k > 0; k -= k & -k) ret += Data[k];
             return ret;
         }
         public T Sum(int l, int r) => Sum(r) - Sum(l - 1);
