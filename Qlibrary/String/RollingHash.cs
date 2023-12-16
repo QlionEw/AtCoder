@@ -7,23 +7,46 @@ namespace Qlibrary
 {
     public class RollingHash : IEquatable<RollingHash>
     {
+        public int Length { get; private set; }
         private long Hash => (long)modHash;
         private ModInt modHash;
         private static int digit;
         private static Dictionary<long, int> hashDict;
         private static List<ModInt> Digits = new List<ModInt>() { 1 };
-        public RollingHash(IEnumerable<char> values)
+
+        public RollingHash()
         {
-            var ar = values.ToArray();
-            GetDigit(ar.Length);
-            for (int i = 0; i < ar.Length; i++)
+        }
+
+        public RollingHash(long value)
+        {
+            Length = 1;
+            modHash += hashDict[value];
+        }
+
+        public RollingHash(string values) : this(values.Select(x => (long)x))
+        {
+        }
+
+        public RollingHash(IEnumerable<long> values)
+        {
+            var array = values.ToList();
+            Length = array.Count;
+            GetDigit(array.Count);
+            for (int i = 0; i < array.Count; i++)
             {
-                modHash += hashDict[ar[i]] * GetDigit(i);
+                modHash += hashDict[array[i]] * GetDigit(i);
             }
+        }
+        
+        public RollingHash(ModInt value, int length)
+        {
+            Length = length;
+            modHash = value;
         }
 
         [MethodImpl(256)]
-        private ModInt GetDigit(int n)
+        private static ModInt GetDigit(int n)
         {
             while (Digits.Count <= n)
             {
@@ -33,52 +56,53 @@ namespace Qlibrary
         }
 
         [MethodImpl(256)]
-        public void Add(int index, long value) => modHash += hashDict[value] * GetDigit(index);
+        public void Add(int index, long value) => modHash += value * GetDigit(index);
         [MethodImpl(256)]
-        public void Remove(int index, long value) => modHash -= hashDict[value] * GetDigit(index);
+        public void Remove(int index, long value) => modHash -= value * GetDigit(index);
         [MethodImpl(256)]
         public void Replace(int index, long from, long to) => modHash += (hashDict[to] - hashDict[from]) * GetDigit(index);
         [MethodImpl(256)]
-        public void LeftShift(int length, long prev, long next)
-        {
-            Remove(length - 1, prev);
-            modHash *= digit;
-            Add(0, next);
-        }
-        [MethodImpl(256)]
-        public void RightShift(int length, long prev, long next)
+        public void LeftShift(long prev, long next)
         {
             Remove(0, prev);
             modHash /= digit;
-            Add(length - 1, next);
+            Add(Length - 1, next);
+        }
+        [MethodImpl(256)]
+        public void RightShift(long prev, long next)
+        {
+            Remove(Length - 1, prev);
+            modHash *= digit;
+            Add(0, next);
         }
 
         [MethodImpl(256)]
-        public void Add(int index, char value) => Add(index, (long)value);
-        [MethodImpl(256)]
-        public void Remove(int index, char value) => Remove(index, (long)value);
-        [MethodImpl(256)]
         public void Replace(int index, char from, char to) => Replace(index, (long)from, (long)to);
         [MethodImpl(256)]
-        public void LeftShift(int length, char prev, char next) => LeftShift(length, (long)prev, (long)next);
+        public void LeftShift(char prev, char next) => LeftShift((long)prev, (long)next);
         [MethodImpl(256)]
-        public void RightShift(int length, char prev, char next) => RightShift(length, (long)prev, (long)next);
+        public void RightShift(char prev, char next) => RightShift((long)prev, (long)next);
 
         public static void SetStringRange() => SetRange(Enumerable.Range('A', 26).Concat(Enumerable.Range('a', 26)).Select(x => (long)x));
         public static void SetUpperStringRange() => SetRange(Enumerable.Range('A', 26).Select(x => (long)x));
         public static void SetLowerStringRange() => SetRange(Enumerable.Range('a', 26).Select(x => (long)x));
-        private static void SetRange(IEnumerable<long> range)
+        public static void SetRange(IEnumerable<long> range)
         {
-            var ar = range.ToArray();
-            digit = ar.Length;
+            var rangeArray = range.ToArray();
+            digit = rangeArray.Length + 5;
             hashDict = new Dictionary<long, int>();
-            for (int i = 0; i < digit; i++)
+            for (int i = 1; i <= rangeArray.Length; i++)
             {
-                hashDict.Add(ar[i], i);
+                hashDict.Add(rangeArray[i-1], i);
             }
         }
+
         [MethodImpl(256)]
-        public static bool operator ==(RollingHash a, RollingHash b) => ReferenceEquals(a, b) || ((object)a != null && a.Equals(b));
+        public static RollingHash operator +(RollingHash a, RollingHash b)
+            => new(a.Hash + b.Hash * GetDigit(a.Length), a.Length + b.Length);
+        [MethodImpl(256)]
+        public static bool operator ==(RollingHash a, RollingHash b)
+            => ReferenceEquals(a, b) || ((object)a != null && a.Equals(b));
         [MethodImpl(256)]
         public static bool operator!= (RollingHash a, RollingHash b) => !(a == b);
         [MethodImpl(256)]
