@@ -14,7 +14,7 @@ namespace Qlibrary
             Data = new T[size + 3];
         }
 
-        public T Sum(int k)
+        private T Sum(int k)
         {
             if (k < 0) return default;  // return 0 if k < 0
             T ret = default;
@@ -28,6 +28,8 @@ namespace Qlibrary
         {
             for (++k; k < Size; k += k & -k) Data[k] += x;
         }
+
+        public void Set(int k, T x) => Add(k, x - this[k]);
         
         /// <summary> 要素が全て非負の時、[0, k]の区間和がw以下となるような最小のkを求める。 </summary>
         public int LowerBound(T w) {
