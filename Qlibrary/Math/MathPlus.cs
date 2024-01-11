@@ -244,5 +244,46 @@ namespace Qlibrary
             ret += FloorSum(y, a, m, (a - x % a) % a);
             return ret;
         }
+
+        [MethodImpl(256)]
+        public static long FloorSqrt(long value)
+        {
+            var sq = (long)Math.Sqrt(value);
+            while ((sq+1) * (sq+1) <= value)
+            {
+                sq++;
+            }
+            while ((sq) * (sq) > value)
+            {
+                sq--;
+            }
+            return sq;
+        }
+
+        [MethodImpl(256)]
+        public static long CeilingSqrt(long value)
+        {
+            var sq = (long)Math.Sqrt(value);
+            while ((sq) * (sq) < value)
+            {
+                sq++;
+            }
+            while ((sq-1) * (sq-1) >= value)
+            {
+                sq--;
+            }
+            return sq;
+        }
+
+        [MethodImpl(256)]
+        public static long AbsMod(this long l, long mod)
+        {
+            var lm = Math.Abs(l) % mod;
+            if (l < 0)
+            {
+                lm = (mod - lm);
+            }
+            return lm;
+        }
     }
 }
