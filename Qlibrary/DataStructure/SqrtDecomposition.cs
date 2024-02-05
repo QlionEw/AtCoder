@@ -82,7 +82,7 @@ namespace Qlibrary
             }
         }
 
-        private struct SqrtBucket
+        private class SqrtBucket
         {
             private readonly Func<TValue, TValue, TValue> indexUpdate;
             private readonly Func<List<TValue>, TBucket> allUpdate;
