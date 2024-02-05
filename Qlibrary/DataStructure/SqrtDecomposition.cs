@@ -6,19 +6,35 @@ using static Qlibrary.MathPlus;
 
 namespace Qlibrary
 {
-    public class SqrtDecomposition<T>
+    public class SqrtDecomposition<TValue, TBucket>
+        : SqrtDecomposition<TValue, TBucket, TValue>
+    {
+        public SqrtDecomposition(
+            IReadOnlyList<TValue> array, 
+            Func<TValue, TValue, TValue> indexUpdate, 
+            Func<List<TValue>, TBucket> allUpdate, 
+            Func<TValue, TValue> indexQuery, 
+            Func<TBucket, TValue> allQuery) : base(array, indexUpdate, allUpdate, indexQuery, allQuery)
+        {
+        }
+    }
+    
+    public class SqrtDecomposition<TValue, TBucket, TQuery>
     {
         private readonly SqrtBucket[] buckets;
         private readonly int bucketSize;
 
-        public SqrtDecomposition(IReadOnlyList<T> array, bool isBuildSet, Func<T, T, T> indexOperation,
-            Func<IEnumerable<T>, T> allOperation)
+        public SqrtDecomposition(IReadOnlyList<TValue> array, 
+            Func<TValue, TValue, TValue> indexUpdate, 
+            Func<List<TValue>, TBucket> allUpdate,
+            Func<TValue, TQuery> indexQuery,
+            Func<TBucket, TQuery> allQuery)
         {
             var size = array.Count;
             bucketSize = (int)Sqrt(size);
             var bucketLength = (int)CeilingLong(size, bucketSize);
             buckets = Enumerable.Repeat(0, bucketLength)
-                .Select(_ => new SqrtBucket(isBuildSet, indexOperation, allOperation)).ToArray();
+                .Select(_ => new SqrtBucket(indexUpdate, allUpdate, indexQuery, allQuery)).ToArray();
             for (int i = 0; i < size; i++)
             {
                 buckets[i / bucketSize].Create(array[i]);
@@ -29,14 +45,14 @@ namespace Qlibrary
             }
         }
 
-        public void Update(int index, T value)
+        public void Update(int index, TValue value)
         {
             int bucketIndex = index / bucketSize;
             int innerIndex = index % bucketSize;
             buckets[bucketIndex].Update(value, innerIndex);
         }
 
-        public IEnumerable<T> QueryValue(int l, int r)
+        public IEnumerable<TQuery> Query(int l, int r)
         {
             int leftBucket = l / bucketSize;
             int leftIndex = l % bucketSize;
@@ -58,92 +74,56 @@ namespace Qlibrary
             }
             for (int i = leftBucket + 1; i <= rightBucket - 1; i++)
             {
-                yield return buckets[i].Value;
+                yield return buckets[i].GetAll();
             }
             foreach (var value in buckets[rightBucket].GetValues(0, rightIndex))
             {
                 yield return value;
             }
         }
-        
-        public IEnumerable<Set<T>> QuerySet(int l, int r)
+
+        private struct SqrtBucket
         {
-            int leftBucket = l / bucketSize;
-            int leftIndex = l % bucketSize;
-            int rightBucket = r / bucketSize;
-            int rightIndex = r % bucketSize;
+            private readonly Func<TValue, TValue, TValue> indexUpdate;
+            private readonly Func<List<TValue>, TBucket> allUpdate;
+            private readonly Func<TValue, TQuery> indexQuery;
+            private readonly Func<TBucket, TQuery> allQuery;
+            private readonly List<TValue> list = new();
+            private TBucket bucket = default;
 
-            var s = new Set<T>(true);
-            if (leftBucket == rightBucket)
+            public SqrtBucket(
+                Func<TValue, TValue, TValue> indexUpdate, 
+                Func<List<TValue>, TBucket> allUpdate,
+                Func<TValue, TQuery> indexQuery,
+                Func<TBucket, TQuery> allQuery)
             {
-                foreach (var value in buckets[leftBucket].GetValues(leftIndex, rightIndex))
-                {
-                    s.Add(value);
-                }
-                yield return s;
-                yield break;
-            }
-
-            foreach (var value in buckets[leftBucket].GetValues(leftIndex, bucketSize))
-            {
-                s.Add(value);
-            }
-            foreach (var value in buckets[rightBucket].GetValues(0, rightIndex))
-            {
-                s.Add(value);
-            }
-            yield return s;
-            for (int i = leftBucket + 1; i <= rightBucket - 1; i++)
-            {
-                yield return buckets[i].BucketSet;
-            }
-        }
-
-        class SqrtBucket
-        {
-            private readonly Func<T, T, T> indexOperation;
-            private readonly Func<IEnumerable<T>, T> allOperation;
-            public T Value { get; private set; }
-            public Set<T> BucketSet { get; private set; }
-            private readonly bool isBuildSet;
-            private readonly List<T> bucket = new List<T>();
-
-            public SqrtBucket(bool isBuildSet, Func<T, T, T> indexOperation, Func<IEnumerable<T>, T> allOperation)
-            {
-                this.isBuildSet = isBuildSet;
-                this.indexOperation = indexOperation;
-                this.allOperation = allOperation;
-                if (isBuildSet)
-                {
-                    BucketSet = new Set<T>(true);
-                }
+                this.indexUpdate = indexUpdate;
+                this.allUpdate = allUpdate;
+                this.indexQuery = indexQuery;
+                this.allQuery = allQuery;
             }
 
-            public void Create(T value)
+            public void Create(TValue value) => list.Add(value);
+
+            public void InitializeBucket() => bucket = allUpdate(list);
+
+            public void Update(TValue value, int index)
             {
-                bucket.Add(value);
-            }
-            
-            public void InitializeBucket()
-            {
-                Value = allOperation(bucket);
+                var old = list[index];
+                list[index] = indexUpdate(old, value);
+                bucket = allUpdate(list);
             }
 
-            public void Update(T value, int index)
+            public IEnumerable<TQuery> GetValues(int left, int right)
             {
-                var old = bucket[index];
-                bucket[index] = indexOperation(old, value);
-                Value = allOperation(bucket);
-            }
-
-            public IEnumerable<T> GetValues(int left, int right)
-            {
-                var max = Math.Min(bucket.Count - 1, right);
+                var max = Min(list.Count - 1, right);
                 for (int i = left; i <= max; i++)
                 {
-                    yield return bucket[i];
+                    yield return indexQuery(list[i]);
                 }
             }
+
+            public TQuery GetAll() => allQuery(bucket);
         }
     }
 }
