@@ -59,7 +59,12 @@ namespace Qlibrary
             }
         }
         
-        /// <summary> a*x + b*y = 1 となるx,yを求める(1をnにする場合返り値をn倍) </summary>
+        /// <summary>
+        /// a*x + b*y = gcd(a,b) となるx,yを求める。
+        /// (この式にはgcd(a,b)以下の解はない)
+        /// gcd(a,b)以上の値Nで解を求めたい場合は帰ってきた(x,y)を(N/gcd(a,b))倍する
+        /// (このときは、(N/gcd(a,b))が整数にならない場合も解なしのはず)
+        /// </summary>
         [MethodImpl(256)]
         public static (long y, long x, long a) ExtGcd(long a, long b, long x = 0, long y = 0)
         {
