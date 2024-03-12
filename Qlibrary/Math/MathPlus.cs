@@ -11,7 +11,11 @@ namespace Qlibrary
         [MethodImpl(256)]
         public static long CeilingLong(long value, long div)
         {
-            return value % div == 0 ? value / div : value / div + 1;
+            if (value >= 0)
+            {
+                return value % div == 0 ? value / div : value / div + 1;
+            }
+            return value / div;
         }
 
         [MethodImpl(256)]
