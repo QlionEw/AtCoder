@@ -23,6 +23,7 @@ namespace Qlibrary
         /// <summary> 自ノードの更新方法 f(x) 元の値を更新によりどのように保持しておくか  </summary>
         /// <example> 更新が置換なら (cur,laz) => laz, 乗算なら (f,g) => cur * laz など </example>
         public Func<(T Current, T Lazy), T> Mapping { get; set; }
+        // public Func<(T Current, T Lazy, int length), T> Mapping { get; set; }
         /// <summary> 更新区間が重なったときの更新の合成方法 f∘g </summary>
         /// <example> 更新が置換なら (f,g) => g, 乗算なら (f,g) => f * g など </example>
         public Func<(T F, T G), T> Composition { get; set; }
@@ -72,11 +73,13 @@ namespace Qlibrary
                 lazyData[2 * k + 2] = Composition((lazyData[2 * k + 2], lazyData[k]));
             }
 
+            // lengthを使う場合はコメントアウト解除
             // int cc = k switch
             // {
             //     0 => n,
             //     _ => 1 << (MathPlus.Digit(n, 2) - MathPlus.Digit(k+1, 2))
             // };
+            // data[k] = Mapping((data[k], lazyData[k], cc));
             data[k] = Mapping((data[k], lazyData[k]));
             lazyData[k] = E;
         }
