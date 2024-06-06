@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using static Qlibrary.Common;
@@ -54,7 +55,7 @@ namespace Qlibrary
 
         public void Undo()
         {
-            if (!IsHistoryEnable) { ThrowSnapshotException(); }
+            Debug.Assert(IsHistoryEnable, "IsHistoryEnable is false.");
             Loop(2, () =>
             {
                 var lastItem = history.Pop();
@@ -64,22 +65,17 @@ namespace Qlibrary
 
         public void TakeSnapShot()
         {
-            if (!IsHistoryEnable) { ThrowSnapshotException(); }
+            Debug.Assert(IsHistoryEnable, "IsHistoryEnable is false.");
             innerSnap = (history.Count >> 1);
         }
         public int HistoryCount => history.Count >> 1;
 
-        void Rollback(int state = -1) 
+        public void Rollback(int state = -1) 
         {
-            if (!IsHistoryEnable) { ThrowSnapshotException(); }
+            Debug.Assert(IsHistoryEnable, "IsHistoryEnable is false.");
             if (state == -1) { state = innerSnap; }
             state <<= 1;
             while (state < history.Count) { Undo(); }
-        }
-
-        private static void ThrowSnapshotException()
-        {
-            throw new Exception("IsHistoryEnable is false.");
         }
 
         public IEnumerable<List<int>> GetUnions(int count, int indexStart = 0)
