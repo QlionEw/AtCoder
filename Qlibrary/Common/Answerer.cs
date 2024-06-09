@@ -61,6 +61,10 @@ namespace Qlibrary
         /// <summary> 2D一括出力 </summary>
         public static void Out2D<T>(T[,] items) =>
             Console.WriteLine(HoldAllLine(items.ToJaggedArray().Select(HoldEachSpace)));
+        
+        /// <summary> 2D一括出力(空白なし) </summary>
+        public static void Out2DNoSpace<T>(T[,] items) =>
+            Console.WriteLine(HoldAllLine(items.ToJaggedArray().Select(x => Hold(x, (char)0))));
 
         private static string Hold<T>(IEnumerable<T> items, char splitter)
         {
@@ -68,7 +72,10 @@ namespace Qlibrary
             foreach (T result in items)
             {
                 sbi.Append(result);
-                sbi.Append(splitter);
+                if (splitter != 0)
+                {
+                    sbi.Append(splitter);
+                }
             }
 
             if (sbi.Length == 0)
@@ -76,7 +83,10 @@ namespace Qlibrary
                 return "";
             }
             
-            sbi.Remove(sbi.Length - 1, 1);
+            if (splitter != 0)
+            {
+                sbi.Remove(sbi.Length - 1, 1);
+            }
             return sbi.ToString();
         }
     }
