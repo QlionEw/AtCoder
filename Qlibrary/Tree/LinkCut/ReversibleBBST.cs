@@ -1,11 +1,13 @@
 using System;
+using System.Runtime.CompilerServices;
+// ReSharper disable InconsistentNaming
 
 namespace Qlibrary
 {
     public class ReversibleBBST<T>
     {
-        protected Func<T, T, T> mergeFunc;
-        protected Func<T, T> toggleSumFunc;
+        protected readonly Func<T, T, T> mergeFunc;
+        protected readonly Func<T, T> toggleSumFunc;
 
         public ReversibleBBST(Func<T, T, T> mergeFunc, Func<T, T> toggleSumFunc,
             Func<LinkCutNode<T>, LinkCutNode<T>, LinkCutNode<T>> lctMerge,
@@ -20,6 +22,7 @@ namespace Qlibrary
         private readonly Func<LinkCutNode<T>, LinkCutNode<T>, LinkCutNode<T>> Merge;
         private readonly Func<LinkCutNode<T>, int, (LinkCutNode<T>, LinkCutNode<T>)> Split;
 
+        [MethodImpl(256)]
         public void Toggle(LinkCutNode<T> node)
         {
             if (node == null) return;
@@ -28,6 +31,7 @@ namespace Qlibrary
             node.Reversed ^= true;
         }
 
+        [MethodImpl(256)]
         protected T Fold(ref LinkCutNode<T> node, int a, int b)
         {
             var(left, mid) = Split(node, a);
@@ -37,6 +41,7 @@ namespace Qlibrary
             return result;
         }
 
+        [MethodImpl(256)]
         protected void Reverse(ref LinkCutNode<T> node, int a, int b)
         {
             var(left, mid) = Split(node, a);
@@ -45,6 +50,7 @@ namespace Qlibrary
             node = Merge(left, Merge(midLeft, right));
         }
 
+        [MethodImpl(256)]
         public LinkCutNode<T> Update(LinkCutNode<T> node)
         {
             if (node == null) return null;
@@ -63,11 +69,13 @@ namespace Qlibrary
             return node;
         }
 
+        [MethodImpl(256)]
         protected T GetSum(LinkCutNode<T> node)
         {
             return node == null ? default(T) : node.Sum;
         }
 
+        [MethodImpl(256)]
         public void Push(LinkCutNode<T> node)
         {
             if (node == null) return;
