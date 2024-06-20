@@ -9,10 +9,7 @@ namespace Qlibrary
 {
     public class UnionFindTree
     {
-        public bool IsHistoryEnable { get; set; }
         private readonly int[] data;
-        private readonly Stack<(int, int)> history = new Stack<(int, int)>();
-        private int innerSnap;
 
         public UnionFindTree(int n)
         {
@@ -33,12 +30,6 @@ namespace Qlibrary
         {
             x = Find(x);
             y = Find(y);
-
-            if (IsHistoryEnable)
-            {
-                history.Push((x, data[x]));
-                history.Push((y, data[y]));
-            }
             
             if (x == y) return false;
 
@@ -51,31 +42,6 @@ namespace Qlibrary
             data[y] = x;
 
             return true;
-        }
-
-        public void Undo()
-        {
-            Debug.Assert(IsHistoryEnable, "IsHistoryEnable is false.");
-            Loop(2, () =>
-            {
-                var lastItem = history.Pop();
-                data[lastItem.Item1] = lastItem.Item2;
-            });
-        }
-
-        public void TakeSnapShot()
-        {
-            Debug.Assert(IsHistoryEnable, "IsHistoryEnable is false.");
-            innerSnap = (history.Count >> 1);
-        }
-        public int HistoryCount => history.Count >> 1;
-
-        public void Rollback(int state = -1) 
-        {
-            Debug.Assert(IsHistoryEnable, "IsHistoryEnable is false.");
-            if (state == -1) { state = innerSnap; }
-            state <<= 1;
-            while (state < history.Count) { Undo(); }
         }
 
         public IEnumerable<List<int>> GetUnions(int count, int indexStart = 0)
