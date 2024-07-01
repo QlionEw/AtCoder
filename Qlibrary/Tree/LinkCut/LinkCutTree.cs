@@ -13,17 +13,17 @@ namespace Qlibrary
         }
 
         [MethodImpl(256)]
-        public LinkCutNode<T> Expose(LinkCutNode<T> t)
+        public LinkCutNode<T> Expose(LinkCutNode<T> u)
         {
             LinkCutNode<T> rp = null;
-            for (LinkCutNode<T> cur = t; cur != null; cur = cur.Parent)
+            for (LinkCutNode<T> cur = u; cur != null; cur = cur.Parent)
             {
                 splay.Splay(cur);
                 cur.Right = rp;
                 splay.Update(cur);
                 rp = cur;
             }
-            splay.Splay(t);
+            splay.Splay(u);
             return rp;
         }
 
@@ -50,11 +50,11 @@ namespace Qlibrary
 
         /// <summary>頂点uを木全体の根とする </summary>
         [MethodImpl(256)]
-        public void Evert(LinkCutNode<T> t)
+        public void Evert(LinkCutNode<T> u)
         {
-            Expose(t);
-            splay.Toggle(t);
-            splay.Push(t);
+            Expose(u);
+            splay.Toggle(u);
+            splay.Push(u);
         }
 
         /// <summary> u と v のLCAを返す </summary>
@@ -68,22 +68,22 @@ namespace Qlibrary
 
         /// <summary> 根方向にK進んだノードを取得 </summary>
         [MethodImpl(256)]
-        public LinkCutNode<T> GetKth(LinkCutNode<T> x, int k)
+        public LinkCutNode<T> GetKth(LinkCutNode<T> u, int k)
         {
-            Expose(x);
-            while (x != null)
+            Expose(u);
+            while (u != null)
             {
-                splay.Push(x);
-                if (x.Right != null && x.Right.Count > k)
+                splay.Push(u);
+                if (u.Right != null && u.Right.Count > k)
                 {
-                    x = x.Right;
+                    u = u.Right;
                 }
                 else
                 {
-                    if (x.Right != null) k -= x.Right.Count;
-                    if (k == 0) return x;
+                    if (u.Right != null) k -= u.Right.Count;
+                    if (k == 0) return u;
                     k -= 1;
-                    x = x.Left;
+                    u = u.Left;
                 }
             }
             return null;
@@ -91,23 +91,23 @@ namespace Qlibrary
 
         /// <summary> uの根を返す </summary>
         [MethodImpl(256)]
-        public LinkCutNode<T> GetRoot(LinkCutNode<T> x)
+        public LinkCutNode<T> GetRoot(LinkCutNode<T> u)
         {
-            Expose(x);
-            while (x.Left != null)
+            Expose(u);
+            while (u.Left != null)
             {
-                splay.Push(x);
-                x = x.Left;
+                splay.Push(u);
+                u = u.Left;
             }
-            return x;
+            return u;
         }
 
-        /// <summary> 根方向にK進んだノードを取得 </summary>
+        /// <summary> 親を取得 </summary>
         [MethodImpl(256)]
-        public LinkCutNode<T> GetParent(LinkCutNode<T> x)
+        public LinkCutNode<T> GetParent(LinkCutNode<T> u)
         {
-            Expose(x);
-            LinkCutNode<T> p = x.Left;
+            Expose(u);
+            LinkCutNode<T> p = u.Left;
             if (p == null) return null;
             while (true)
             {
@@ -119,18 +119,18 @@ namespace Qlibrary
 
         /// <summary> 頂点uのkeyを書き換える </summary>
         [MethodImpl(256)]
-        public virtual void SetKey(LinkCutNode<T> t, T key)
+        public virtual void SetKey(LinkCutNode<T> u, T key)
         {
-            splay.Splay(t);
-            t.Key = key;
-            splay.Update(t);
+            splay.Splay(u);
+            u.Key = key;
+            splay.Update(u);
         }
 
         /// <summary> 頂点uのkeyの値を得る </summary>
         [MethodImpl(256)]
-        public virtual T GetKey(LinkCutNode<T> t)
+        public virtual T GetKey(LinkCutNode<T> u)
         {
-            return t.Key;
+            return u.Key;
         }
 
         /// <summary> u, v間のパスのkeyの和を得る </summary>
