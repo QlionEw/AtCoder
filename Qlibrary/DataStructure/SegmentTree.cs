@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
@@ -48,7 +49,8 @@ namespace Qlibrary
                 Data[i] = updateMethod(Data[2 * i + 1], Data[2 * i + 2]);
             }
         }
-
+        
+        [MethodImpl(256)]
         public void SetValue(int index, T value)
         {
             index += N - 1;
@@ -59,17 +61,14 @@ namespace Qlibrary
                 Data[index] = updateMethod(Data[index * 2 + 1], Data[index * 2 + 2]);
             }
         }
+        
+        [MethodImpl(256)]
+        public T Query(int index) => Query(index, index);
 
-        public T Query(int index)
-        {
-            return Query(index, index);
-        }
+        [MethodImpl(256)]
+        public T Query(int indexStart, int indexEnd) => Query(indexStart, indexEnd + 1, 0, 0, N);
 
-        public T Query(int indexStart, int indexEnd)
-        {
-            return Query(indexStart, indexEnd + 1, 0, 0, N);
-        }
-
+        [MethodImpl(256)]
         private T Query(int indexStart, int indexEnd, int current, int left, int right)
         {
             if (right <= indexStart || indexEnd <= left) { return firstValue; }

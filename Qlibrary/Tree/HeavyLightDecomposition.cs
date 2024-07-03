@@ -13,7 +13,8 @@ namespace Qlibrary
             for (int i = 0; i < Graph[cur].Length; i++)
             {
                 var dst = Graph[cur][i];
-                if (dst.To == Parent[cur]) {
+                if (dst.To == Parent[cur])
+                {
                     if (Graph[cur].Length >= 2 && dst.To == Graph[cur][0].To)
                     {
                         (Graph[cur][0], Graph[cur][1]) = (Graph[cur][1], Graph[cur][0]);
@@ -35,9 +36,11 @@ namespace Qlibrary
             }
         }
 
+        public List<(int, int)> Tour { get; } = new();
         private void DfsForHld(int cur)
         {
             Down[cur] = id++;
+            Tour.Add((Parent[cur], cur));
             foreach (var dst in Graph[cur].Where(dst => dst.To != Parent[cur]))
             {
                 Next[dst.To] = dst.To == Graph[cur][0].To ? Next[cur] : dst.To;
@@ -104,7 +107,7 @@ namespace Qlibrary
             DfsForHld(root);
         }
 
-        public (int, int) Index(int i)
+        public (int In, int Out) Index(int i)
         {
             return (Down[i], Up[i]);
         }

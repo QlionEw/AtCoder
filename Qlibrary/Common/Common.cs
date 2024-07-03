@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
@@ -21,10 +22,12 @@ namespace Qlibrary
         public static long[][] Sql(int yCount, int xCount) => Scanner.SquareLong(yCount, xCount);
         public static string[] Sss(int count) => Enumerable.Repeat(0, count).Select(_ => Ss()).ToArray();
         public static T[] Make<T>(int n, Func<T> creator) => Enumerable.Repeat(0, n).Select(_ => creator()).ToArray();
-        public static (T, T) SorTuple<T>(T a, T b) where T : IComparable<T>
-            => a.CompareTo(b) < 0 ? (a,b) : (b,a);
+        [MethodImpl(256)]
+        public static (T, T) SorTuple<T>(T a, T b) where T : IComparable<T> => a.CompareTo(b) < 0 ? (a,b) : (b,a);
+        [MethodImpl(256)] 
         public static (T, T) SorTuple<T>((T, T) t) where T : IComparable<T> => SorTuple(t.Item1, t.Item2);
 
+        [MethodImpl(256)]
         public static void Loop(long n, Action action)
         {
             for (int i = 0; i < n; i++)
@@ -33,6 +36,7 @@ namespace Qlibrary
             }
         }
 
+        [MethodImpl(256)] 
         public static T GetInfinity<T>() where T : INumberBase<T>
         {
             return T.Zero switch
@@ -45,8 +49,8 @@ namespace Qlibrary
             };
         }
 
-        public static T GMin<T>(T v1, T v2) where T : INumber<T> => v1 <= v2 ? v1 : v2;
-        public static T GMax<T>(T v1, T v2) where T : INumber<T> => v1 >= v2 ? v1 : v2;
+        [MethodImpl(256)] public static T GMin<T>(T v1, T v2) where T : INumber<T> => v1 <= v2 ? v1 : v2;
+        [MethodImpl(256)] public static T GMax<T>(T v1, T v2) where T : INumber<T> => v1 >= v2 ? v1 : v2;
 
         private static T[,] Rotate90<T>(this T[,] self)
         {
