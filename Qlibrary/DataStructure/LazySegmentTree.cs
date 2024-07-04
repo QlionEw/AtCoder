@@ -17,13 +17,13 @@ namespace Qlibrary
     {
         private T[] data;
         private T[] lazyData;
+        private int[] depth;
         /// <summary> 全ノードの集計方法を表す二項演算 </summary>
         /// <example> 最終的に和を得たいなら (a,b) = a + b のようにする </example>
         public Func<(T A, T B), T> Operation { get; set; }
         /// <summary> 自ノードの更新方法 f(x) 元の値を更新によりどのように保持しておくか  </summary>
         /// <example> 更新が置換なら (cur,laz) => laz, 乗算なら (f,g) => cur * laz など </example>
-        public Func<(T Current, T Lazy), T> Mapping { get; set; }
-        // public Func<(T Current, T Lazy, int length), T> Mapping { get; set; }
+        public Func<(T Current, T Lazy, int length), T> Mapping { get; set; }
         /// <summary> 更新区間が重なったときの更新の合成方法 f∘g </summary>
         /// <example> 更新が置換なら (f,g) => g, 乗算なら (f,g) => f * g など </example>
         public Func<(T F, T G), T> Composition { get; set; }
@@ -47,6 +47,12 @@ namespace Qlibrary
 
             data = Enumerable.Repeat(E, 2 * n - 1).ToArray();
             lazyData = Enumerable.Repeat(E, 2 * n - 1).ToArray();
+            depth = new int[2 * n - 1];
+            var nd = MathPlus.Digit(n, 2);
+            for (int i = 0; i < 2 * n - 1; i++)
+            {
+                depth[i] = 1 << (nd - MathPlus.Digit(i + 1, 2));
+            }
         }
         
         [MethodImpl(256)]
@@ -73,14 +79,7 @@ namespace Qlibrary
                 lazyData[2 * k + 2] = Composition((lazyData[2 * k + 2], lazyData[k]));
             }
 
-            // lengthを使う場合はコメントアウト解除
-            // int cc = k switch
-            // {
-            //     0 => n,
-            //     _ => 1 << (MathPlus.Digit(n, 2) - MathPlus.Digit(k+1, 2))
-            // };
-            // data[k] = Mapping((data[k], lazyData[k], cc));
-            data[k] = Mapping((data[k], lazyData[k]));
+            data[k] = Mapping((data[k], lazyData[k], depth[k]));
             lazyData[k] = E;
         }
 

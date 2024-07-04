@@ -12,11 +12,13 @@ namespace Qlibrary
     {
         // Edge
         private bool isInitForEdge;
+        private T edgeFirstValue;
         private SegmentTreeExtend<T> segTree;
         private readonly Dictionary<(int,int), int> edgeToIndex = new();
         private Func<T, T, T> update;
         // Vertex
         private bool isInitForVertex;
+        private T vertexFirstValue;
         private SegmentTreeExtend<T> vertexSegTree;
         private int[] vertexToIndex;
         private Func<T, T, T> updateVertex;
@@ -25,9 +27,10 @@ namespace Qlibrary
         {
         }
 
-        private void InitForEdgeInner()
+        private void InitEdgeInner(T firstValue)
         {
             isInitForEdge = true;
+            edgeFirstValue = firstValue;
             for (int i = 0; i < Tour.Count; i++)
             {
                 edgeToIndex.Add(SorTuple(Tour[i]), i);
@@ -35,21 +38,21 @@ namespace Qlibrary
         }
 
         [MethodImpl(256)]
-        public void InitForEdge(T firstValue, Func<T, T, T> updateMethod)
+        public void InitEdge(T firstValue, Func<T, T, T> updateMethod)
         {
-            InitForEdgeInner();
+            InitEdgeInner(firstValue);
             update = updateMethod;
             segTree = new SegmentTreeExtend<T>();
             segTree.Init(Tour.Count, firstValue, updateMethod);
         }
 
         [MethodImpl(256)]
-        public void InitForEdgeFromGraph(Func<T, T, T> updateMethod)
+        public void InitEdgeFromGraph(T firstValue, Func<T, T, T> updateMethod)
         {
-            InitForEdgeInner();
+            InitEdgeInner(firstValue);
             update = updateMethod;
             segTree = new SegmentTreeExtend<T>();
-            segTree.Init(Tour.Count, T.Zero, updateMethod);
+            segTree.Init(Tour.Count, firstValue, updateMethod);
             for (int i = 0; i < Graph.Count; i++)
             {
                 foreach (var to in Graph[i])
@@ -63,9 +66,10 @@ namespace Qlibrary
         }
 
         [MethodImpl(256)]
-        public void InitForVertex(T firstValue, Func<T, T, T> updateMethod)
+        public void InitVertex(T firstValue, Func<T, T, T> updateMethod)
         {
             isInitForVertex = true;
+            vertexFirstValue = firstValue;
             vertexToIndex = new int[Graph.Count];
             for (int i = 0; i < Graph.Count; i++)
             {
@@ -79,9 +83,9 @@ namespace Qlibrary
         }
 
         [MethodImpl(256)]
-        public void InitForVertex(T[] values, Func<T, T, T> updateMethod)
+        public void InitVertex(T[] values, T firstValue, Func<T, T, T> updateMethod)
         {
-            InitForVertex(T.Zero, updateMethod);
+            InitVertex(firstValue, updateMethod);
             var ar = new int[Graph.Count];
             for (int i = 0; i < Graph.Count - 1; i++)
             {
@@ -98,19 +102,19 @@ namespace Qlibrary
         }
 
         [MethodImpl(256)]
-        public T QueryForEdgesOfPath(int u, int v)
+        public T QueryEdgesOfPath(int u, int v)
         {
             Debug.Assert(isInitForEdge);
-            T value = T.Zero;
+            T value = edgeFirstValue;
             QueryPath(u, v, false, (i1, i2) => value = update(value, segTree.Query(i1, i2 - 1)));
             return value;
         }
 
         [MethodImpl(256)]
-        public T QueryForEdgesOfSubTree(int u)
+        public T QueryEdgesOfSubTree(int u)
         {
             Debug.Assert(isInitForEdge);
-            T value = T.Zero;
+            T value = edgeFirstValue;
             QuerySubtree(u, true, (i1, i2) => value = update(value, segTree.Query(i1, i2 - 1)));
             return value;
         }
@@ -123,19 +127,19 @@ namespace Qlibrary
         }
 
         [MethodImpl(256)]
-        public T QueryForVertexesOfPath(int u, int v)
+        public T QueryVertexesOfPath(int u, int v)
         {
             Debug.Assert(isInitForVertex);
-            T value = T.Zero;
+            T value = vertexFirstValue;
             QueryPath(u, v, true, (i1, i2) => value = updateVertex(value, vertexSegTree.Query(i1, i2 - 1)));
             return value;
         }
 
         [MethodImpl(256)]
-        public T QueryForVertexesOfSubTree(int u)
+        public T QueryVertexesOfSubTree(int u)
         {
             Debug.Assert(isInitForVertex);
-            T value = T.Zero;
+            T value = vertexFirstValue;
             QuerySubtree(u, true, (i1, i2) => value = updateVertex(value, vertexSegTree.Query(i1, i2 - 1)));
             return value;
         }
