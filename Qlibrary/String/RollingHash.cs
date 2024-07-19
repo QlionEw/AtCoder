@@ -77,11 +77,11 @@ namespace Qlibrary
         }
 
         [MethodImpl(256)]
-        public void Replace(int index, char from, char to) => Replace(index, (long)from, (long)to);
+        public void Replace(int index, char from, char to) => Replace(index, hashDict[from], hashDict[to]);
         [MethodImpl(256)]
-        public void LeftShift(char prev, char next) => LeftShift((long)prev, (long)next);
+        public void LeftShift(char prev, char next) => LeftShift(hashDict[prev], hashDict[next]);
         [MethodImpl(256)]
-        public void RightShift(char prev, char next) => RightShift((long)prev, (long)next);
+        public void RightShift(char prev, char next) => RightShift(hashDict[prev], hashDict[next]);
 
         public static void SetStringRange() => SetRange(Enumerable.Range('A', 26).Concat(Enumerable.Range('a', 26)).Select(x => (long)x));
         public static void SetUpperStringRange() => SetRange(Enumerable.Range('A', 26).Select(x => (long)x));
