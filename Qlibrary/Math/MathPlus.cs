@@ -123,64 +123,86 @@ namespace Qlibrary
             return value;
         }
 
+        [MethodImpl(256)]
+        public static void GetPermutations<T>(IEnumerable<T> array, Action<List<T>> action)
+            where T : IComparable<T>
+        {
+            var a = new List<T>(array);
+            int n = a.Count;
+            a.Sort();
 
-        [MethodImpl(256)]
-        public static IEnumerable<IEnumerable<T>> GetPermutations<T>(params T[] array) where T : IComparable
-            => GetPermutations(array, 0, array.Length - 1);
-        
-        [MethodImpl(256)]
-        public static IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> items) where T : IComparable
-        {
-            var array = items.ToArray();
-            return GetPermutations(array, 0, array.Length - 1);
-        }
-        
-        [MethodImpl(256)]
-        private static IEnumerable<IEnumerable<T>> GetPermutations<T>(IList<T> list, int k, int m) where T : IComparable
-        {
-            if (k == m)
+            action(a);
+
+            bool next = true;
+            while (next)
             {
-                yield return list;
-            }
-            else
-            {
-                for (int i = k; i <= m; i++)
+                next = false;
+                int i;
+                for (i = n - 2; i >= 0; i--)
                 {
-                    (list[k], list[i]) = (list[i], list[k]);
-                    foreach (var perm in GetPermutations(list, k + 1, m))
-                    {
-                        yield return perm;
-                    }
-                    (list[k], list[i]) = (list[i], list[k]);
+                    if (a[i].CompareTo(a[i + 1]) < 0) break;
+                }
+
+                if (i < 0) break;
+
+                int j = n;
+                do
+                {
+                    j--;
+                } while (a[i].CompareTo(a[j]) >= 0);
+
+                if (a[i].CompareTo(a[j]) < 0)
+                {
+                    (a[i], a[j]) = (a[j], a[i]);
+                    a.Reverse(i + 1, n - i - 1);
+                    action(a);
+                    next = true;
                 }
             }
         }
         
         [MethodImpl(256)]
-        public static IEnumerable<T[]> GetCombinations<T>(IEnumerable<T> items, int k, bool withRepetition = false)
+        public static void GetCombinations<T>(IEnumerable<T> items, int k, Action<T[]> action, bool withRepetition = false)
         {
-            if (k == 0)
+            var itemsArray = items as T[] ?? items.ToArray();
+            int n = itemsArray.Length;
+
+            if (k == 0 || n == 0 || k > n && !withRepetition)
             {
-                yield return new T[] { };
-                yield break;
-            }
-            if (k == 1)
-            {
-                foreach (var item in items)
-                    yield return new T[] {item};
-                yield break;
+                action(Array.Empty<T>());
+                return;
             }
 
-            IEnumerable<T> enumerable = items as T[] ?? items.ToArray();
-            foreach (var item in enumerable)
+            int[] indices = new int[k];
+            for (int i = 0; i < k; i++)
             {
-                var leftside = new T[] {item};
+                indices[i] = withRepetition ? 0 : i;
+            }
 
-                var unused = withRepetition ? enumerable : enumerable.SkipWhile(e => !e.Equals(item)).Skip(1).ToList();
-
-                foreach (var rightside in GetCombinations(unused, k - 1, withRepetition))
+            while (true)
+            {
+                T[] combination = new T[k];
+                for (int i = 0; i < k; i++)
                 {
-                    yield return leftside.Concat(rightside).ToArray();
+                    combination[i] = itemsArray[indices[i]];
+                }
+                action(combination);
+
+                int pos = k - 1;
+                while (pos >= 0 && (withRepetition ? indices[pos] == n - 1 : indices[pos] == n - k + pos))
+                {
+                    pos--;
+                }
+
+                if (pos < 0)
+                {
+                    break;
+                }
+
+                indices[pos]++;
+                for (int i = pos + 1; i < k; i++)
+                {
+                    indices[i] = withRepetition ? indices[pos] : indices[pos] + i - pos;
                 }
             }
         }
