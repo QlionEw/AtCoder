@@ -8,11 +8,12 @@ using static Qlibrary.MathPlus;
 
 namespace QlibraryBenchmark
 {
+    [ShortRunJob]
     public class Program
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<Program>();
+            var summary = BenchmarkRunner.Run<Program>();
         }
         
         [Benchmark]
