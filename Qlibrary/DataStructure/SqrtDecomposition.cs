@@ -61,7 +61,7 @@ namespace Qlibrary
             buckets[rightBucket].IndexUpdate(0, rightIndex, value);
         }
 
-        public IEnumerable<TQuery> Query(int l, int r)
+        public TQuery Query(int l, int r, Func<TQuery, TQuery, TQuery> merge)
         {
             int leftBucket = l / bucketSize;
             int leftIndex = l % bucketSize;
@@ -70,16 +70,17 @@ namespace Qlibrary
 
             if (leftBucket == rightBucket)
             {
-                yield return buckets[leftBucket].IndexQuery(leftIndex, rightIndex);
-                yield break;
+                return buckets[leftBucket].IndexQuery(leftIndex, rightIndex);
             }
 
-            yield return buckets[leftBucket].IndexQuery(leftIndex, bucketSize - 1);
+            TQuery value = buckets[leftBucket].IndexQuery(leftIndex, bucketSize - 1);
             for (int i = leftBucket + 1; i <= rightBucket - 1; i++)
             {
-                yield return buckets[i].AllQuery();
+                merge(value, buckets[i].AllQuery());
             }
-            yield return buckets[rightBucket].IndexQuery(0, rightIndex);
+            merge(value, buckets[rightBucket].IndexQuery(0, rightIndex));
+
+            return value;
         }
     }
 }

@@ -4,8 +4,9 @@ namespace Qlibrary
 {
     public static class RunLengthExtensions
     {
-        public static IEnumerable<(T Value, int Length)> RunLength<T>(this IEnumerable<T> self)
+        public static List<(T Value, int Length)> RunLength<T>(this IEnumerable<T> self)
         {
+            var list = new List<(T Value, int Length)>(); 
             bool isFirst = true;
             T current = default;
             int count = 0;
@@ -13,7 +14,7 @@ namespace Qlibrary
             {
                 if (!c.Equals(current) && !isFirst)
                 {
-                    yield return (current, count);
+                    list.Add((current, count));
                 }
                 if (!c.Equals(current) || isFirst)
                 {
@@ -23,7 +24,8 @@ namespace Qlibrary
                 }
                 count++;
             }
-            yield return (current, count);
+            list.Add((current, count));
+            return list;
         }
     }
 }
