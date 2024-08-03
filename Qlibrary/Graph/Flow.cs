@@ -59,6 +59,34 @@ namespace Qlibrary
                 }
             }
         }
+        
+        /// <summary>
+        /// 最小カットの復元
+        /// 返り値の頂点集合から、そこに含まれない頂点に流れる辺（カット）が最小カット
+        /// https://37zigen.com/max-flow/#i-6
+        /// </summary>
+        [MethodImpl(256)]
+        public bool[] MinCut(int s)
+        {
+            var visited = new bool[size];
+            var que = new Queue<int>();
+            que.Enqueue(s);
+            while (que.Count > 0)
+            {
+                int p = que.Dequeue();
+                visited[p] = true;
+                foreach (var edge in graphs[p])
+                {
+                    if (edge.Capacity != 0 && !visited[edge.To])
+                    {
+                        visited[edge.To] = true;
+                        que.Enqueue(edge.To);
+                    }
+                }
+            }
+
+            return visited;
+        }
 
         public class PathInfo : IComparable<PathInfo>
         {
