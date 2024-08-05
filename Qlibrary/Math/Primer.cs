@@ -83,5 +83,32 @@ namespace Qlibrary
                 }
             }
         }
+
+        /// <summary>
+        /// オイラーのϕ関数（トーシェント関数）
+        /// </summary>
+        /// <remarks>
+        /// nと互いに素である 1 以上 n 以下の自然数の個数 φ(n) を与える数論的関数 φ <br />
+        /// nが正の整数でaをnと互いに素な正の整数としたとき、以下が成立する。 <br />
+        /// a^φ(N) ≡ 1(modN)
+        /// </remarks>
+        public static long Totient(long n)
+        {
+            long ans = n;
+            for (int p = 2; p * p <= n; p++)
+            {
+                if (n % p != 0) continue;
+                while (n % p == 0)
+                {
+                    n /= p;
+                }
+                ans -= ans / p;
+            }
+            if (n != 1)
+            {
+                ans -= ans / n;
+            }
+            return ans;
+        }
     }
 }
