@@ -36,7 +36,7 @@ namespace Qlibrary
             return costArray;
         }
 
-        public List<(int, int)> TourTime { get; set; }
+        public List<(int Current, int Depth)> TourTime { get; set; }
         public int[] FirstTime { get; set; }
         private void CheckCostAndTour(int current, T cost, int from, ref int time, int depth = 0)
         {

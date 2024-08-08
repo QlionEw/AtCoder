@@ -1,9 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
+    public class UndoableUnionFind : UndoableUnionFind<int>
+    {
+        public UndoableUnionFind(int n) : base(Enumerable.Range(0, n + 1).ToArray(), (a,b) => a)
+        {
+        }
+    }
+    
     public class UndoableUnionFind<T>
     {
         private int num;
