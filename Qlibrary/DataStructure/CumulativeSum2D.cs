@@ -1,43 +1,48 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using static System.Math;
 
 namespace Qlibrary
 {
-    public class CumulativeSum2D : IEnumerable<IEnumerable<long>>
+    public class CumulativeSum2D
     {
+        private readonly int height;
+        private readonly int width;
         private bool isCalculated;
         private readonly long[][] box;
         
         public CumulativeSum2D(int height, int width)
         {
-            box = Enumerable.Repeat(0, height).Select(_ => new long[width]).ToArray();
+            this.height = height;
+            this.width = width;
+            box = Enumerable.Repeat(0, height + 2).Select(_ => new long[width + 2]).ToArray();
         }
 
         [MethodImpl(256)]
-        public void Add(int height, int width, long value)
+        public void Add(int h, int w, long value)
         {
-            box[height][width] += value;
+            box[h+1][w+1] += value;
         }
         
         [MethodImpl(256)]
         public void AddSquare((int h,int w) start, (int h,int w) end, long value)
         {
-            box[start.h][start.w] += value;
-            if (end.h + 1 < box.Length)
-            {
-                box[end.h + 1][start.w] -= value;
-            }
-            if (end.w + 1 < box[0].Length)
-            {
-                box[start.h][end.w + 1] -= value;
-            }
-            if (end.h + 1 < box.Length && end.w + 1 < box[0].Length)
-            {
-                box[end.h + 1][end.w + 1] += value;
-            }
+            start = (start.h + 1, start.w + 1);
+            end = (end.h + 1, end.w + 1);
+            box[RoundH(start.h)][RoundW(start.w)] += value;
+            box[RoundH(end.h + 1)][RoundW(start.w)] -= value;
+            box[RoundH(start.h)][RoundW(end.w + 1)] -= value;
+            box[RoundH(end.h + 1)][RoundW(end.w + 1)] += value;
         }
+
+        [MethodImpl(256)]
+        private int RoundH(int v) => Min(Max(0, v), height + 1);
+        [MethodImpl(256)]
+        private int RoundW(int v) => Min(Max(0, v), width + 1);
 
         public void Calculate()
         {
@@ -69,24 +74,6 @@ namespace Qlibrary
                 }
                 return box[h][w];
             }
-        }
-
-        public IEnumerator<IEnumerable<long>> GetEnumerator()
-        {
-            if (!isCalculated)
-            {
-                Calculate();
-            }
-            return box.AsEnumerable().GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            if (!isCalculated)
-            {
-                Calculate();
-            }
-            return GetEnumerator();
         }
     }
 }
