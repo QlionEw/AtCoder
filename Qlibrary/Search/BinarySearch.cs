@@ -26,7 +26,7 @@ namespace Qlibrary
         {
             long ok = min;
             long ng = max;
-            long i = (ok + ng) / 2;
+            long i = (ok + ng) >> 1;
             while (ok + 1 < ng)
             {
                 if (i == min || i == max)
@@ -43,7 +43,7 @@ namespace Qlibrary
                     ng = i;
                 }
 
-                i = (ok + ng) / 2;
+                i = (ok + ng) >> 1;
             }
 
             return ok;
@@ -53,7 +53,7 @@ namespace Qlibrary
         {
             long ok = max;
             long ng = min;
-            long i = (ok + ng) / 2;
+            long i = (ok + ng) >> 1;
             while (ng + 1 < ok)
             {
                 if (i == min || i == max)
@@ -70,7 +70,7 @@ namespace Qlibrary
                     ng = i;
                 }
 
-                i = (ok + ng) / 2;
+                i = (ok + ng) >> 1;
             }
 
             return ok;
