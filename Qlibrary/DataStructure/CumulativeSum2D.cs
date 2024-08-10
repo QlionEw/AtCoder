@@ -68,12 +68,27 @@ namespace Qlibrary
         {
             get
             {
+                if (h < 0 || w < 0)
+                {
+                    return 0;
+                }
                 if (!isCalculated)
                 {
                     Calculate();
                 }
-                return box[h][w];
+                return box[h + 1][w + 1];
             }
+        }
+
+        public long GetSquare((int h,int w) c1, (int h,int w) c2)
+        {
+            if (!isCalculated)
+            {
+                Calculate();
+            }
+            var s = (Min(c1.h, c2.h) - 1, Min(c1.w, c2.w) - 1);
+            var t = (Max(c1.h, c2.h), Max(c1.w, c2.w));
+            return this[t.Item1, t.Item2] - this[t.Item1, s.Item2] - this[s.Item1, t.Item2] + this[s.Item1,s.Item2];
         }
     }
 }
