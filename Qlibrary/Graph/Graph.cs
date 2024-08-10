@@ -33,11 +33,10 @@ namespace Qlibrary
         public override int GetHashCode() => HashCode.Combine(From, To);
     }
 
-    public class Graph<T> : IEnumerable<Edge<T>[]> where T : INumber<T>
+    public class Graph<T> : IEnumerable<List<Edge<T>>> where T : INumber<T>
     {
         private readonly long fromIndex = MathPlus.BigPow(10, 9);
-        private Edge<T>[][] graph;
-        private readonly List<Edge<T>>[] tempGraph;
+        private readonly List<Edge<T>>[] graph;
         private Dictionary<long, long>[] additionalInfo;
         public int Count { get; }
         public int PathCount { get; private set; }
@@ -46,7 +45,7 @@ namespace Qlibrary
         public Graph(int n, bool isDirected)
         {
             Count = n + 1;
-            tempGraph = Make(Count, () => new List<Edge<T>>());
+            graph = Make(Count, () => new List<Edge<T>>());
             IsDirected = isDirected;
         }
 
@@ -68,8 +67,8 @@ namespace Qlibrary
         public void AddPath(int p, int q, T cost)
         {
             PathCount++;
-            tempGraph[p].Add(new Edge<T>(p, q, cost));
-            if (!IsDirected) tempGraph[q].Add(new Edge<T>(q, p, cost));
+            graph[p].Add(new Edge<T>(p, q, cost));
+            if (!IsDirected) graph[q].Add(new Edge<T>(q, p, cost));
         } 
 
         private void SetAdditionalInfo(params int[] v)
@@ -89,19 +88,18 @@ namespace Qlibrary
                 for (int j = 0; j < Count; j++)
                 {
                     if (paths[i][j] == 0) continue;
-                    tempGraph[i + indexed].Add(new Edge<T>(i + indexed, j + indexed, T.CreateChecked(paths[i][j])));
+                    graph[i + indexed].Add(new Edge<T>(i + indexed, j + indexed, T.CreateChecked(paths[i][j])));
                 }
             }
         }
         
-        public Edge<T>[][] GetGraph()
+        public List<Edge<T>>[] GetGraph()
         {
-            if(graph == null) graph = Array.ConvertAll(tempGraph, x => x.ToArray());
             return graph;
         }
         
-        public Edge<T>[] this[int edge] => GetGraph()[edge];
-        public IEnumerator<Edge<T>[]> GetEnumerator() => GetGraph().AsEnumerable().GetEnumerator();
+        public List<Edge<T>> this[int edge] => graph[edge];
+        public IEnumerator<List<Edge<T>>> GetEnumerator() => GetGraph().AsEnumerable().GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

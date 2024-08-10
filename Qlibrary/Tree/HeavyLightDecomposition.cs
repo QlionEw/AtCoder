@@ -10,12 +10,12 @@ namespace Qlibrary
         private void DfsForSize(int cur)
         {
             Size[cur] = 1;
-            for (int i = 0; i < Graph[cur].Length; i++)
+            for (int i = 0; i < Graph[cur].Count; i++)
             {
                 var dst = Graph[cur][i];
                 if (dst.To == Parent[cur])
                 {
-                    if (Graph[cur].Length >= 2 && dst.To == Graph[cur][0].To)
+                    if (Graph[cur].Count >= 2 && dst.To == Graph[cur][0].To)
                     {
                         (Graph[cur][0], Graph[cur][1]) = (Graph[cur][1], Graph[cur][0]);
                         dst = Graph[cur][0];
