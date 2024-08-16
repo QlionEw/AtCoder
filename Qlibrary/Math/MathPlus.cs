@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using static System.Math;
 
 namespace Qlibrary
 {
@@ -309,10 +310,12 @@ namespace Qlibrary
         [MethodImpl(256)]
         public static long AbsMod(this long l, long mod)
         {
-            var lm = Math.Abs(l) % mod;
+            mod = Abs(mod);
+            var lm = Abs(l) % mod;
             if (l < 0)
             {
                 lm = (mod - lm);
+                lm %= mod;
             }
             return lm;
         }
