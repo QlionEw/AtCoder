@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -8,6 +9,7 @@ namespace Qlibrary
 {
     public class Doubling
     {
+        private bool isBuild;
         private readonly int size;
         private readonly int logSize;
         private readonly int[,] table;
@@ -16,12 +18,16 @@ namespace Qlibrary
         {
             this.size = size;
             logSize = 64 - BitOperations.LeadingZeroCount((ulong)maxOperationCount);
-            table = new int[logSize, size];
+            table = new int[size, logSize];
             table.Init(-1);
         }
 
         [MethodImpl(256)]
-        public void SetNext(int k, int x) => table[0,k] = x;
+        public void SetNext(int from, int to)
+        { 
+            Debug.Assert(!isBuild, "[Doubling] Do not SetNext() after querying.");
+            table[from,0] = to;
+        }
 
         [MethodImpl(256)]
         public void Build()
@@ -30,29 +36,31 @@ namespace Qlibrary
             {
                 for (int i = 0; i < size; i++)
                 {
-                    if (table[k,i] == -1)
+                    if (table[i,k] == -1)
                     {
-                        table[k + 1,i] = -1;
+                        table[i, k + 1] = -1;
                     }
                     else
                     {
-                        table[k + 1,i] = table[k,table[k,i]];
+                        table[i, k + 1] = table[table[i,k], k];
                     }
                 }
             }
+            isBuild = true;
         }
 
         [MethodImpl(256)]
-        public int Query(int k, long t)
+        public int Query(int from, long count)
         {
-            for (int i = logSize - 1; i >= 0; i--)
+            if (!isBuild) Build();
+            for (int k = logSize - 1; k >= 0; k--)
             {
-                if (((t >> i) & 1) == 1)
+                if (((count >> k) & 1) == 1)
                 {
-                    k = table[i,k];
+                    from = table[from,k];
                 }
             }
-            return k;
+            return from;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -8,6 +9,7 @@ namespace Qlibrary
 {
     public class ValuedDoubling<T> where T : INumber<T>
     {
+        private bool isBuild;
         private readonly int size;
         private readonly int logSize;
         private readonly (int first, T second)[,] table;
@@ -23,10 +25,14 @@ namespace Qlibrary
         }
 
         [MethodImpl(256)]
-        public void SetNext(int from, int to, T value) => table[from,0] = (to, value);
+        public void SetNext(int from, int to, T value)
+        {
+            Debug.Assert(!isBuild, "[ValuedDoubling] Do not SetNext() after querying.");
+            table[from,0] = (to, value);
+        }
 
         [MethodImpl(256)]
-        public void Build()
+        private void Build()
         {
             for (int k = 0; k + 1 < logSize; ++k)
             {
@@ -43,11 +49,13 @@ namespace Qlibrary
                     }
                 }
             }
+            isBuild = true;
         }
 
         [MethodImpl(256)]
         public (int MoveTo, T Sum) Query(int from, long count)
         {
+            if (!isBuild) Build();
             T d = initValue;
             for (int k = logSize - 1; k >= 0; k--)
             {
@@ -64,12 +72,17 @@ namespace Qlibrary
         }
 
         // 2^n個先の要素を取得
-        public (int MoveTo, T Sum) QueryPow(int from, int count2N) => table[from,count2N];
+        public (int MoveTo, T Sum) QueryPow(int from, int count2N)
+        {
+            if (!isBuild) Build();
+            return table[from, count2N];
+        }
 
         // 未検証
         [MethodImpl(256)]
         public (long, (int, T)) SolveMax(int i, int t)
         {
+            if (!isBuild) Build();
             int threshold = i;
             T d = initValue;
             long times = 0;
@@ -89,6 +102,7 @@ namespace Qlibrary
         [MethodImpl(256)]
         public (long, (int, T)) SolveMin(int i, int t)
         {
+            if (!isBuild) Build();
             int threshold = i;
             T d = initValue;
             long times = 0;
