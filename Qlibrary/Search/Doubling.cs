@@ -6,100 +6,53 @@ using static System.Math;
 
 namespace Qlibrary
 {
-    public class Doubling<T> where T : INumber<T>
+    public class Doubling
     {
         private readonly int size;
         private readonly int logSize;
-        private readonly (int first, T second)[][] table;
-        private readonly T initValue;
+        private readonly int[,] table;
 
-        public Doubling(int size, long limit, T initValue)
+        public Doubling(int size, long maxOperationCount)
         {
             this.size = size;
-            logSize = (int)Log(limit + 2);
-            this.initValue = initValue;
-            table = Enumerable.Repeat(0, size).Select(_ => Enumerable.Repeat((-1, initValue), logSize).ToArray())
-                .ToArray();
+            logSize = 64 - BitOperations.LeadingZeroCount((ulong)maxOperationCount);
+            table = new int[logSize, size];
+            table.Init(-1);
         }
 
-        public void SetNext(int from, int to, T value) => table[from][0] = (to, value);
+        [MethodImpl(256)]
+        public void SetNext(int k, int x) => table[0,k] = x;
 
+        [MethodImpl(256)]
         public void Build()
         {
-            for (int k = 0; k + 1 < logSize; ++k)
+            for (int k = 0; k + 1 < logSize; k++)
             {
-                for (int i = 0; i < size; ++i)
+                for (int i = 0; i < size; i++)
                 {
-                    int pre = table[i][k].first;
-                    if (pre == -1)
+                    if (table[k,i] == -1)
                     {
-                        table[i][k + 1] = table[i][k];
+                        table[k + 1,i] = -1;
                     }
                     else
                     {
-                        table[i][k + 1] = (table[pre][k].first, table[i][k].second + table[pre][k].second);
+                        table[k + 1,i] = table[k,table[k,i]];
                     }
                 }
             }
         }
 
         [MethodImpl(256)]
-        public (int MoveTo, T Sum) Query(int from, long count)
+        public int Query(int k, long t)
         {
-            T d = initValue;
-            for (int k = logSize - 1; k >= 0; k--)
+            for (int i = logSize - 1; i >= 0; i--)
             {
-                if (((count >> k) & 1) == 1)
+                if (((t >> i) & 1) == 1)
                 {
-                    d += table[from][k].second;
-                    from = table[from][k].first;
+                    k = table[i,k];
                 }
-
-                if (from == -1) break;
             }
-
-            return (from, d);
-        }
-
-        // 2^n個先の要素を取得
-        public (int MoveTo, T Sum) QueryPow(int from, int count2N) => table[from][count2N];
-
-        // 未検証
-        [MethodImpl(256)]
-        public (long, (int, T)) SolveMax(int i, int t)
-        {
-            int threshold = i;
-            T d = initValue;
-            long times = 0;
-            for (int k = logSize - 1; k >= 0; k--)
-            {
-                int nxt = table[threshold][k].first;
-                if (nxt == -1 || nxt > t) continue;
-                d += table[threshold][k].second;
-                threshold = nxt;
-                times += 1L << k;
-            }
-
-            return (times, (threshold, d));
-        }
-
-        // 未検証
-        [MethodImpl(256)]
-        public (long, (int, T)) SolveMin(int i, int t)
-        {
-            int threshold = i;
-            T d = initValue;
-            long times = 0;
-            for (int k = logSize - 1; k >= 0; k--)
-            {
-                int nxt = table[threshold][k].first;
-                if (nxt == -1 || nxt < t) continue;
-                d += table[threshold][k].second;
-                threshold = nxt;
-                times += 1L << k;
-            }
-
-            return (times, (threshold, d));
+            return k;
         }
     }
 }
