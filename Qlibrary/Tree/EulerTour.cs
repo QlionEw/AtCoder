@@ -35,12 +35,21 @@ namespace Qlibrary
         private void ProcessTour(int current, int from, bool isRequireBack)
         {
             tourVertex.Add(current);
-            foreach (var edge in g[current].Where(edge => edge.To != from))
+            Edge<T> s = new Edge<T>();
+            foreach (var edge in g[current])
             {
+                if (edge.To == from && isRequireBack)
+                {
+                    s = edge;
+                }
+                if (edge.To == from)
+                {
+                    continue;
+                }
                 tourPath.Add(edge);
                 ProcessTour(edge.To, current, isRequireBack);
-                if (isRequireBack) tourPath.Add(edge);
             }
+            if (isRequireBack && from != -1) tourPath.Add(s);
 
             if (isRequireBack) tourVertex.Add(-current);
         }

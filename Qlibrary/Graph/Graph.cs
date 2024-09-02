@@ -31,6 +31,8 @@ namespace Qlibrary
         public bool Equals(Edge<T> other) => From == other.From && To == other.To;
         public override bool Equals(object obj) => obj is Edge<T> other && Equals(other);
         public override int GetHashCode() => HashCode.Combine(From, To);
+
+        public override string ToString() => $"From {From} -> {To}, Cost {Cost}";
     }
 
     public class Graph<T> : IEnumerable<List<Edge<T>>> where T : INumber<T>
