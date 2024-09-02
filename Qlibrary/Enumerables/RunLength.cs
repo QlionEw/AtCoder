@@ -24,7 +24,10 @@ namespace Qlibrary
                 }
                 count++;
             }
-            list.Add((current, count));
+            if (count != 0)
+            {
+                list.Add((current, count));
+            }
             return list;
         }
     }
