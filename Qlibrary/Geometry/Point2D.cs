@@ -7,7 +7,8 @@ namespace Qlibrary
 {
     public readonly struct Point2D : IComparable<Point2D>, IEquatable<Point2D>
     {
-        private const double Tol = 0.000001;
+        public static Point2D Invalid = new Point2D(double.PositiveInfinity, double.PositiveInfinity);
+        private const double Tol = 1e-8;
         public double X { get; }
         public double Y { get; }
 

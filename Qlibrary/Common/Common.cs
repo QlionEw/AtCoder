@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -48,6 +49,13 @@ namespace Qlibrary
                 _ => T.CreateSaturating(long.MaxValue) / T.CreateSaturating(2.1)
             };
         }
+
+        [MethodImpl(256)] 
+        public static T Epsilon<T>() where T : INumberBase<T> => T.Zero switch
+        {
+            double => T.CreateSaturating(1e-8),
+            _ => T.Zero
+        };
 
         [MethodImpl(256)] public static T GMin<T>(T v1, T v2) where T : INumber<T> => v1 <= v2 ? v1 : v2;
         [MethodImpl(256)] public static T GMax<T>(T v1, T v2) where T : INumber<T> => v1 >= v2 ? v1 : v2;
