@@ -28,6 +28,10 @@ namespace Qlibrary
         {
             int a = uft.Find(i0);
             int b = uft.Find(i1);
+            if (a == b)
+            {
+                return;
+            }
             uft.Unite(i0, i1);
             int x = uft.Find(i1);
             var inQue = count(arrays[a]) > count(arrays[b]) ? arrays[a] : arrays[b];
