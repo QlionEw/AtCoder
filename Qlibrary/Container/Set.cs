@@ -278,4 +278,55 @@ namespace Qlibrary
             }
         }
     }
+    
+    public static class SetExtensions
+    {
+        /// <summary>
+        /// valueより真に小さい集合に含まれない値のうち最大値を取る
+        /// </summary>
+        /// <param name="set"></param>
+        /// <param name="value">基準値</param>
+        /// <param name="min">下限値</param>
+        /// <returns></returns>
+        public static long LowerExcluded(this Set<long> set, long value, long min)
+        {
+            var v1 = set.Find(value - 1);
+            if (!v1.IsFound)
+            {
+                return value - 1;
+            }
+            var rcur = v1.Prev + 1;
+            var bs = new BinarySearch(min, value - 1);
+            int r1 = (int)bs.SolveMin(v =>
+            {
+                var k = set.UpperBound((int)v - 1);
+                return (value - 1 - v) == (rcur - k);
+            });
+            return r1 - 1;
+        }
+        
+        /// <summary>
+        /// valueより真に大きい集合に含まれない値のうち最小値を取る
+        /// </summary>
+        /// <param name="set"></param>
+        /// <param name="value">基準値</param>
+        /// <param name="max">上限値</param>
+        /// <returns></returns>
+        public static long UpperExcluded(this Set<long> set, long value, long max)
+        {
+            var v1 = set.Find(value + 1);
+            if (!v1.IsFound)
+            {
+                return value + 1;
+            }
+            var rcur = v1.Next - 1;
+            var bs = new BinarySearch(value + 1, max);
+            int r2 = (int)bs.SolveMax(v =>
+            {
+                var k = set.LowerBound((int)v + 1);
+                return (v - (value + 1)) == (k - rcur);
+            });
+            return r2 + 1;
+        }
+    }
 }
