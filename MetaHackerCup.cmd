@@ -8,5 +8,5 @@ if "%buildConfig%"=="" (
 )
 
 dotnet publish -c %buildConfig%
-bin\%buildConfig%\net7.0\publish\AtCoder.exe<%textpath%>"../out.txt"
-copy Combined.csx "../main.cs" /Y
+AtCoder\bin\%buildConfig%\net7.0\publish\AtCoder.exe<%textpath%>"out.txt"
+copy AtCoder\Combined.csx "main.cs" /Y

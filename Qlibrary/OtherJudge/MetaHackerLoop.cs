@@ -7,7 +7,7 @@ namespace Qlibrary
 {
     public static class MetaHackerLoop
     {
-        public static void Execute(Func<string> solve)
+        public static void Execute(Func<object> solve)
         {
             int t = Si();
             int cases = 0;
@@ -18,7 +18,7 @@ namespace Qlibrary
             Answerer.OutBuild();
         }
         
-        public static void Execute(Func<(string, string[])> solve)
+        public static void Execute(Func<(object, object[])> solve)
         {
             int t = Si();
             int cases = 0;
