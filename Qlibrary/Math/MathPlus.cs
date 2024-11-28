@@ -308,7 +308,7 @@ namespace Qlibrary
         }
 
         [MethodImpl(256)]
-        public static long AbsMod(this long l, long mod)
+        public static long AbsMod(long l, long mod)
         {
             mod = Abs(mod);
             var lm = Abs(l) % mod;
