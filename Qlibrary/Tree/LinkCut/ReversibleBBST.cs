@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
-    public class ReversibleBBST<T>
+    internal class ReversibleBBST<T>
     {
         protected readonly Func<T, T, T> mergeFunc;
         protected readonly Func<T, T> toggleSumFunc;

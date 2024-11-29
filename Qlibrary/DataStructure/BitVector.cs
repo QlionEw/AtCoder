@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
-    public class BitVector
+    internal class BitVector
     {
         private const uint W = 64;
         private List<ulong> block;

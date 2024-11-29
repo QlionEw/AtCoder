@@ -3,9 +3,8 @@ using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
-    public abstract class SplayTreeBase<T>
+    internal abstract class SplayTreeBase<T>
     {
-        public LinkCutNode<T> Root;
         public abstract void Push(LinkCutNode<T> node);
         public abstract LinkCutNode<T> Update(LinkCutNode<T> node);
 

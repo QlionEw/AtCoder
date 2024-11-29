@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Qlibrary
 {
-    public class ReversibleSplayTree<T> : SplayTreeBase<T>
+    internal class ReversibleSplayTree<T> : SplayTreeBase<T>
     {
         private ReversibleBBST<T> bbst;
 
