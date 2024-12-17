@@ -6,6 +6,7 @@
         <RootNamespace>Qompetitive</RootNamespace>
         <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
         <InvariantGlobalization>true</InvariantGlobalization>
+        <NoWarn>NETSDK1138</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
