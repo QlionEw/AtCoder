@@ -18,6 +18,16 @@ namespace Qlibrary
             }
             return value / div;
         }
+        
+        [MethodImpl(256)]
+        public static long FloorLong(long value, long div)
+        {
+            if (value >= 0)
+            {
+                return value / div;
+            }
+            return value % div == 0 ? value / div : value / div - 1;
+        }
 
         [MethodImpl(256)]
         public static int Digit(long num, int b)
@@ -280,6 +290,8 @@ namespace Qlibrary
         [MethodImpl(256)]
         public static long FloorSqrt(long value)
         {
+            if (value < 0) throw new ArithmeticException();
+            if (value == 0) return 0;
             var sq = (long)Math.Sqrt(value);
             while ((sq+1) * (sq+1) <= value)
             {
@@ -295,6 +307,8 @@ namespace Qlibrary
         [MethodImpl(256)]
         public static long CeilingSqrt(long value)
         {
+            if (value < 0) throw new ArithmeticException();
+            if (value == 0) return 0;
             var sq = (long)Math.Sqrt(value);
             while ((sq) * (sq) < value)
             {
