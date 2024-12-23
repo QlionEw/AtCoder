@@ -53,6 +53,7 @@ namespace Qlibrary
         [MethodImpl(256)] public long GetRangeMin(int l, int r) => InnerFold(l, r + 1, 1);
         [MethodImpl(256)] public long GetRangeMax(int l, int r) => InnerFold(l, r + 1, 2);
         [MethodImpl(256)] public long GetRangeSum(int l, int r) => InnerFold(l, r + 1, 3);
+        [MethodImpl(256)] public long Get(int i) => v[i + n].Sum;
 
         [MethodImpl(256)]
         private void Update(int k)
@@ -188,6 +189,8 @@ namespace Qlibrary
         private void InnerApply(int l, int r, long x, int cmd)
         {
             if (l == r) return;
+            if (l < 0) l = 0;
+            if (r >= n) r = n;
             l += n;
             r += n;
             for (int i = log; i >= 1; i--)
@@ -236,7 +239,9 @@ namespace Qlibrary
         [MethodImpl(256)] 
         private long InnerFold(int l, int r, int cmd)
         {
-            if (l == r) return E(cmd);
+            if (l >= r) return E(cmd);
+            if (l < 0) l = 0;
+            if (r >= n) r = n;
             l += n;
             r += n;
             for (int i = log; i >= 1; i--)
