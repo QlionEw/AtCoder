@@ -190,9 +190,9 @@ namespace Qlibrary
                 indices[i] = withRepetition ? 0 : i;
             }
 
+            T[] combination = new T[k];
             while (true)
             {
-                T[] combination = new T[k];
                 for (int i = 0; i < k; i++)
                 {
                     combination[i] = itemsArray[indices[i]];
