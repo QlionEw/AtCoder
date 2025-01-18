@@ -57,6 +57,10 @@ namespace Qlibrary
 
         public T Restore(int index)
         {
+            if (list != null && dict == null)
+            {
+                Generate(list);
+            }
             return reversed.Length > index ? reversed[index] : default;
         }
 
