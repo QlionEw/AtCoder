@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -12,8 +13,8 @@ namespace Qlibrary
         private class Node
         {
             public long Sum { get; set; }
-            public long G1 { get; set; }
-            public long L1 { get; set; }
+            public long G1 { get; set; } = -Infinity;
+            public long L1 { get; set; } = Infinity;
             public long G2 { get; set; } = -Infinity;
             public long Gc { get; set; } = 1;
             public long L2 { get; set; } = Infinity;
@@ -24,6 +25,7 @@ namespace Qlibrary
         private readonly Node[] v;
         private readonly int n;
         private readonly int log;
+        private readonly int count;
 
         public SegmentTreeBeats(int n) : this(new long[n])
         {
@@ -32,17 +34,16 @@ namespace Qlibrary
         public SegmentTreeBeats(IEnumerable<long> vv)
         {
             var vc = vv.ToArray();
+            count = vc.Length;
             n = 1;
             log = 0;
-            while (n < vc.Length)
+            while (n < count)
             {
                 n <<= 1;
                 log++;
             }
-
             v = Make(2 * n, () => new Node());
-            for (int i = 0; i < vc.Length; ++i) { v[i + n].Sum = v[i + n].G1 = v[i + n].L1 = vc[i]; }
-
+            for (int i = 0; i < count; ++i) { v[i + n].Sum = v[i + n].G1 = v[i + n].L1 = vc[i]; }
             for (int i = n - 1; i > 0; --i) Update(i);
         }
 
@@ -53,7 +54,6 @@ namespace Qlibrary
         [MethodImpl(256)] public long GetRangeMin(int l, int r) => InnerFold(l, r + 1, 1);
         [MethodImpl(256)] public long GetRangeMax(int l, int r) => InnerFold(l, r + 1, 2);
         [MethodImpl(256)] public long GetRangeSum(int l, int r) => InnerFold(l, r + 1, 3);
-        [MethodImpl(256)] public long Get(int i) => v[i + n].Sum;
 
         [MethodImpl(256)]
         private void Update(int k)
@@ -133,7 +133,6 @@ namespace Qlibrary
                 PushAdd(k * 2 + 1, p.Add);
                 p.Add = 0;
             }
-
             if (p.G1 < v[k * 2 + 0].G1) PushMin(k * 2 + 0, p.G1);
             if (p.L1 > v[k * 2 + 0].L1) PushMax(k * 2 + 0, p.L1);
             if (p.G1 < v[k * 2 + 1].G1) PushMin(k * 2 + 1, p.G1);
@@ -149,7 +148,6 @@ namespace Qlibrary
                 PushMin(k, x);
                 return;
             }
-
             Push(k);
             SubtreeChMin(k * 2 + 0, x);
             SubtreeChMin(k * 2 + 1, x);
@@ -165,7 +163,6 @@ namespace Qlibrary
                 PushMax(k, x);
                 return;
             }
-
             Push(k);
             SubtreeChMax(k * 2 + 0, x);
             SubtreeChMax(k * 2 + 1, x);
@@ -190,7 +187,7 @@ namespace Qlibrary
         {
             if (l == r) return;
             if (l < 0) l = 0;
-            if (r >= n) r = n;
+            if (r >= count) r = count;
             l += n;
             r += n;
             for (int i = log; i >= 1; i--)
@@ -241,7 +238,7 @@ namespace Qlibrary
         {
             if (l >= r) return E(cmd);
             if (l < 0) l = 0;
-            if (r >= n) r = n;
+            if (r >= count) r = count;
             l += n;
             r += n;
             for (int i = log; i >= 1; i--)
@@ -263,6 +260,39 @@ namespace Qlibrary
             if (cmd == 2) lx = Max(lx, rx);
             if (cmd == 3) lx += rx;
             return lx;
+        }
+
+        [MethodImpl(256)] 
+        public int SolveMin(Predicate<long> predicate)
+        {
+            int left = 1;
+            for (int i = 0; i < log; i++)
+            {
+                Push(left);
+                int o = left << 1;
+                if ((o + 1 - (1 << (i + 1))) * (n >> (i + 1)) >= count)
+                {
+                    left = o;
+                    continue;
+                }
+                var p = v[o + 1].L1 == Infinity ? v[o + 1].L2 : v[o + 1].L1;
+                left = predicate(p) ? o : o + 1;
+            }
+            return Max(left + 1 - n, 0);
+        }
+
+        [MethodImpl(256)] 
+        public int SolveMax(Predicate<long> predicate)
+        {
+            int right = 1;
+            for (int i = 0; i < log; i++)
+            {
+                if ((right - (1 << i)) * (n >> i) >= count) { return count - 1; }
+                Push(right);
+                int o = right << 1;
+                right = predicate(v[o].G1) ? o + 1 : o;
+            }
+            return Min(right - 1 - n, count - 1);
         }
     }
 }
