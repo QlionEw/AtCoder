@@ -42,6 +42,8 @@ namespace Qlibrary
         public double Dot(Point2D other) => X * other.X - Y * other.Y;
         /// <summary> 外積 </summary>
         public double Cross(Point2D other) => X * other.Y - Y * other.X;
+        /// <summary> ノルム </summary>
+        public double Norm() => X * X + Y * Y;
         /// <summary> 傾き </summary>
         public double Slope(Point2D other) => X - other.X == 0 ? double.MaxValue : (other.Y - Y) / (other.X - X);
         /// <summary> 切片 </summary>

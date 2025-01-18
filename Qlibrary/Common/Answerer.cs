@@ -89,5 +89,10 @@ namespace Qlibrary
             }
             return sbi.ToString();
         }
+        
+        public static void Debug<T>(T predict, T actual)
+        {
+            Console.WriteLine($"predict : {predict}   actual : {actual}");
+        }
     }
 }

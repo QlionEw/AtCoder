@@ -144,5 +144,26 @@ namespace Qlibrary
                 }
             }
         }
+        
+        public static void Init<T>(this T[,,,] array, T value)
+        {
+            var l1 = array.GetLength(0);
+            var l2 = array.GetLength(1);
+            var l3 = array.GetLength(2);
+            var l4 = array.GetLength(3);
+            for (int i = 0; i < l1; i++)
+            {
+                for (int j = 0; j < l2; j++)
+                {
+                    for (int k = 0; k < l3; k++)
+                    {
+                        for (int l = 0; l < l4; l++)
+                        {
+                            array[i, j, k, l] = value;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
