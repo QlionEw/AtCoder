@@ -9,7 +9,7 @@ namespace Qlibrary
 {
     public class SternBrocotTree
     {
-        public static (Fraction Lower, Fraction Upper) BinarySearch(Func<Fraction, bool> f,
+        public static (Fraction Lower, Fraction Upper) BinarySearch(Predicate<Fraction> f,
             long max)
         {
             var m = new SternBrocotTreeNode();

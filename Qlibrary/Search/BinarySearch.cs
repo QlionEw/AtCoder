@@ -22,7 +22,7 @@ namespace Qlibrary
             this.max = max + 1;
         }
 
-        public long SolveMax(Func<long, bool> judge)
+        public long SolveMax(Predicate<long> judge)
         {
             long ok = min;
             long ng = max;
@@ -49,7 +49,7 @@ namespace Qlibrary
             return ok;
         }
 
-        public long SolveMin(Func<long, bool> judge)
+        public long SolveMin(Predicate<long> judge)
         {
             long ok = max;
             long ng = min;
