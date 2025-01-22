@@ -18,7 +18,7 @@ cd ..
 dotnet publish -c $buildConfig
 cd AtCoder
 
-cp -v -r bin/$buildConfig/net7.0/publish/* $questionPath
+cp -v -r AtCoder/bin/$buildConfig/net7.0/publish/* $questionPath
 cd $questionPath
 atcoder-tools test -t2 -e ./AtCoder
 
@@ -26,7 +26,7 @@ if [ $? -eq 0 ]; then
     echo "Submit?(y/n) "
     read submit
     if [ "$submit" = "y" ]; then
-        cp -v -f $current/Combined.csx $questionPath/main.cs
+        cp -v -f $current/AtCoder/Combined.csx $questionPath/main.cs
         atcoder-tools submit -u -t2 -e ./AtCoder
         open -a "Google Chrome" https://atcoder.jp/contests/$contestName/submissions/me
     fi
