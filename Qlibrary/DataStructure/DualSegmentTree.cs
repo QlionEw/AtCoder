@@ -36,10 +36,11 @@ namespace Qlibrary
             }
         }
 
-        private void Thrust(int k)
+        private void Thrust(int kk)
         {
             for (int i = height; i > 0; i--)
             {
+                var k = kk >> i;
                 if (lazy[k].Equals(firstValue)) continue;
                 lazy[(k << 1) + 0] = updateMethod(lazy[(k << 1) + 0], lazy[k]);
                 lazy[(k << 1) + 1] = updateMethod(lazy[(k << 1) + 1], lazy[k]);
